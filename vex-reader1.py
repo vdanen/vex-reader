@@ -95,6 +95,10 @@ def main():
         print('Acknowledgements:')
         print(f'  Red Hat would like to thank {vex.acks} for reporting this issue.')
 
+    if packages.wontfix:
+        print('Packages that will not receive fixes:')
+        for x in packages.wontfix:
+            print(f"  {x.product} ({x.component}): {x.reason}")
 
 if __name__ == '__main__':
     main()

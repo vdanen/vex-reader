@@ -18,8 +18,8 @@ class Fix(object):
     """
 
     def __init__(self, x, pmap):
-            self.id = None
-            self.url = x['url']
+            self.id         = None
+            self.url        = x['url']
             self.components = []
 
             for v in VENDOR_ADVISORY:
@@ -35,6 +35,20 @@ class Fix(object):
                 (product, component, version) = y.split(':')
                 self.components.append(':'.join([component, version]))
                 self.product = product_lookup(product, pmap)
+
+
+class WontFix(object):
+    """
+    class to handle affects that the vendor will not fix.  These come as one (or multiple?) list of product ids
+    with a reason
+    """
+
+    def __init__(self, x, y, pmap):
+            print('hit')
+            self.reason     = x['details']
+            (product, self.component) = y.split(':')
+            self.product = product_lookup(product, pmap)
+
 
 class VexPackages(object):
     """
@@ -89,6 +103,5 @@ class VexPackages(object):
                     self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
 
                 if x['category'] == 'no_fix_planned':
-                    nf_details = x['details']
-                    for p in x['product_ids']:
-                        self.wontfix.append({'product': p, 'reason': nf_details})
+                    for y in filter_products(x['product_ids']):
+                        self.wontfix.append(WontFix(x, y, self.pmap))
