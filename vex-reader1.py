@@ -34,32 +34,40 @@ def main():
     print('Description:')
     print(f'  {vex.description}')
     print()
+
     if vex.statement:
         print('Statement:')
         print(f'  {vex.statement}')
-        #if mitigation:
         print()
-        print('Additional Information:')
-        print(f'  Bugzilla {vex.bz_id}: {vex.summary}')
-        print(f'  {vex.cwe_id}: {vex.cwe_name}')
-        print()
+
+    #if mitigation:
+
+    print('Additional Information:')
+    print(f'  Bugzilla {vex.bz_id}: {vex.summary}')
+    print(f'  {vex.cwe_id}: {vex.cwe_name}')
+    print()
+
+    if vex.references:
         print('External References:')
         for url in vex.references:
             print(f'  {url}')
         print()
+
+    if packages.fixes:
         print('Fixed Packages:')
         for x in packages.fixes:
-            print(f"  {x.id} -- {x.product}")
+            print(f"  {x.id} -- {x.product} ({x.vendor})")
             if args.show_components:
                 for c in list(set(x.components)):
                     print(f'             {c}')
-
         print()
 
+    if vex.cvss_type:
         print(f'CVSS {vex.cvss_type} Vector')
         print(f"Red Hat: {vex.global_cvss['vectorString']}")
         print('NVD:     **NOT YET**')
         print()
+
         print(f'CVSS {vex.cvss_type} Score Breakdown')
         # TODO: string padding
         print('                        Red Hat    NVD')
@@ -73,6 +81,8 @@ def main():
         print(f"Integrity Impact        {vex.global_cvss['integrityImpact'].capitalize()}")
         print(f"Availability Impact     {vex.global_cvss['availabilityImpact'].capitalize()}")
         print()
+
+    if vex.acks:
         print('Acknowledgements:')
         print(f'  Red Hat would like to thank {vex.acks} for reporting this issue.')
 
