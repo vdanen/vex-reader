@@ -66,31 +66,6 @@ class Vex(object):
             if x['category'] == 'external':
                 self.references.append(x['url'])
 
-        # errata
-        self.fixes       = []
-        self.workarounds = []
-        self.wontfix     = []
-        for x in k['remediations']:
-            if x['category'] == 'vendor_fix':
-                rhsa = None
-                url = x['url']
-                if 'RHSA' in url:
-                    rhsa = url.split('/')[-1]
-                f_pkgs = filter_products(x['product_ids'])
-                self.fixes.append({'rhsa': rhsa, 'url': url, 'packages': f_pkgs})
-
-            if x['category'] == 'workaround':
-                wa_details = x['details']
-                # seems stupid to have a package list for workarounds
-                # but... just in case
-                w_pkgs = filter_products(x['product_ids'])
-                self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
-
-            if x['category'] == 'no_fix_planned':
-                nf_details = x['details']
-                for p in x['product_ids']:
-                    self.wontfix.append({'product': p, 'reason': nf_details})
-
         self.cvss_v3 = []
         self.cvss_v2 = []
         for x in k['scores']:
