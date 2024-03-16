@@ -42,9 +42,15 @@ def main():
 
     #if mitigation:
 
-    print('Additional Information:')
-    print(f'  Bugzilla {vex.bz_id}: {vex.summary}')
-    print(f'  {vex.cwe_id}: {vex.cwe_name}')
+    refs = []
+    if vex.bz_id:
+        refs.append(f'  Bugzilla {vex.bz_id}: {vex.summary}')
+    if vex.cwe_id:
+        refs.append(f'  {vex.cwe_id}: {vex.cwe_name}')
+    if refs:
+        print('Additional Information:')
+        for r in refs:
+            print(r)
     print()
 
     if vex.references:
@@ -53,10 +59,13 @@ def main():
             print(f'  {url}')
         print()
 
+    vendor = 'Unknown'
     if packages.fixes:
         print('Fixed Packages:')
         for x in packages.fixes:
-            print(f"  {x.id} -- {x.product} ({x.vendor})")
+            # TODO: if there are no fixes then there is no vendor string, need to pull this from the VEX 'publisher'
+            vendor = x.vendor
+            print(f"  {x.id} -- {x.product}")
             if args.show_components:
                 for c in list(set(x.components)):
                     print(f'             {c}')
@@ -70,7 +79,7 @@ def main():
 
         print(f'CVSS {vex.cvss_type} Score Breakdown')
         # TODO: string padding
-        print('                        Red Hat    NVD')
+        print(f'                        {vendor}    NVD')
         print(f"CVSS v3 Base Score      {vex.global_cvss['baseScore']}        0.0")
         print(f"Attack Vector           {vex.global_cvss['attackVector'].capitalize()}")
         print(f"Attack Complexity       {vex.global_cvss['attackComplexity'].capitalize()}")
