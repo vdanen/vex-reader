@@ -29,7 +29,8 @@ VENDOR_ADVISORY = OrderedDict(
     [
         ("RHSA", "Red Hat"),
         ("USN", "Ubuntu"),
-        ("SUSE-SU", "SUSE")
+        ("SUSE-SU", "SUSE"),
+        ("GLSA", "Gentoo")
     ]
 )
 

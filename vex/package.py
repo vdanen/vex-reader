@@ -24,8 +24,12 @@ class Fix(object):
 
             for v in VENDOR_ADVISORY:
                 if v in self.url:
-                    # TODO: some regexp here to make this better; right now I'm assuming RHSA
+                    # most advisories have the advisory name at the end of the URL
                     self.id = self.url.split('/')[-1]
+                    self.vendor = VENDOR_ADVISORY[v]
+                    # ... but some don't
+                    if self.vendor == 'Gentoo':
+                        self.id = f'{v}-{self.id}'
 
             for y in filter_products(x['product_ids']):
                 (product, component, version) = y.split(':')
