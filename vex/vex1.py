@@ -25,22 +25,32 @@ class Vex(object):
         """
 
         for k in self.raw['vulnerabilities']:
+            # defaults
+            self.cwe_id      = None
+            self.cwe_name    = None
+            self.description = None
+            self.summary     = None
+            self.statement   = None
+
+
             self.title          = k['title']
             self.cve            = k['cve']
-            self.cwe_id         = k['cwe']['id']
-            self.cwe_name       = k['cwe']['name']
+            if 'cwe' in k:
+                self.cwe_id     = k['cwe']['id']
+                self.cwe_name   = k['cwe']['name']
             self.discovery_date = k['discovery_date']
             self.release_date   = k['release_date']
 
         # Acknowledgements
         self.acks = None
-        for x in k['acknowledgments']:
-            for a in x:
-                if len(x[a]) == 1:
-                    self.acks = x[a][0]
-                # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
-                elif len(x[a]) > 1:
-                    self.acks = " and ".join(x[a])
+        if 'acknowledgments' in k:
+            for x in k['acknowledgments']:
+                for a in x:
+                    if len(x[a]) == 1:
+                        self.acks = x[a][0]
+                    # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
+                    elif len(x[a]) > 1:
+                        self.acks = " and ".join(x[a])
 
         # Bugzilla / bugtracking
         for x in k['ids']:
@@ -103,7 +113,7 @@ class Vex(object):
         # Impact ratings
         self.global_impact = None
         if len(self.impacts) == 1:
-            self.global_impact = list(self.impacts.keys())[0]
+            self.global_impact = list(self.impacts[0].keys())[0]
         else:
             baseline = 0
             for a in self.impacts:
