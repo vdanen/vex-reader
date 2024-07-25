@@ -236,18 +236,32 @@ def main():
         print('Fixed Packages:')
         for x in fixes:
             # TODO: this is missing the release date for the RHSA
+            # TODO: this is also missing any changed severity ratings and CVSS scores
             rhsa_id  = x['rhsa']
             rhsa_url = x['url']
-            components = []
+            component_versions = []
+            component_names    = []
             for y in x['packages']:
-                (product, component, version) = y.split(':')
+                (product, comp, version) = y.split(':')
                 # only care about components
-                components.append(':'.join([component, version]))
+                component_versions.append(':'.join([comp, version]))
+                # NOTE: the epoch is appended to the component name (i.e. runc with an epoch of 0 is runc-0, with
+                # an epoch of 4 it's runc-4 ... this is meaningless information for consumers frankly and we
+                # shouldn't do it, but there it is...  for presentation, let's weed it out
+
+                component_names.append('-'.join(comp.split('-')[:-1]))
             product_name = product_lookup(product, pmap)
-            print(f"  {rhsa_id} -- {product_name}")
+
             if args.show_components:
-                for c in list(set(components)):
+                print(f"  {rhsa_id} -- {product_name}")
+                for c in list(set(component_versions)):
                     print(f'             {c}')
+            else:
+                # TODO: if we look at CVE-2024-21626 as one example, we get a list of components that technically are
+                # not affected, how do we refine this down to the one component that is? (i.e. show 'runc' and not
+                # 'podman' and 'skopeo', etc)
+                print(f"  {rhsa_id} -- {product_name} -- {component_names}")
+
         print()
 
         print(f'CVSS {cvss_type} Vector')
