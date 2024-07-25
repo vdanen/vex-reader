@@ -63,18 +63,10 @@ def main():
     # keys": 'document', 'product_tree', 'vulnerabilities'
     #print(vex['document'])
 
-    # build the product tree
+    # build the product tree which has a weird amount of depth but ok...
     pmap = []
     for p in vex['product_tree']['branches']:
-        # TODO there seems to be a bug in the VEX output respective to branch nesting, it's very convoluted =(
         for b in p['branches']:
-            if 'category' in b.keys():
-                if b['category'] == 'product_name':
-                    name = b['name']
-                    id   = b['product']['product_id']
-                    pmap.append({id: name})
-
-            # this is where the bug is, we shouldn't have to step down a level when the first product is one level up, right?
             if 'branches' in b.keys():
                 for c in b['branches']:
                     if 'category' in c.keys():
@@ -82,7 +74,6 @@ def main():
                             name = c['name']
                             id = c['product']['product_id']
                             pmap.append({id: name})
-
 
     for k in vex['vulnerabilities']:
         title = k['title']
