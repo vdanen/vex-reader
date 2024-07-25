@@ -232,7 +232,7 @@ def main():
         print('Fixed Packages:')
         for x in fixes:
             # TODO: this is missing the release date for the RHSA, see https://issues.redhat.com/browse/SECDATA-645
-            # TODO: this is also missing any changed severity ratings and CVSS scores
+            # TODO: this is also missing any changed CVSS scores
             rhsa_id  = x['rhsa']
             rhsa_url = x['url']
             component_versions = []
@@ -249,8 +249,10 @@ def main():
                 # NOTE: the epoch is appended to the component name (i.e. runc with an epoch of 0 is runc-0, with
                 # an epoch of 4 it's runc-4 ... this is meaningless information for consumers frankly and we
                 # shouldn't do it, but there it is...  for presentation, let's weed it out
-
-                component_names.append('-'.join(comp.split('-')[:-1]))
+                c_name = '-'.join(comp.split('-')[:-1])
+                if c_name not in component_names:
+                    # get list of components and de-duplicate
+                    component_names.append(c_name)
             product_name = product_lookup(product, pmap)
 
             if args.show_components:
@@ -261,9 +263,10 @@ def main():
                 # TODO: if we look at CVE-2024-21626 as one example, we get a list of components that technically are
                 # not affected, how do we refine this down to the one component that is? (i.e. show 'runc' and not
                 # 'podman' and 'skopeo', etc)
-                print(f"  {rhsa_id} -- {product_name}{severity} -- {component_names}")
+                print(f"  {rhsa_id} -- {product_name}{severity} -- {', '.join(component_names)}")
 
         print()
+        # TODO: missing affected packages without a resolution, i.e. Out of support scope; see https://issues.redhat.com/browse/SECDATA-646
 
         print(f'CVSS {cvss_type} Vector')
         print(f"Red Hat: {global_cvss['vectorString']}")
