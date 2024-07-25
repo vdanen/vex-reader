@@ -4,6 +4,7 @@
 # i.e. https://access.redhat.com/security/data/csaf/beta/vex/2024/cve-2024-21626.json
 
 import argparse
+from datetime import timezone, datetime
 import os
 import json
 
@@ -89,17 +90,26 @@ def main():
         cwe_id = k['cwe']['id']
         cwe_name = k['cwe']['name']
         discovery_date = k['discovery_date']
-        release_date= k['release_date']
+        rd = datetime.fromisoformat(k['release_date'])
+        release_date = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
 
         # Acknowledgements
         acks = None
         for x in k['acknowledgments']:
-            for a in x:
-                if len(x[a]) == 1:
-                    acks = x[a][0]
-                # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
-                elif len(x[a]) > 1:
-                    acks = " and ".join(x[a])
+            # we should always have names, but may not always have an organization
+            # (if the credit is to an org, the org is the name)
+            if 'organization' not in x:
+                x['organization'] = ''
+            ack_list = {'names': x['names'], 'org': x['organization']}
+            if len(ack_list['names']) > 1:
+                names = " and ".join(ack_list['names'])
+            else:
+                names = ack_list['names'][0]
+
+            if ack_list['org'] == '':
+                acks = names
+            else:
+                acks = f"{names} ({ack_list['org']})"
 
         # Bugzilla / bugtracking
         for x in k['ids']:
@@ -209,6 +219,7 @@ def main():
 
         print(cve)
         print(f'Public on {release_date}')
+        #TODO: add updated date
         print(f'{global_impact} Impact')
         print(f"{global_cvss['baseScore']} CVSS Score")
         print()
