@@ -62,6 +62,8 @@ def main():
 
     # keys": 'document', 'product_tree', 'vulnerabilities'
     #print(vex['document'])
+    global_impact = vex['document']['aggregate_severity']['text'].capitalize()
+
 
     # build the product tree which has a weird amount of depth but ok...
     pmap = []
@@ -109,7 +111,6 @@ def main():
               bz_url = f'https://bugzilla.redhat.com/show_bug.cgi?id={bz_id}'
 
         # Notes including descriptions, summaries, statements
-        # TODO: oddly it's missing mitigations!!
         for x in k['notes']:
             if x['category'] == 'description':
                 description = x['text']
@@ -160,7 +161,6 @@ def main():
         for w in workarounds:
             mitigation = w['details']
 
-        print(len(workarounds))
         cvss_v3 = []
         cvss_v2 = []
         for x in k['scores']:
@@ -190,22 +190,16 @@ def main():
             # TODO: something fancy like above
             #print(cvss_v2)
 
-        impacts = []
+        impacts = {'Critical': [], 'Important': [], 'Moderate': [], 'Low': []}
         for x in k['threats']:
             if x['category'] == 'impact':
-                impacts.append({x['details']: filter_products(x['product_ids'])})
+                # need to map impacts to products
+                for y in filter_products(x['product_ids']):
+                    impacts[x['details']].append(y)
+                #impacts.append({x['details']: filter_products(x['product_ids'])})
 
-        # Impact ratings
-        global_impact = None
-        if len(impacts) == 1:
-            global_impact = list(impacts.keys())[0]
-        else:
-            baseline = 0
-            for a in impacts:
-                sev = list(a.keys())[0]
-                if severity[sev] > baseline:
-                    baseline = severity[sev]
-                    global_impact = sev
+        # we can drop those that match the "global" impact by setting the list to empty
+        impacts[global_impact] = []
 
 
         print(cve)
@@ -237,13 +231,18 @@ def main():
         print()
         print('Fixed Packages:')
         for x in fixes:
-            # TODO: this is missing the release date for the RHSA
+            # TODO: this is missing the release date for the RHSA, see https://issues.redhat.com/browse/SECDATA-645
             # TODO: this is also missing any changed severity ratings and CVSS scores
             rhsa_id  = x['rhsa']
             rhsa_url = x['url']
             component_versions = []
             component_names    = []
             for y in x['packages']:
+                # look for any different severities from the global
+                severity = ''
+                for i in impacts:
+                    if y in impacts[i]:
+                        severity = f' [Severity: {i}]'
                 (product, comp, version) = y.split(':')
                 # only care about components
                 component_versions.append(':'.join([comp, version]))
@@ -255,14 +254,14 @@ def main():
             product_name = product_lookup(product, pmap)
 
             if args.show_components:
-                print(f"  {rhsa_id} -- {product_name}")
+                print(f"  {rhsa_id} -- {product_name}{severity}")
                 for c in list(set(component_versions)):
                     print(f'             {c}')
             else:
                 # TODO: if we look at CVE-2024-21626 as one example, we get a list of components that technically are
                 # not affected, how do we refine this down to the one component that is? (i.e. show 'runc' and not
                 # 'podman' and 'skopeo', etc)
-                print(f"  {rhsa_id} -- {product_name} -- {component_names}")
+                print(f"  {rhsa_id} -- {product_name}{severity} -- {component_names}")
 
         print()
 
