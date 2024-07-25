@@ -150,6 +150,16 @@ def main():
                 for p in x['product_ids']:
                     wontfix.append({'product': p, 'reason': nf_details})
 
+        # TODO: are there any cases where there may be more than one workaround?
+        if len(workarounds) > 1:
+            print('**WARNING**: MORE THAN ONE MITIGATION DISCOVERED!')
+            # NOTE: because this would be interesting to catch, let's make it a hard fail for now
+            exit(1)
+
+        for w in workarounds:
+            mitigation = w['details']
+
+        print(len(workarounds))
         cvss_v3 = []
         cvss_v2 = []
         for x in k['scores']:
@@ -208,8 +218,13 @@ def main():
         if statement:
             print('Statement:')
             print(f'  {statement}')
-        #if mitigation:
-        print()
+            print()
+
+        if mitigation:
+            print('Mitigation:')
+            print(f'  {mitigation}')
+            print()
+
         print('Additional Information:')
         print(f'  Bugzilla {bz_id}: {summary}')
         print(f'  {cwe_id}: {cwe_name}')
