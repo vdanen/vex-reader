@@ -36,6 +36,8 @@ VENDOR_ADVISORY = OrderedDict(
 
 ARCHES = ['ppc64le', 'ppc64', 'ppc', 'i686', 's390x', 'x86_64', 'aarch64', 'noarch']
 
+FORBIDDEN = ['debuginfo', 'kernel-headers']
+
 def get_rating(score):
     # map a CVSS score to a severity category
     if 0.1 <= score <= 3.9:
@@ -51,17 +53,24 @@ def get_rating(score):
 
 def filter_products(products):
     """
-    strip out all arches from product listings
+    only look for the srpms, if these are missing default to x86_64
     """
     filtered = []
 
     for p in products:
-        c = 0
-        for a in ARCHES:
-            if a in p:
-                c += 1
-        if c == 0:
-            # remove the .src from the product listing
-            filtered.append(p.replace('.src',''))
+        if '.src' in p:
+            filtered.append(p.replace('.src', ''))
+
+    if len(filtered) == 0:
+        # there was no srpm
+        for p in products:
+            if 'x86_64' in p:
+                skip = False
+                # filter out any forbidden package names like debuginfo which will pollute our output
+                for f in FORBIDDEN:
+                    if f in p:
+                        skip = True
+                if not skip:
+                    filtered.append(p.replace('.x86_64', ''))
 
     return filtered

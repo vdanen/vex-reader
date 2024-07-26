@@ -26,16 +26,25 @@ def get_rating(score):
 
 def filter_products(products):
     # strip out all arches from product listings
-    arches = ['ppc64le', 'ppc64', 'ppc', 'i686', 's390x', 'x86_64', 'aarch64', 'noarch']
-    filtered = []
+    arches    = ['ppc64le', 'ppc64', 'ppc', 'i686', 's390x', 'x86_64', 'aarch64', 'noarch']
+    forbidden = ['debuginfo', 'kernel-headers']
+    filtered  = []
+
     for p in products:
-        c = 0
-        for a in arches:
-            if a in p:
-                c += 1
-        if c == 0:
-            # remove the .src from the product listing
-            filtered.append(p.replace('.src',''))
+        if '.src' in p:
+            filtered.append(p.replace('.src', ''))
+
+    if len(filtered) == 0:
+        # there was no srpm
+        for p in products:
+            if 'x86_64' in p:
+                skip = False
+                # filter out any forbidden package names like debuginfo which will pollute our output
+                for f in forbidden:
+                    if f in p:
+                        skip = True
+                if not skip:
+                    filtered.append(p.replace('.x86_64', ''))
     return filtered
 
 
@@ -139,7 +148,6 @@ def main():
         affected     = []
         if 'product_status' in k:
             for x in k['product_status']:
-                print(x)
                 if x == 'known_affected':
                     for y in k['product_status']['known_affected']:
                         affected.append(y)
@@ -324,7 +332,7 @@ def main():
 
         print()
         # TODO: see https://issues.redhat.com/browse/SECDATA-647 for CVE pages that exist but for which VEX documents
-        # do not exist
+        # do not exist (also see https://issues.redhat.com/browse/SECDATA-525 where the work is being done)
 
         if global_cvss:
             print(f'CVSS {cvss_type} Vector')
