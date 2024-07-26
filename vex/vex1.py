@@ -1,6 +1,8 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
+from datetime import datetime
+
 from .constants import (
     SEVERITY_MAP,
     SEVERITIES,
@@ -15,7 +17,11 @@ class Vex(object):
     """
 
     def __init__(self, vexdata):
-        self.raw = vexdata
+        self.raw           = vexdata
+        self.global_impact = self.raw['document']['aggregate_severity']['text'].capitalize()
+        self.distribution  = self.raw['document']['distribution']['text']
+        self.title         = self.raw['document']['title']
+
         self.parse_vulns()
 
     def parse_vulns(self):
@@ -32,25 +38,34 @@ class Vex(object):
             self.summary     = None
             self.statement   = None
 
-
             self.title          = k['title']
             self.cve            = k['cve']
             if 'cwe' in k:
                 self.cwe_id     = k['cwe']['id']
                 self.cwe_name   = k['cwe']['name']
             self.discovery_date = k['discovery_date']
-            self.release_date   = k['release_date']
+            rd                  = datetime.fromisoformat(k['release_date'])
+            self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
 
         # Acknowledgements
         self.acks = None
         if 'acknowledgments' in k:
             for x in k['acknowledgments']:
-                for a in x:
-                    if len(x[a]) == 1:
-                        self.acks = x[a][0]
+                # we should always have names, but may not always have an organization
+                # (if the credit is to an org, the org is the name)
+                if 'organization' not in x:
+                    x['organization'] = ''
+                ack_list = {'names': x['names'], 'org': x['organization']}
+                if len(ack_list['names']) > 1:
                     # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
-                    elif len(x[a]) > 1:
-                        self.acks = " and ".join(x[a])
+                    names = " and ".join(ack_list['names'])
+                else:
+                    names = ack_list['names'][0]
+
+                if ack_list['org'] == '':
+                    self.acks = names
+                else:
+                    self.acks = f"{names} ({ack_list['org']})"
 
         # Bugzilla / bugtracking
         for x in k['ids']:
@@ -59,7 +74,10 @@ class Vex(object):
               self.bz_url = f'https://bugzilla.redhat.com/show_bug.cgi?id={self.bz_id}'
 
         # Notes including descriptions, summaries, statements
-        # TODO: oddly it's missing mitigations!!
+        self.description = None
+        self.summary     = None
+        self.statement   = None
+
         for x in k['notes']:
             if x['category'] == 'description':
                 self.description = x['text']
@@ -78,16 +96,17 @@ class Vex(object):
 
         self.cvss_v3 = []
         self.cvss_v2 = []
-        for x in k['scores']:
-            if 'products' in x:
-                filtered_products = filter_products(x['products'])
-            if 'cvss_v3' in x:
-                self.cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
-            elif 'cvss_v2' in x:
-                self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
+        if 'scores' in k:
+            for x in k['scores']:
+                if 'products' in x:
+                    filtered_products = filter_products(x['products'])
+                if 'cvss_v3' in x:
+                    self.cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
+                elif 'cvss_v2' in x:
+                    self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
         self.global_cvss = None
-        self.cvss_type = None
+        self.cvss_type   = None
         if self.cvss_v3:
             self.cvss_type = 'v3'
             if len(self.cvss_v3) == 1:
@@ -105,19 +124,14 @@ class Vex(object):
             # TODO: something fancy like above
             #print(cvss_v2)
 
-        self.impacts = []
-        for x in k['threats']:
-            if x['category'] == 'impact':
-                self.impacts.append({x['details']: filter_products(x['product_ids'])})
+        self.impacts = {'Critical': [], 'Important': [], 'Moderate': [], 'Low': []}
+        if 'threats' in k:
+            for x in k['threats']:
+                if x['category'] == 'impact':
+                    # need to map impacts to products
+                    for y in filter_products(x['product_ids']):
+                        self.impacts[x['details']].append(y)
+                    #self.impacts.append({x['details']: filter_products(x['product_ids'])})
 
-        # Impact ratings
-        self.global_impact = None
-        if len(self.impacts) == 1:
-            self.global_impact = list(self.impacts[0].keys())[0]
-        else:
-            baseline = 0
-            for a in self.impacts:
-                sev = list(a.keys())[0]
-                if SEVERITY_MAP[sev] > baseline:
-                    self.baseline = SEVERITY_MAP[sev]
-                    self.global_impact = sev
+        # we can drop those that match the "global" impact by setting the list to empty
+        self.impacts[self.global_impact] = []

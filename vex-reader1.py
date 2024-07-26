@@ -29,7 +29,8 @@ def main():
     print(vex.cve)
     print(f'Public on {vex.release_date}')
     print(f'{vex.global_impact} Impact')
-    print(f"{vex.global_cvss['baseScore']} CVSS Score")
+    if vex.global_cvss:
+        print(f"{vex.global_cvss['baseScore']} CVSS Score")
     print()
     print('Description:')
     print(f'  {vex.description}')
@@ -61,7 +62,7 @@ def main():
 
     vendor = 'Unknown'
     if packages.fixes:
-        print('Fixed Packages:')
+        print('Affected Packages and Issued Errata:')
         for x in packages.fixes:
             # TODO: if there are no fixes then there is no vendor string, need to pull this from the VEX 'publisher'
             vendor = x.vendor
@@ -71,10 +72,10 @@ def main():
                     print(f'             {c}')
         print()
 
-    if vex.cvss_type:
+    if vex.global_cvss:
         print(f'CVSS {vex.cvss_type} Vector')
         print(f"Red Hat: {vex.global_cvss['vectorString']}")
-        print('NVD:     **NOT YET**')
+        print('NVD:      **NOT YET**')
         print()
 
         print(f'CVSS {vex.cvss_type} Score Breakdown')
@@ -99,6 +100,8 @@ def main():
         print('Packages that will not receive fixes:')
         for x in packages.wontfix:
             print(f"  {x.product} ({x.component}): {x.reason}")
+
+    print(vex.distribution)
 
 if __name__ == '__main__':
     main()
