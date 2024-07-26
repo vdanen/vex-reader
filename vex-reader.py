@@ -134,6 +134,19 @@ def main():
             if x['category'] == 'external':
                 references.append(x['url'])
 
+        # product status
+        not_affected = []
+        affected     = []
+        if 'product_status' in k:
+            for x in k['product_status']:
+                print(x)
+                if x == 'known_affected':
+                    for y in k['product_status']['known_affected']:
+                        affected.append(y)
+                if x == 'known_not_affected':
+                    for y in k['product_status']['known_not_affected']:
+                        not_affected.append(y)
+
         # errata
         fixes       = []
         workarounds = []
@@ -243,8 +256,7 @@ def main():
             print(f'  {url}')
         print()
 
-        if len(fixes) > 0:
-            print('Fixed Packages:')
+        print('Affected Packages and Issued Red Hat Security Errata:')
         for x in fixes:
             # TODO: this is missing the release date for the RHSA, see https://issues.redhat.com/browse/SECDATA-645
             # TODO: this is also missing any changed CVSS scores
@@ -280,10 +292,39 @@ def main():
                 # 'podman' and 'skopeo', etc)
                 print(f"  {rhsa_id} -- {product_name}{severity} -- {', '.join(component_names)}")
 
+# TODO: need to filter these products like we do for fixes; can test with cve-2022-1012.json
+        if not_affected:
+            for x in not_affected:
+                # omg these strings are ridiculous
+                t = x.split(':')
+                p = t[0]  # product
+                c = ':'.join(t[1:])  # component
+                product_name = product_lookup(p, pmap)
+                print(f'  {product_name} -- {c} -- Not Affected')
+
+        if wontfix:
+            for x in wontfix:
+                # omg these strings are ridiculous
+                t = x['product'].split(':')
+                p = t[0]  # product
+                c = ':'.join(t[1:])  # component
+                product_name = product_lookup(p, pmap)
+                print(f"  {product_name} -- {c} -- {x['reason']}")
+                if x['product'] in affected:
+                    affected.remove(x['product'])
+
+        if affected:
+            for x in affected:
+                # omg these strings are ridiculous
+                t = x['product'].split(':')
+                p = t[0]  # product
+                c = ':'.join(t[1:])  # component
+                product_name = product_lookup(p, pmap)
+                print(f'  {product_name} -- {c} -- Affected')
+
         print()
-        # TODO: missing affected packages without a resolution, i.e. Out of support scope; see
-        #  https://issues.redhat.com/browse/SECDATA-646 also see https://issues.redhat.com/browse/SECDATA-647 for CVE
-        #  pages that exist but for which VEX documents do not
+        # TODO: see https://issues.redhat.com/browse/SECDATA-647 for CVE pages that exist but for which VEX documents
+        # do not exist
 
         if global_cvss:
             print(f'CVSS {cvss_type} Vector')
