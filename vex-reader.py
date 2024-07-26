@@ -78,31 +78,34 @@ def main():
                             pmap.append({id: name})
 
     for k in vex['vulnerabilities']:
-        title = k['title']
-        cve   = k['cve']
-        cwe_id = k['cwe']['id']
-        cwe_name = k['cwe']['name']
+        title  = k['title']
+        cve    = k['cve']
+        cwe_id = None
+        if 'cwe' in k:
+            cwe_id = k['cwe']['id']
+            cwe_name = k['cwe']['name']
         discovery_date = k['discovery_date']
         rd = datetime.fromisoformat(k['release_date'])
         release_date = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
 
         # Acknowledgements
         acks = None
-        for x in k['acknowledgments']:
-            # we should always have names, but may not always have an organization
-            # (if the credit is to an org, the org is the name)
-            if 'organization' not in x:
-                x['organization'] = ''
-            ack_list = {'names': x['names'], 'org': x['organization']}
-            if len(ack_list['names']) > 1:
-                names = " and ".join(ack_list['names'])
-            else:
-                names = ack_list['names'][0]
+        if 'acknowledgements' in k:
+            for x in k['acknowledgments']:
+                # we should always have names, but may not always have an organization
+                # (if the credit is to an org, the org is the name)
+                if 'organization' not in x:
+                    x['organization'] = ''
+                ack_list = {'names': x['names'], 'org': x['organization']}
+                if len(ack_list['names']) > 1:
+                    names = " and ".join(ack_list['names'])
+                else:
+                    names = ack_list['names'][0]
 
-            if ack_list['org'] == '':
-                acks = names
-            else:
-                acks = f"{names} ({ack_list['org']})"
+                if ack_list['org'] == '':
+                    acks = names
+                else:
+                    acks = f"{names} ({ack_list['org']})"
 
         # Bugzilla / bugtracking
         for x in k['ids']:
@@ -111,6 +114,10 @@ def main():
               bz_url = f'https://bugzilla.redhat.com/show_bug.cgi?id={bz_id}'
 
         # Notes including descriptions, summaries, statements
+        description = None
+        summary     = None
+        statement   = None
+
         for x in k['notes']:
             if x['category'] == 'description':
                 description = x['text']
@@ -131,26 +138,27 @@ def main():
         fixes       = []
         workarounds = []
         wontfix     = []
-        for x in k['remediations']:
-            if x['category'] == 'vendor_fix':
-                rhsa = None
-                url = x['url']
-                if 'RHSA' in url:
-                    rhsa = url.split('/')[-1]
-                f_pkgs = filter_products(x['product_ids'])
-                fixes.append({'rhsa': rhsa, 'url': url, 'packages': f_pkgs})
+        if 'remediations' in k:
+            for x in k['remediations']:
+                if x['category'] == 'vendor_fix':
+                    rhsa = None
+                    url = x['url']
+                    if 'RHSA' in url:
+                        rhsa = url.split('/')[-1]
+                    f_pkgs = filter_products(x['product_ids'])
+                    fixes.append({'rhsa': rhsa, 'url': url, 'packages': f_pkgs})
 
-            if x['category'] == 'workaround':
-                wa_details = x['details']
-                # seems stupid to have a package list for workarounds
-                # but... just in case
-                w_pkgs = filter_products(x['product_ids'])
-                workarounds.append({'details': wa_details, 'packages': w_pkgs})
+                if x['category'] == 'workaround':
+                    wa_details = x['details']
+                    # seems stupid to have a package list for workarounds
+                    # but... just in case
+                    w_pkgs = filter_products(x['product_ids'])
+                    workarounds.append({'details': wa_details, 'packages': w_pkgs})
 
-            if x['category'] == 'no_fix_planned':
-                nf_details = x['details']
-                for p in x['product_ids']:
-                    wontfix.append({'product': p, 'reason': nf_details})
+                if x['category'] == 'no_fix_planned':
+                    nf_details = x['details']
+                    for p in x['product_ids']:
+                        wontfix.append({'product': p, 'reason': nf_details})
 
         # TODO: are there any cases where there may be more than one workaround?
         if len(workarounds) > 1:
@@ -158,18 +166,20 @@ def main():
             # NOTE: because this would be interesting to catch, let's make it a hard fail for now
             exit(1)
 
+        mitigation = None
         for w in workarounds:
             mitigation = w['details']
 
         cvss_v3 = []
         cvss_v2 = []
-        for x in k['scores']:
-            if 'products' in x:
-                filtered_products = filter_products(x['products'])
-            if 'cvss_v3' in x:
-                cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
-            elif 'cvss_v2' in x:
-                cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
+        if 'scores' in k:
+            for x in k['scores']:
+                if 'products' in x:
+                    filtered_products = filter_products(x['products'])
+                if 'cvss_v3' in x:
+                    cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
+                elif 'cvss_v2' in x:
+                    cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
         global_cvss = None
         cvss_type = None
@@ -191,12 +201,13 @@ def main():
             #print(cvss_v2)
 
         impacts = {'Critical': [], 'Important': [], 'Moderate': [], 'Low': []}
-        for x in k['threats']:
-            if x['category'] == 'impact':
-                # need to map impacts to products
-                for y in filter_products(x['product_ids']):
-                    impacts[x['details']].append(y)
-                #impacts.append({x['details']: filter_products(x['product_ids'])})
+        if 'threats' in k:
+            for x in k['threats']:
+                if x['category'] == 'impact':
+                    # need to map impacts to products
+                    for y in filter_products(x['product_ids']):
+                        impacts[x['details']].append(y)
+                    #impacts.append({x['details']: filter_products(x['product_ids'])})
 
         # we can drop those that match the "global" impact by setting the list to empty
         impacts[global_impact] = []
@@ -206,7 +217,8 @@ def main():
         print(f'Public on {release_date}')
         #TODO: add updated date
         print(f'{global_impact} Impact')
-        print(f"{global_cvss['baseScore']} CVSS Score")
+        if global_cvss:
+            print(f"{global_cvss['baseScore']} CVSS Score")
         print()
         print('Description:')
         print(f'  {description}')
@@ -223,13 +235,16 @@ def main():
 
         print('Additional Information:')
         print(f'  Bugzilla {bz_id}: {summary}')
-        print(f'  {cwe_id}: {cwe_name}')
+        if cwe_id:
+            print(f'  {cwe_id}: {cwe_name}')
         print()
         print('External References:')
         for url in references:
             print(f'  {url}')
         print()
-        print('Fixed Packages:')
+
+        if len(fixes) > 0:
+            print('Fixed Packages:')
         for x in fixes:
             # TODO: this is missing the release date for the RHSA, see https://issues.redhat.com/browse/SECDATA-645
             # TODO: this is also missing any changed CVSS scores
@@ -270,25 +285,28 @@ def main():
         #  https://issues.redhat.com/browse/SECDATA-646 also see https://issues.redhat.com/browse/SECDATA-647 for CVE
         #  pages that exist but for which VEX documents do not
 
-        print(f'CVSS {cvss_type} Vector')
-        print(f"Red Hat: {global_cvss['vectorString']}")
-        print('NVD:      **NOT YET**')
-        print()
-        print(f'CVSS {cvss_type} Score Breakdown')
-        # TODO: string padding
-        print('                        Red Hat    NVD')
-        print(f"CVSS v3 Base Score      {global_cvss['baseScore']}        0.0")
-        print(f"Attack Vector           {global_cvss['attackVector'].capitalize()}")
-        print(f"Attack Complexity       {global_cvss['attackComplexity'].capitalize()}")
-        print(f"Privileges Required     {global_cvss['privilegesRequired'].capitalize()}")
-        print(f"User Interaction        {global_cvss['userInteraction'].capitalize()}")
-        print(f"Scope                   {global_cvss['scope'].capitalize()}")
-        print(f"Confidentiality Impact  {global_cvss['confidentialityImpact'].capitalize()}")
-        print(f"Integrity Impact        {global_cvss['integrityImpact'].capitalize()}")
-        print(f"Availability Impact     {global_cvss['availabilityImpact'].capitalize()}")
-        print()
-        print('Acknowledgements:')
-        print(f'  Red Hat would like to thank {acks} for reporting this issue.')
+        if global_cvss:
+            print(f'CVSS {cvss_type} Vector')
+            print(f"Red Hat: {global_cvss['vectorString']}")
+            print('NVD:      **NOT YET**')
+            print()
+            print(f'CVSS {cvss_type} Score Breakdown')
+            # TODO: string padding
+            print('                        Red Hat    NVD')
+            print(f"CVSS v3 Base Score      {global_cvss['baseScore']}        0.0")
+            print(f"Attack Vector           {global_cvss['attackVector'].capitalize()}")
+            print(f"Attack Complexity       {global_cvss['attackComplexity'].capitalize()}")
+            print(f"Privileges Required     {global_cvss['privilegesRequired'].capitalize()}")
+            print(f"User Interaction        {global_cvss['userInteraction'].capitalize()}")
+            print(f"Scope                   {global_cvss['scope'].capitalize()}")
+            print(f"Confidentiality Impact  {global_cvss['confidentialityImpact'].capitalize()}")
+            print(f"Integrity Impact        {global_cvss['integrityImpact'].capitalize()}")
+            print(f"Availability Impact     {global_cvss['availabilityImpact'].capitalize()}")
+            print()
+
+        if acks:
+            print('Acknowledgements:')
+            print(f'  Red Hat would like to thank {acks} for reporting this issue.')
 
 """
         print(title)
