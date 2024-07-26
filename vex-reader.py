@@ -266,7 +266,9 @@ def main():
                 print(f"  {rhsa_id} -- {product_name}{severity} -- {', '.join(component_names)}")
 
         print()
-        # TODO: missing affected packages without a resolution, i.e. Out of support scope; see https://issues.redhat.com/browse/SECDATA-646
+        # TODO: missing affected packages without a resolution, i.e. Out of support scope; see
+        #  https://issues.redhat.com/browse/SECDATA-646 also see https://issues.redhat.com/browse/SECDATA-647 for CVE
+        #  pages that exist but for which VEX documents do not
 
         print(f'CVSS {cvss_type} Vector')
         print(f"Red Hat: {global_cvss['vectorString']}")
