@@ -69,7 +69,14 @@ def main():
 
     vendor = 'Unknown'
     if packages.fixes:
-        print(f'{vex.publisher} Affected Packages and Issued Errata:')
+        # the vendor for Red Hat VEX is Red Hat Product Security which isn't right,
+        # so we'll override until there's a fix
+        if vex.publisher == 'Red Hat Product Security':
+            publisher = 'Red Hat'
+        else:
+            publisher = vex.publisher
+
+        print(f'{publisher} affected packages and issued errata:')
         for x in packages.fixes:
             print(f"  {x.id} -- {x.product}")
             if args.show_components:
