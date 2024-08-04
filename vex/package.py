@@ -63,6 +63,18 @@ class NotAffected(object):
         self.product = product_lookup(product, pmap)
 
 
+class Affected(object):
+    """
+    class to handle products listed as affected with no resolution
+    """
+
+    def __init__(self, y, pmap):
+        self.components = []
+        t       = y.split(':')
+        product = t[0]
+        self.components.append(':'.join(t[1:]))
+        self.product = product_lookup(product, pmap)
+
 class VexPackages(object):
     """
     class to handle packages
@@ -121,7 +133,7 @@ class VexPackages(object):
                 for x in k['product_status']:
                     if x == 'known_affected':
                         for y in filter_components(k['product_status']['known_affected']):
-                            self.affected.append(y)
+                            self.affected.append(Affected(y, self.pmap))
                     if x == 'known_not_affected':
                         for y in filter_components(k['product_status']['known_not_affected']):
                             self.not_affected.append(NotAffected(y, self.pmap))
