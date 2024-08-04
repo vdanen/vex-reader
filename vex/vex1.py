@@ -8,7 +8,7 @@ from .constants import (
     SEVERITIES,
     ARCHES,
     OrderedDict,
-    filter_products,
+    filter_components,
 )
 
 class Vex(object):
@@ -99,7 +99,7 @@ class Vex(object):
         if 'scores' in k:
             for x in k['scores']:
                 if 'products' in x:
-                    filtered_products = filter_products(x['products'])
+                    filtered_products = filter_components(x['products'])
                 if 'cvss_v3' in x:
                     self.cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
                 elif 'cvss_v2' in x:
@@ -129,7 +129,7 @@ class Vex(object):
             for x in k['threats']:
                 if x['category'] == 'impact':
                     # need to map impacts to products
-                    for y in filter_products(x['product_ids']):
+                    for y in filter_components(x['product_ids']):
                         self.impacts[x['details']].append(y)
                     #self.impacts.append({x['details']: filter_products(x['product_ids'])})
 

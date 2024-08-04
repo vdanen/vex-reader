@@ -51,26 +51,26 @@ def get_rating(score):
     else:
         return 'None'
 
-def filter_products(products):
+def filter_components(components):
     """
     only look for the srpms, if these are missing default to x86_64
     """
     filtered = []
 
-    for p in products:
-        if '.src' in p:
-            filtered.append(p.replace('.src', ''))
+    for c in components:
+        if '.src' in c:
+            filtered.append(c.replace('.src', ''))
 
     if len(filtered) == 0:
         # there was no srpm
-        for p in products:
-            if 'x86_64' in p:
+        for c in components:
+            if 'x86_64' in c:
                 skip = False
                 # filter out any forbidden package names like debuginfo which will pollute our output
                 for f in FORBIDDEN:
-                    if f in p:
+                    if f in c:
                         skip = True
                 if not skip:
-                    filtered.append(p.replace('.x86_64', ''))
+                    filtered.append(c.replace('.x86_64', ''))
 
     return filtered

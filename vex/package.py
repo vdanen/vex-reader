@@ -2,7 +2,7 @@
 # License: GPLv3+
 
 from .constants import (
-    filter_products,
+    filter_components,
     VENDOR_ADVISORY,
 )
 
@@ -31,7 +31,7 @@ class Fix(object):
                     if self.vendor == 'Gentoo':
                         self.id = f'{v}-{self.id}'
 
-            for y in filter_products(x['product_ids']):
+            for y in filter_components(x['product_ids']):
                 (product, component, version) = y.split(':')
                 self.components.append(':'.join([component, version]))
                 self.product = product_lookup(product, pmap)
@@ -94,9 +94,12 @@ class VexPackages(object):
 
     def parse_packages(self):
         # errata
-        self.fixes       = []
-        self.workarounds = []
-        self.wontfix     = []
+        self.fixes        = []
+        self.workarounds  = []
+        self.wontfix      = []
+        self.affected     = []
+        self.not_affected = []
+
         for k in self.raw['vulnerabilities']:
             if 'remediations' in k:
                 for x in k['remediations']:
@@ -107,9 +110,19 @@ class VexPackages(object):
                         wa_details = x['details']
                         # seems stupid to have a package list for workarounds
                         # but... just in case
-                        w_pkgs = filter_products(x['product_ids'])
+                        w_pkgs = filter_components(x['product_ids'])
                         self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
 
                     if x['category'] == 'no_fix_planned':
-                        for y in filter_products(x['product_ids']):
+                        for y in filter_components(x['product_ids']):
                             self.wontfix.append(WontFix(x, y, self.pmap))
+
+            if 'product_status' in k:
+                for x in k['product_status']:
+                    if x == 'known_affected':
+                        for y in filter_components(k['product_status']['known_affected']):
+                            self.affected.append(y)
+                    if x == 'known_not_affected':
+                        for y in filter_components(k['product_status']['known_not_affected']):
+                            self.not_affected.append(NotAffected(y, self.pmap))
+

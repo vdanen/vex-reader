@@ -96,6 +96,11 @@ def main():
         print('Acknowledgements:')
         print(f'  Red Hat would like to thank {vex.acks} for reporting this issue.')
 
+    if packages.not_affected:
+        print('Packages that are not affected:')
+        for x in packages.not_affected:
+            print(f"  {x.product} ({', '.join(x.components)})")
+
     if packages.wontfix:
         print('Packages that will not receive fixes:')
         for x in packages.wontfix:
