@@ -41,7 +41,14 @@ def main():
         print(f'  {vex.statement}')
         print()
 
-    #if mitigation:
+    mitigation = None
+    if packages.mitigation:
+        print('Mitigation:')
+        if len(packages.mitigation) > 1:
+            print('**WARNING**: MORE THAN ONE MITIGATION DISCOVERED!')
+        for x in packages.mitigation:
+            print(f'  {x.details}')
+        print()
 
     refs = []
     if vex.bz_id:

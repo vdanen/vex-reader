@@ -44,7 +44,6 @@ class WontFix(object):
     """
 
     def __init__(self, y, x, pmap):
-        print('----hit----')
         self.reason     = x['details']
         (product, self.component) = y.split(':')
         self.product = product_lookup(product, pmap)
@@ -74,6 +73,20 @@ class Affected(object):
         product = t[0]
         self.components.append(':'.join(t[1:]))
         self.product = product_lookup(product, pmap)
+
+
+class Mitigation(object):
+    """
+    class to handle products listed with mitigations
+
+    There should only be one mitigation and not multiple; there may be one mitigiation with
+    a large component list, however -- we probably don't need the components but will keep them
+    just in case
+    """
+
+    def __init__(self, x):
+        self.details = x['details']
+        self.packages = filter_components(x['product_ids'])
 
 class VexPackages(object):
     """
@@ -107,7 +120,7 @@ class VexPackages(object):
     def parse_packages(self):
         # errata
         self.fixes        = []
-        self.workarounds  = []
+        self.mitigation   = []
         self.wontfix      = []
         self.affected     = []
         self.not_affected = []
@@ -119,11 +132,7 @@ class VexPackages(object):
                         self.fixes.append(Fix(x, self.pmap))
 
                     if x['category'] == 'workaround':
-                        wa_details = x['details']
-                        # seems stupid to have a package list for workarounds
-                        # but... just in case
-                        w_pkgs = filter_components(x['product_ids'])
-                        self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
+                        self.mitigation.append(Mitigation(x))
 
                     if x['category'] == 'no_fix_planned':
                         # don't filter anything on components with no fix planned as there aren't
