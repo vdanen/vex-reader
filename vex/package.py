@@ -85,17 +85,18 @@ class VexPackages(object):
         self.workarounds = []
         self.wontfix     = []
         for k in self.raw['vulnerabilities']:
-            for x in k['remediations']:
-                if x['category'] == 'vendor_fix':
-                    self.fixes.append(Fix(x, self.pmap))
+            if 'remediations' in k:
+                for x in k['remediations']:
+                    if x['category'] == 'vendor_fix':
+                        self.fixes.append(Fix(x, self.pmap))
 
-                if x['category'] == 'workaround':
-                    wa_details = x['details']
-                    # seems stupid to have a package list for workarounds
-                    # but... just in case
-                    w_pkgs = filter_products(x['product_ids'])
-                    self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
+                    if x['category'] == 'workaround':
+                        wa_details = x['details']
+                        # seems stupid to have a package list for workarounds
+                        # but... just in case
+                        w_pkgs = filter_products(x['product_ids'])
+                        self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
 
-                if x['category'] == 'no_fix_planned':
-                    for y in filter_products(x['product_ids']):
-                        self.wontfix.append(WontFix(x, y, self.pmap))
+                    if x['category'] == 'no_fix_planned':
+                        for y in filter_products(x['product_ids']):
+                            self.wontfix.append(WontFix(x, y, self.pmap))
