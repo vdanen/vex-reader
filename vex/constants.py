@@ -73,4 +73,8 @@ def filter_components(components):
                 if not skip:
                     filtered.append(c.replace('.x86_64', ''))
 
+    if not filtered:
+        # we have an empty list, which means there was neither a src nor x86_64 rpm, so this is likely a won't fix
+        filtered = components
+
     return filtered

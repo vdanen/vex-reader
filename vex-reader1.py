@@ -72,6 +72,18 @@ def main():
                     print(f'             {c}')
         print()
 
+    if packages.not_affected:
+        print('Packages that are not affected:')
+        for x in packages.not_affected:
+            print(f"  {x.product} ({', '.join(x.components)})")
+        print()
+
+    if packages.wontfix:
+        print('Affected packages without fixes:')
+        for x in packages.wontfix:
+            print(f"  {x.product} ({x.component}): {x.reason}")
+        print()
+
     if vex.global_cvss:
         print(f'CVSS {vex.cvss_type} Vector')
         print(f"Red Hat: {vex.global_cvss['vectorString']}")
@@ -95,16 +107,7 @@ def main():
     if vex.acks:
         print('Acknowledgements:')
         print(f'  Red Hat would like to thank {vex.acks} for reporting this issue.')
-
-    if packages.not_affected:
-        print('Packages that are not affected:')
-        for x in packages.not_affected:
-            print(f"  {x.product} ({', '.join(x.components)})")
-
-    if packages.wontfix:
-        print('Packages that will not receive fixes:')
-        for x in packages.wontfix:
-            print(f"  {x.product} ({x.component}): {x.reason}")
+        print()
 
     print(vex.distribution)
 

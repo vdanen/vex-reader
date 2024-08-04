@@ -43,11 +43,11 @@ class WontFix(object):
     with a reason
     """
 
-    def __init__(self, x, y, pmap):
-            print('hit')
-            self.reason     = x['details']
-            (product, self.component) = y.split(':')
-            self.product = product_lookup(product, pmap)
+    def __init__(self, y, x, pmap):
+        print('----hit----')
+        self.reason     = x['details']
+        (product, self.component) = y.split(':')
+        self.product = product_lookup(product, pmap)
 
 
 class NotAffected(object):
@@ -126,8 +126,10 @@ class VexPackages(object):
                         self.workarounds.append({'details': wa_details, 'packages': w_pkgs})
 
                     if x['category'] == 'no_fix_planned':
-                        for y in filter_components(x['product_ids']):
-                            self.wontfix.append(WontFix(x, y, self.pmap))
+                        # don't filter anything on components with no fix planned as there aren't
+                        # any real components (so no .src or .[arch] packages to filter)
+                        for y in (x['product_ids']):
+                            self.wontfix.append(WontFix(y, x, self.pmap))
 
             if 'product_status' in k:
                 for x in k['product_status']:
