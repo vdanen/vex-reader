@@ -21,6 +21,7 @@ class Vex(object):
         self.global_impact = self.raw['document']['aggregate_severity']['text'].capitalize()
         self.distribution  = self.raw['document']['distribution']['text']
         self.title         = self.raw['document']['title']
+        self.publisher     = self.raw['document']['publisher']['name']
 
         self.parse_vulns()
 

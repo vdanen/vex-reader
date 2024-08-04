@@ -69,10 +69,8 @@ def main():
 
     vendor = 'Unknown'
     if packages.fixes:
-        print('Affected Packages and Issued Errata:')
+        print(f'{vex.publisher} Affected Packages and Issued Errata:')
         for x in packages.fixes:
-            # TODO: if there are no fixes then there is no vendor string, need to pull this from the VEX 'publisher'
-            vendor = x.vendor
             print(f"  {x.id} -- {x.product}")
             if args.show_components:
                 for c in list(set(x.components)):
