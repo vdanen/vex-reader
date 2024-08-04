@@ -50,6 +50,19 @@ class WontFix(object):
             self.product = product_lookup(product, pmap)
 
 
+class NotAffected(object):
+    """
+    class to handle products listed as not affected
+    """
+
+    def __init__(self, y, pmap):
+        self.components = []
+        t       = y.split(':')
+        product = t[0]
+        self.components.append(':'.join(t[1:]))
+        self.product = product_lookup(product, pmap)
+
+
 class VexPackages(object):
     """
     class to handle packages

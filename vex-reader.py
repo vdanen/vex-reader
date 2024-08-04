@@ -150,10 +150,10 @@ def main():
         if 'product_status' in k:
             for x in k['product_status']:
                 if x == 'known_affected':
-                    for y in k['product_status']['known_affected']:
+                    for y in filter_products(k['product_status']['known_affected']):
                         affected.append(y)
                 if x == 'known_not_affected':
-                    for y in k['product_status']['known_not_affected']:
+                    for y in filter_products(k['product_status']['known_not_affected']):
                         not_affected.append(y)
 
         # errata
