@@ -72,6 +72,7 @@ def main():
     # keys": 'document', 'product_tree', 'vulnerabilities'
     #print(vex['document'])
     global_impact = vex['document']['aggregate_severity']['text'].capitalize()
+    distribution  = vex['document']['distribution']['text']
 
 
     # build the product tree which has a weird amount of depth but ok...
@@ -356,6 +357,8 @@ def main():
         if acks:
             print('Acknowledgements:')
             print(f'  Red Hat would like to thank {acks} for reporting this issue.')
+
+        print(distribution)
 
 """
         print(title)
