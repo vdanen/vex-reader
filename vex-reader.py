@@ -86,9 +86,9 @@ def main():
 
     refs = []
     if vex.bz_id:
-        refs.append(f'  Bugzilla {vex.bz_id}: {vex.summary}')
+        refs.append(f'  Bugzilla: {vex.bz_id}')
     if vex.cwe_id:
-        refs.append(f'  [blue]{vex.cwe_id}[/blue]: {vex.cwe_name}')
+        refs.append(f'  [blue]{vex.cwe_id}[/blue] : {vex.cwe_name}')
     if refs:
         console.print('[green]Additional Information[/green]')
         for r in refs:
