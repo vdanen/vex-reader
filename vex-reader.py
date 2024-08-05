@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description='VEX Parser')
     parser.add_argument('--vex', dest='vex', metavar="FILE", help='VEX file to process', required=True)
     parser.add_argument('--show-components', dest='show_components', action='store_true', default=False, help='Show components in output')
+    parser.add_argument('--no-nvd', dest='no_nvd', action='store_true', default=False, help='Avoid API calls to NVD')
 
     args = parser.parse_args()
 
@@ -28,16 +29,19 @@ def main():
     vex      = Vex(jdata)
     packages = VexPackages(jdata)
 
-    response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={vex.cve}')
-    nvd_cve  = response.json()
-    if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
-        # we got the right result
-        if 'cvssMetricV2' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'])
-        elif 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
-        else:
-            nvd = None
+    if args.no_nvd:
+        nvd = NVD(None)
+    else:
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={vex.cve}')
+        nvd_cve  = response.json()
+        if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
+            # we got the right result
+            if 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
+            elif 'cvssMetricV2' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'])
+            else:
+                nvd = NVD(None)
 
     print(vex.cve)
     print(f'Public on {vex.release_date}')
@@ -115,7 +119,8 @@ def main():
         if len(publisher) > 4:
             plen = len(publisher)
         print(f"  {publisher:{plen}}: {vex.global_cvss['vectorString']}")
-        print(f'  {"NVD":{plen}}: {nvd.vectorString}')
+        if not args.no_nvd:
+            print(f'  {"NVD":{plen}}: {nvd.vectorString}')
         print()
 
         print(f'CVSS {vex.cvss_type} Score Breakdown')
