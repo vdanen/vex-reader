@@ -16,6 +16,17 @@ SEVERITY_MAP = OrderedDict(
     ]
 )
 
+
+SEVERITY_COLOR = OrderedDict(
+    [
+        ("Critical", 'red'),
+        ("Important", 'yellow'),
+        ("Moderate", 'blue'),
+        ("Low", 'green')
+    ]
+)
+
+
 SEVERITIES = OrderedDict(
     [
         ("C", "Critical"),

@@ -37,7 +37,7 @@ class Vex(object):
             for x in self.raw['document']['notes']:
                 if x['category'] not in self.notes:
                     self.notes[x['category']] = ''
-                self.notes[x['category']] += f"** {x['title']} **\n {x['text']}\n\n"
+                self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
 
         self.parse_vulns()
 
@@ -85,7 +85,6 @@ class Vex(object):
         summary   = None
         if 'acknowledgments' in k:
             for x in k['acknowledgments']:
-                print(x)
                 # we should always have names, but may not always have an organization
                 # (if the credit is to an org, the org is the name)
                 if 'organization' not in x:
@@ -114,7 +113,7 @@ class Vex(object):
             for x in k['notes']:
                 if x['category'] not in self.notes:
                     self.notes[x['category']] = ''
-                self.notes[x['category']] += f"** {x['title']} **\n {x['text']}\n\n"
+                self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
 
         # external references
         self.references = []

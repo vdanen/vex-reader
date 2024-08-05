@@ -7,9 +7,12 @@ import argparse
 import os
 import json
 import requests
+from rich.console import Console
+from rich.markdown import Markdown
 from vex import Vex
 from vex import VexPackages
 from vex import NVD
+from vex.constants import SEVERITY_COLOR
 
 def main():
     parser = argparse.ArgumentParser(description='VEX Parser')
@@ -26,6 +29,7 @@ def main():
     with open(args.vex) as fp:
         jdata = json.load(fp)
 
+    console  = Console()
     vex      = Vex(jdata)
     packages = VexPackages(jdata)
 
@@ -45,54 +49,54 @@ def main():
             else:
                 nvd = NVD(None)
 
-    print(vex.cve)
+    console.print(f'[bold red]{vex.cve}[/bold red]')
     print('-' * len(vex.cve))
     print()
-    print(f'Public on : {vex.release_date}')
+    console.print(f'Public on : [cyan]{vex.release_date}[/cyan]', highlight=False)
     if vex.global_impact:
-        print(f'Impact    : {vex.global_impact}')
+        console.print(f'Impact    : [{SEVERITY_COLOR[vex.global_impact]}]{vex.global_impact}[/{SEVERITY_COLOR[vex.global_impact]}]')
     if vex.global_cvss:
-        print(f"CVSS Score: {vex.global_cvss['baseScore']}")
+        console.print(f"CVSS Score: [cyan]{vex.global_cvss['baseScore']}[/cyan]", highlight=False)
     print()
 
     # print the notes from the VEX document
     if 'summary' in vex.notes:
-        print(vex.notes['summary'])
+        console.print(vex.notes['summary'], highlight=False)
     if 'description' in vex.notes:
-        print(vex.notes['description'])
+        console.print(vex.notes['description'], highlight=False)
     if 'general' in vex.notes:
-        print(vex.notes['general'])
+        console.print(vex.notes['general'], highlight=False)
     if 'legal_disclaimer' in vex.notes:
-        print(vex.notes['legal_disclaimer'])
-    print()
+        console.print(vex.notes['legal_disclaimer'], highlight=False)
 
     if vex.statement:
-        print('Statement:')
+        console.print('[green]Statement[/green]')
         print(f'  {vex.statement}')
         print()
 
     mitigation = None
     if packages.mitigation:
-        print('Mitigation:')
+        console.print('[green]Mitigation[/green]')
         if len(packages.mitigation) > 1:
-            print('**WARNING**: MORE THAN ONE MITIGATION DISCOVERED!')
+            console.print('[bold red]**WARNING**: MORE THAN ONE MITIGATION DISCOVERED![/bold red]')
         for x in packages.mitigation:
-            print(f'  {x.details}')
+            # Red Hat at least uses Markdown here, so let's render it
+            console.print(Markdown(x.details))
         print()
 
     refs = []
     if vex.bz_id:
         refs.append(f'  Bugzilla {vex.bz_id}: {vex.summary}')
     if vex.cwe_id:
-        refs.append(f'  {vex.cwe_id}: {vex.cwe_name}')
+        refs.append(f'  [blue]{vex.cwe_id}[/blue]: {vex.cwe_name}')
     if refs:
-        print('Additional Information:')
+        console.print('[green]Additional Information[/green]')
         for r in refs:
-            print(r)
+            console.print(r, highlight=False)
     print()
 
     if vex.references:
-        print('External References:')
+        console.print('[green]External References[/green]')
         for url in vex.references:
             print(f'  {url}')
         print()
@@ -106,28 +110,28 @@ def main():
         else:
             publisher = vex.publisher
 
-        print(f'{publisher} affected packages and issued errata:')
+        console.print(f'[green]{publisher} affected packages and issued errata[/green]')
         for x in packages.fixes:
-            print(f"  {x.id} -- {x.product}")
+            console.print(f"  [blue]{x.id}[/blue] -- {x.product}", highlight=False)
             if args.show_components:
                 for c in list(set(x.components)):
                     print(f'             {c}')
         print()
 
     if packages.not_affected:
-        print('Packages that are not affected:')
+        console.print('[green]Packages that are not affected[/green]')
         for x in packages.not_affected:
             print(f"  {x.product} ({', '.join(x.components)})")
         print()
 
     if packages.wontfix:
-        print('Affected packages without fixes:')
+        console.print('[green]Affected packages without fixes[/green]')
         for x in packages.wontfix:
-            print(f"  {x.product} ({x.component}): {x.reason}")
+            console.print(f"  {x.product} ({x.component}): [red]{x.reason}[/red]")
         print()
 
     if vex.global_cvss:
-        print(f'CVSS {vex.cvss_type} Vector')
+        console.print(f'[green]CVSS {vex.cvss_type} Vector[/green]')
         plen = 4
         if len(publisher) > 4:
             plen = len(publisher)
@@ -136,7 +140,7 @@ def main():
             print(f'  {"NVD":{plen}}: {nvd.vectorString}')
         print()
 
-        print(f'CVSS {vex.cvss_type} Score Breakdown')
+        console.print(f'[green]CVSS {vex.cvss_type} Score Breakdown[/green]')
         # TODO: string padding
         print(f'{' ':26} {publisher:<10} NVD')
         if vex.cvss_type == 'v3':
@@ -163,8 +167,8 @@ def main():
         print()
 
     if vex.acks:
-        print('Acknowledgements:')
-        print(f'  {vex.acks}')
+        console.print('[green]Acknowledgements[/green]')
+        print(f'{vex.acks}')
         print()
 
     if vex.distribution:
