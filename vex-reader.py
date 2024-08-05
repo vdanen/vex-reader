@@ -54,8 +54,16 @@ def main():
     if vex.global_cvss:
         print(f"CVSS Score: {vex.global_cvss['baseScore']}")
     print()
-    print('Description:')
-    print(f'  {vex.description}')
+
+    # print the notes from the VEX document
+    if 'summary' in vex.notes:
+        print(vex.notes['summary'])
+    if 'description' in vex.notes:
+        print(vex.notes['description'])
+    if 'general' in vex.notes:
+        print(vex.notes['general'])
+    if 'legal_disclaimer' in vex.notes:
+        print(vex.notes['legal_disclaimer'])
     print()
 
     if vex.statement:

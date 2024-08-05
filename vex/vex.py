@@ -31,6 +31,14 @@ class Vex(object):
         self.title     = self.raw['document']['title']
         self.publisher = self.raw['document']['publisher']['name']
 
+        # Notes build up the bulk of our text, we should include them all
+        self.notes = {}
+        if 'notes' in self.raw['document']:
+            for x in self.raw['document']['notes']:
+                if x['category'] not in self.notes:
+                    self.notes[x['category']] = ''
+                self.notes[x['category']] += f"** {x['title']} **\n {x['text']}\n\n"
+
         self.parse_vulns()
 
         if not self.acks:
@@ -101,19 +109,12 @@ class Vex(object):
                     self.bz_id = x['text']
                     self.bz_url = f'https://bugzilla.redhat.com/show_bug.cgi?id={self.bz_id}'
 
-        # Notes including descriptions, summaries, statements
-        self.description = None
-        self.summary     = None
-        self.statement   = None
-
+        # Notes including descriptions, summaries, statements as part of the vulnerabilities section
         if 'notes' in k:
             for x in k['notes']:
-                if x['category'] == 'description':
-                    self.description = x['text']
-                if x['category'] == 'summary':
-                    self.summary = x['text']
-                if x['category'] == 'other' and x['title'] == 'Statement':
-                    self.statement = x['text']
+                if x['category'] not in self.notes:
+                    self.notes[x['category']] = ''
+                self.notes[x['category']] += f"** {x['title']} **\n {x['text']}\n\n"
 
         # external references
         self.references = []
