@@ -9,12 +9,6 @@ class NVD(object):
     """
 
     def __init__(self, nvd_data):
-        #        >> > nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData']
-        #        {'version': '3.0', 'vectorString': 'CVSS:3.0/AV:P/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H', 'attackVector': 'PHYSICAL',
-        #         'attackComplexity': 'HIGH', 'privilegesRequired': 'NONE', 'userInteraction': 'NONE', 'scope': 'UNCHANGED',
-        #         'confidentialityImpact': 'HIGH', 'integrityImpact': 'HIGH', 'availabilityImpact': 'HIGH', 'baseScore': 6.4,
-        #         'baseSeverity': 'MEDIUM'}
-
         self.raw                   = nvd_data
         if self.raw == None:
             self.version = 'None'
@@ -31,6 +25,12 @@ class NVD(object):
             self.baseSeverity          = ''
 
         self.version               = nvd_data['version']
+
+        #        >> > nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData']
+        #        {'version': '3.0', 'vectorString': 'CVSS:3.0/AV:P/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H', 'attackVector': 'PHYSICAL',
+        #         'attackComplexity': 'HIGH', 'privilegesRequired': 'NONE', 'userInteraction': 'NONE', 'scope': 'UNCHANGED',
+        #         'confidentialityImpact': 'HIGH', 'integrityImpact': 'HIGH', 'availabilityImpact': 'HIGH', 'baseScore': 6.4,
+        #         'baseSeverity': 'MEDIUM'}
         if self.version == '3.0':
             self.baseScore             = nvd_data['baseScore']
             self.vectorString          = nvd_data['vectorString']
@@ -44,3 +44,15 @@ class NVD(object):
             self.availabilityImpact    = nvd_data['availabilityImpact'].capitalize()
             self.baseSeverity          = nvd_data['baseSeverity'].capitalize()
 
+        # {'version': '2.0', 'vectorString': 'AV:N/AC:L/Au:N/C:P/I:N/A:N', 'accessVector': 'NETWORK',
+        # 'accessComplexity': 'LOW', 'authentication': 'NONE', 'confidentialityImpact': 'PARTIAL',
+        # 'integrityImpact': 'NONE', 'availabilityImpact': 'NONE', 'baseScore': 5.0}
+        if self.version == '2.0':
+            self.baseScore             = nvd_data['baseScore']
+            self.vectorString          = nvd_data['vectorString']
+            self.accessVector          = nvd_data['accessVector'].capitalize()
+            self.accessComplexity      = nvd_data['accessComplexity'].capitalize()
+            self.authentication        = nvd_data['authentication'].capitalize()
+            self.confidentialityImpact = nvd_data['confidentialityImpact'].capitalize()
+            self.integrityImpact       = nvd_data['integrityImpact'].capitalize()
+            self.availabilityImpact    = nvd_data['availabilityImpact'].capitalize()

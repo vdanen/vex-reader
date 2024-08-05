@@ -32,9 +32,12 @@ def main():
     nvd_cve  = response.json()
     if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
         # we got the right result
-        nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
-    else:
-        nvd = None
+        if 'cvssMetricV2' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'])
+        elif 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
+        else:
+            nvd = None
 
     print(vex.cve)
     print(f'Public on {vex.release_date}')

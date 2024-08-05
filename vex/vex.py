@@ -33,18 +33,20 @@ class Vex(object):
 
         for k in self.raw['vulnerabilities']:
             # defaults
-            self.cwe_id      = None
-            self.cwe_name    = None
-            self.description = None
-            self.summary     = None
-            self.statement   = None
+            self.cwe_id         = None
+            self.cwe_name       = None
+            self.description    = None
+            self.summary        = None
+            self.statement      = None
+            self.discovery_date = None
 
             self.title          = k['title']
             self.cve            = k['cve']
             if 'cwe' in k:
                 self.cwe_id     = k['cwe']['id']
                 self.cwe_name   = k['cwe']['name']
-            self.discovery_date = k['discovery_date']
+            if 'discovery_date' in k:
+                self.discovery_date = k['discovery_date']
             rd                  = datetime.fromisoformat(k['release_date'])
             self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
 

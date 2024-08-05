@@ -32,9 +32,13 @@ class Fix(object):
                         self.id = f'{v}-{self.id}'
 
             for y in filter_components(x['product_ids']):
-                (product, component, version) = y.split(':')
-                self.components.append(':'.join([component, version]))
-                self.product = product_lookup(product, pmap)
+                if len(y.split(':')) == 1:
+                    # we may not have a component or version, just a product name
+                    self.product = product_lookup(y, pmap)
+                else:
+                    (product, component, version) = y.split(':')
+                    self.components.append(':'.join([component, version]))
+                    self.product = product_lookup(product, pmap)
 
 
 class WontFix(object):
