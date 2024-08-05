@@ -1,0 +1,560 @@
+{
+  "document": {
+    "acknowledgments": [
+      {
+        "summary": "This vulnerability was publicly disclosed by the Qualys Threat Research Unit on July 1, 2024."
+      }
+    ],
+    "category": "csaf_security_advisory",
+    "csaf_version": "2.0",
+    "notes": [
+      {
+        "category": "summary",
+        "title": "Summary",
+        "text": "On July 1, 2024, the Qualys Threat Research Unit (TRU) disclosed an unauthenticated, remote code execution vulnerability that affects the OpenSSH server (sshd) in glibc-based Linux systems.\r\n\r\nCVE-2024-6387: A signal handler race condition was found in sshd, where a client does not authenticate within LoginGraceTime seconds (120 by default, 600 in old OpenSSH versions), then the sshd SIGALRM handler is called asynchronously. However, this signal handler calls various functions that are not async-signal-safe, for example, syslog().\r\n\r\nFor a description of this vulnerability, see the Qualys Security Advisory [\"https://www.qualys.com/2024/07/01/cve-2024-6387/regresshion.txt\"].\r\n\r\nThis advisory will be updated as additional information becomes available.\r\n\r\n"
+      },
+      {
+        "category": "general",
+        "title": "Affected Products",
+        "text": "Cisco has investigated its product line to determine which products and cloud services may be affected by this vulnerability.\r\n\r\nThis advisory only lists Cisco products and services that are known to include the impacted software component and thus may be vulnerable. Products and services that do not contain the impacted software component are not vulnerable and therefore are not listed in this advisory. Any Cisco product or service that is not explicitly listed in the Affected Products section of this advisory is not affected by the vulnerability or vulnerabilities described. Because this is an ongoing investigation, be aware that products that are currently considered not vulnerable may subsequently be considered vulnerable as additional information becomes available.\r\n\r\nThe Vulnerable Products [\"#vp\"] section includes Cisco bug IDs for each affected product or service. The bugs are accessible through the Cisco Bug Search Tool [\"https://bst.cloudapps.cisco.com/bugsearch/\"] and contain additional platform-specific information, including workarounds (if available) and fixed software releases."
+      },
+      {
+        "category": "general",
+        "title": "Vulnerable Products",
+        "text": "The following table lists Cisco products that are affected by the vulnerability that is described in this advisory. If a future release date is indicated for software, the date provided represents an estimate based on all information known to Cisco as of the Last Updated date at the top of the advisory. Availability dates are subject to change based on a number of factors, including satisfactory testing results and delivery of other priority features and fixes. If no version or date is listed for an affected component (indicated by a blank field and/or an advisory designation of Interim), Cisco is continuing to evaluate the fix and will update the advisory as additional information becomes available. After the advisory is marked Final, customers should refer to the associated Cisco bugs for further details.\r\n        Product  Cisco Bug ID  Fixed Release Availability [\"https://tools.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"]      Network and Content Security Devices      Adaptive Security Appliance (ASA) Software  CSCwk62296 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62296\"]  9.18.4.34\r\n9.20.3      Firepower 4100/9300 FXOS Firepower Chassis Manager  CSCwk62297 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62297\"]  2.12.1      Firepower Management Center (FMC) Software  CSCwk62296 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62296\"]  7.0.6.3 (Oct 2024)\r\n7.2.8.1 (Sep 2024)\r\n7.4.2      Firepower Threat Defense (FTD) Software  CSCwk62296 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62296\"]  7.0.6.3 (Oct 2024)\r\n7.2.8.1 (Sep 2024)\r\n7.4.2      Identity Services Engine (ISE)  CSCwk61938 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61938\"]  3.3 patch\r\n3.2 patch\r\n3.1 patch      Secure Access Resource Connector  CSCwk67866 [\"https://tools.cisco.com/bugsearch/bug/CSCwk67866\"]  2.0.0-2407032046      Secure Email and Web Manager  CSCwk63532 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63532\"]  15.5.2 MR (Aug 2024)      Secure Email Gateway  CSCwk63523 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63523\"]  15.5.2 MR (Aug 2024)\r\n15.0.3 MR (Nov 2024)\r\n16.0 (Oct 2024)      Secure Network Analytics  CSCwk64073 [\"https://tools.cisco.com/bugsearch/bug/CSCwk64073\"]  7.4.2 (Aug 2024)\r\n7.5.0 (Aug 2024)      Network Management and Provisioning      Application Policy Infrastructure Controller (APIC)  CSCwk62256 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62256\"]  6.0(7x) (Sep 2024)\r\n6.1(1x) (Aug 2024)      Common Services Platform Collector (CSPC)  CSCwk62250 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62250\"]  2.11.0.1      Crosswork Data Gateway  CSCwk62311 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62311\"]  7.0.0 (Aug 2024)      Cyber Vision  CSCwk62289 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62289\"]  4.1.7\r\n4.4.3\r\n5.0.0      DNA Spaces Connector  CSCwk62273 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62273\"]  Connector 3 (Aug 2024)      Evolved Programmable Network Manager (EPNM)  CSCwk62268 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62268\"]         Nexus Dashboard, formerly Application Services Engine  CSCwk62261 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62261\"]  3.2.1x (Aug 2024)      Prime Infrastructure  CSCwk62276 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62276\"]  3.10.5      Smart PHY  CSCwk62284 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62284\"]  24.2 (Sep 2024)      Smart Software Manager On-Prem  CSCwk62288 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62288\"]  9-202407 (Aug 2024)      Virtualized Infrastructure Manager  CSCwk62277 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62277\"]  5.0.1 (Aug 2024)      Routing and Switching - Enterprise and Service Provider      8000 Series Routers  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      ASR 5000 Series Routers  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         Catalyst IE3x00 Rugged Series Switches  CSCwk67488 [\"https://tools.cisco.com/bugsearch/bug/CSCwk67488\"]  17.15 (Aug 2024)      Catalyst IE9300 Rugged Series Switches  CSCwk67488 [\"https://tools.cisco.com/bugsearch/bug/CSCwk67488\"]  17.15 (Aug 2024)      Embedded Services 3300 Series Switches  CSCwk67488 [\"https://tools.cisco.com/bugsearch/bug/CSCwk67488\"]  17.15 (Aug 2024)      GGSN Gateway GPRS Support Node  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         IOS XE Software with NETCONF enabled  CSCwk61216 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61216\"]  17.15.1 (Aug 2024)      IOS XRd Control Plane  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      IOS XRd vRouter  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      IP Services Gateway (IPSG)  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         MDS 9000 Series Multilayer Switches  CSCwk62258 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62258\"]  9.4(2a) (Aug 2024)      MME Mobility Management Entity  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         Network Convergence System 540 Series Routers running NCS540L images  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      Network Convergence System 1010  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      Network Convergence System 1014  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      Network Convergence System 5700 Fixed Chassis NCS-57B1, NCS-57C1, and NCS-57D2  CSCwk62108 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62108\"]  24.3.1 (Sep 2024)\r\n24.2.2 (Oct 2024)\r\n24.2.11 Available from SMU ID AA35431      Nexus 3000 Series Switches  CSCwk61235 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61235\"]  10.2(9) (Jan 2025)\r\n10.3(6) (Aug 2024)\r\n10.4(4) (Oct 2024)\r\n10.5(1) (Aug 2024)      Nexus 9000 Series Fabric Switches in ACI Mode  CSCwk62257 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62257\"]  6.1.2 (Nov 2024)      Nexus 9000 Series Switches in standalone NX-OS mode  CSCwk61235 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61235\"]  10.2(9) (Jan 2025)\r\n10.3(6) (Aug 2024)\r\n10.4(4) (Oct 2024)\r\n10.5(1) (Aug 2024)      PDSN/HA Packet Data Serving Node and Home Agent  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         PGW Packet Data Network Gateway  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         System Architecture Evolution Gateway (SAEGW)  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         Ultra Cloud Core - Access and Mobility Management Function  CSCwk62243 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62243\"]         Ultra Cloud Core - Session Management Function  CSCwk62246 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62246\"]  2024.03.1 (Aug 2024)      Ultra Cloud Core - Subscriber Microservices Infrastructure  CSCwk62247 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62247\"]  2024.03.1 (Aug 2024)      Ultra Cloud Core 5G Policy Control Function  CSCwk62244 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62244\"]         Ultra Packet Core  CSCwk63293 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63293\"]         Unified Computing      Intersight Virtual Appliance  CSCwk63145 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63145\"]  1.0.9-677      UCS C-Series Rack Servers and S-Series Storage Servers - Integrated Management Controller (CIMC)  CSCwk62266 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62266\"]  4.3.4 (Aug 2024)\r\n4.3.2 (Aug 2024)      UCS Director  CSCwk62255 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62255\"]  6.9.1.0 (Oct 2024)      UCS Manager  CSCwk62264 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62264\"]  4.2(3l) (Sep 2024)\r\n4.3(5a) (Oct 2024)\r\n4.3(4c) (Aug 2024)      Voice and Unified Communications Devices      Desk Phone 9841  CSCwk62323 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62323\"]  3.2(1) (Oct 2024)      Desk Phone 9851  CSCwk62323 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62323\"]  3.2(1) (Oct 2024)      Emergency Responder  CSCwk63694 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63694\"]  15.0.1.12900 (Sep 2024)\r\n15SU2 (Sep 2024)\r\nciscocm.V15_CVE-2024-6387_v1.1.zip [\"https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files\"]1      Prime Collaboration Deployment  CSCwk64755 [\"https://tools.cisco.com/bugsearch/bug/CSCwk64755\"]  15.0.1.12900 (Sep 2024)\r\n15SU2 (Sep 2024)\r\nciscocm.V15_CVE-2024-6387_v1.1.zip [\"https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files\"]1      Unified Communications Manager / Unified Communications Manager Session Management Edition  CSCwk62318 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62318\"]  15.0.1.12900 (Sep 2024)\r\n15SU2 (Sep 2024)\r\nciscocm.V15_CVE-2024-6387_v1.1.zip [\"https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files\"]1      Unified Communications Manager IM and Presence Service  CSCwk63634 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63634\"]  15.0.1.12900 (Sep 2024)\r\n15SU2 (Sep 2024)\r\nciscocm.V15_CVE-2024-6387_v1.1.zip [\"https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files\"]1      Unity Connection  CSCwk63494 [\"https://tools.cisco.com/bugsearch/bug/CSCwk63494\"]  15.0.1.12900 (Sep 2024)\r\n15Su2 (Sep 2024)\r\nciscocm.V15_CVE-2024-6387_v1.1.zip [\"https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files\"]1      Video Phone 8875  CSCwk62317 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62317\"]  2.3(1) (Nov 2024)      Webex Video Mesh  CSCwk80951 [\"https://tools.cisco.com/bugsearch/bug/CSCwk80951\"]         Video, Streaming, TelePresence, and Transcoding Devices      Board Series  CSCwk70371 [\"https://tools.cisco.com/bugsearch/bug/CSCwk70371\"]  Cloud - RoomOS 11.18.1.6\r\nOn-premise - RoomOS 11.17.3.0\r\nOn-premise - RoomOS 11.14.4      Cisco Meeting Server  CSCwk62286 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62286\"]  SMU - CMS 3.9.2 (Aug 2024)\r\nSMU - CMS 3.8.2 (Aug 2024)      Desk Series  CSCwk70371 [\"https://tools.cisco.com/bugsearch/bug/CSCwk70371\"]  Cloud - RoomOS 11.18.1.6\r\nOn-premise - RoomOS 11.17.3.0\r\nOn-premise - RoomOS 11.14.4      Expressway Series  CSCwk61630 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61630\"]  X15.0.3\r\nX15.2.0 (Sep 2024)      Room Series  CSCwk70371 [\"https://tools.cisco.com/bugsearch/bug/CSCwk70371\"]  Cloud - RoomOS 11.18.1.6\r\nOn-premise - RoomOS 11.17.3.0\r\nOn-premise - RoomOS 11.14.4      TelePresence Video Communication Server (VCS)  CSCwk61630 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61630\"]  X15.0.3\r\nX15.2.0 (Sep 2024)      Webex Board  CSCwk70371 [\"https://tools.cisco.com/bugsearch/bug/CSCwk70371\"]  Cloud - RoomOS 11.18.1.6\r\nOn-premise - RoomOS 11.17.3.0\r\nOn-premise - RoomOS 11.14.4      Wireless      6300 Series Embedded Services Access Points  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Aironet 802.11ac Wave2 Access Points  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Aironet 1540 Series  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Aironet 1560 Series  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Catalyst 9100 Series Access Points  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Catalyst 9800 Series Wireless Controllers  CSCwk61216 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61216\"]  17.15.1 (Aug 2024)      Catalyst ESS9300 Embedded Series Switches  CSCwk67488 [\"https://tools.cisco.com/bugsearch/bug/CSCwk67488\"]  17.15 (Aug 2024)      Catalyst IW6300 Heavy Duty Series Access Points  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Catalyst IW9165 Heavy Duty Series  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Catalyst IW9165 Rugged Series  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Catalyst IW9167 Heavy Duty Series  CSCwk62269 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62269\"]  17.15 (Aug 2024)\r\n17.9.6 (Aug 2024)\r\n17.12.4      Connected Mobile Experiences  CSCwk62270 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62270\"]  11.0.1 (Aug 2024)      Embedded Wireless Controllers  CSCwk61216 [\"https://tools.cisco.com/bugsearch/bug/CSCwk61216\"]  17.15.1 (Aug 2024)      IEC6400 Edge Compute Appliance  CSCwk62290 [\"https://tools.cisco.com/bugsearch/bug/CSCwk62290\"]  1.0.2 (Aug 2024)\r\n1.1.0 (Oct 2024)\r\n1. COP files can be downloaded and installed without Cisco TAC assistance. These COP files apply only to certain releases."
+      },
+      {
+        "category": "general",
+        "title": "Products Confirmed Not Vulnerable",
+        "text": "Cisco is investigating its product line to determine which products may be affected by this vulnerability. This section will be updated as information becomes available.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nEndpoint Clients and Client Software\r\n\r\nAnyConnect Secure Mobility Client\r\n\r\nNetwork Application, Service, and Acceleration\r\n\r\nCloud Services Platform 5000 Series\r\nCX Cloud Agent\r\nSecure Workload\r\n\r\nNetwork and Content Security Devices\r\n\r\nSecure Endpoint Private Cloud\r\nSecure Web Appliance\r\nUmbrella Virtual Appliance\r\n\r\nNetwork Management and Provisioning\r\n\r\nBusiness Process Automation\r\nCatalyst Center\r\nCatalyst Center Assurance\r\nCisco Telemetry Broker\r\nCrosswork Change Automation\r\nCrosswork Health Insights\r\nCrosswork Zero Touch Provisioning (ZTP)\r\nData Center Network Manager (DCNM)\r\nModeling Labs\r\nNetwork Services Orchestrator (NSO)\r\nPolicy Suite\r\nPrime Cable Provisioning\r\nPrime Network Registrar\r\nSecureX Orchestration Remote\r\nThousandEyes Enterprise Agent\r\nWAN Automation Engine (WAE)\r\n\r\nRouting and Switching - Enterprise and Service Provider\r\n\r\nASR 9000 Series Aggregation Services Routers\r\nCarrier Routing System (CRS)\r\nCatalyst SD-WAN Controller, formerly known as SD-WAN vSmart\r\nCatalyst SD-WAN Manager, formerly SD-WAN vManage\r\nCatalyst SD-WAN Validator, formerly SD-WAN vBond Orchestrator\r\nIndustrial Ethernet 1000 Series Switches\r\nIndustrial Ethernet 2000 Series Switches\r\nIndustrial Ethernet 3000 Series Switches\r\nIndustrial Ethernet 4000 Series Switches\r\nIndustrial Ethernet 5000 Series Switches\r\nIOS Software\r\nIOS XRv 9000 Series Routers\r\nNetwork Convergence System 540 Series Routers running IOS XR 64-bit (eXR) Software\r\nNetwork Convergence System 560 Series Routers\r\nNetwork Convergence System 1001\r\nNetwork Convergence System 1002\r\nNetwork Convergence System 1004\r\nNetwork Convergence System 5000 Series Routers\r\nNetwork Convergence System 5500 Series Routers\r\nNetwork Convergence System 5700 Series Routers running IOS XR 64-bit (eXR) Software\r\nNexus 1000V Series Switches\r\nNexus 5500 Platform Switches\r\nNexus 5600 Platform Switches\r\nNexus 6000 Series Switches\r\nNexus 7000 Series Switches\r\nOptical Network Controller\r\nSD-WAN vEdge Cloud Routers\r\nSD-WAN vEdge Routers\r\n\r\nUnified Computing\r\n\r\nDevice Console for UCS Fabric Interconnect in Intersight Managed Mode (IMM)\r\nEnterprise NFV Infrastructure Software (NFVIS)\r\nHyperFlex System\r\nIntegrated Management Controller (IMC) Supervisor\r\nUCS Central Software\r\nUCS E-Series Servers\r\n\r\nVoice and Unified Communications Devices\r\n\r\nComputer Telephony Integration Object Server (CTIOS)\r\nFinesse\r\nUnified Contact Center Enterprise (Unified CCE)\r\nUnified Contact Center Enterprise - Cloud Connect\r\nUnified Contact Center Express (Unified CCX)\r\nUnified Customer Voice Portal (Unified CVP)\r\nUnified Intelligence Center\r\nUnified Intelligent Contact Management Enterprise\r\nUnified SIP Proxy Software\r\n\r\nVideo, Streaming, TelePresence, and Transcoding Devices\r\n\r\nWebex DX80\r\n\r\nWireless\r\n\r\n800 and 1900 Series ISR Integrated Access Points\r\nAireOS Wireless LAN Controllers\r\nAironet 700 Series Access Points\r\nAironet 700W Series Access Points\r\nAironet 802.11ac Wave1 Access Points Industrial Wireless 3700 Series\r\nAironet 1530 Series\r\nAironet 1550 Series\r\nAironet 1570 Series\r\nMeraki products\r\nUltra-Reliable Wireless Backhaul\r\n\r\nCisco Cloud Hosted Services\r\n\r\nAppDynamics\r\nArmorblox\r\nAttack Surface Management\r\nBusiness Critical Services\r\nCisco Managed Services Platform\r\nCisco Secure Client\r\nCisco University - Next Gen Learning\r\nCloud Native Application Observability\r\nCrosswork Cloud\r\nCustomer Journey Platform R10\r\nData Science Services\r\nDevNet Cloud Services\r\nDevNet Sandbox\r\neSIM Flex\r\nIntersight SaaS\r\nIoT Control Center\r\nIoT Operations Dashboard\r\nKenna Platform\r\nManaged Services Accelerator (MSXaaS)\r\nMatrix Network Intelligence Service\r\nNetwork Plug and Play Connect\r\nObservability Platform\r\nPanoptica\r\nProvider Connectivity Assurance, formerly Skylight Performance Analytics\r\nSecure Cloud Analytics\r\nSecure Email Cloud\r\nSecure Email Encryption Service, formerly Registered Envelope Service\r\nSecure Email Threat Defense\r\nSecure Endpoint\r\nSecure Malware Analytics\r\nSecure Workload SaaS\r\nSlido\r\nSmartlook\r\nSmart Software Manager\r\nUC Management\r\nUltra-Reliable Wireless Backhaul\r\nUser Defined Network Cloud\r\nVidcast\r\nWebex Calling\r\nWebex Contact Center\r\nWebex Events\r\nWebex - Meetings - Messaging App - Calling\r\nWebex Teams\r\nXDR"
+      },
+      {
+        "category": "general",
+        "title": "Details",
+        "text": "Cisco Response to This Vulnerability\r\n\r\nCisco continues to assess all products and services for impact from CVE-2024-6387. To help detect exploitation of this vulnerability, Cisco has released the following Snort rules:\r\n\r\n33654 [\"https://snort.org/rule_docs/1-33654\"]\r\n63659 [\"https://snort.org/rule_docs/1-63659\"]\r\n\r\nCisco recommends restricting SSH access to only trusted hosts. For the steps to apply infrastructure access control lists (ACLs) to prevent access to SSH services, see the following guides:\r\n\r\nCisco Guide to Harden Cisco IOS Devices - Limit Access to the Network with Infrastructure ACLs [\"https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html#anc32\"]\r\nCisco Guide to Securing NX-OS Software Devices - Limiting Access to the Network with Infrastructure ACLs [\"https://sec.cloudapps.cisco.com/security/center/resources/securing_nx_os.html#_Toc303633199\"]\r\nCisco UCS Hardening Guide - Limit Network Access with ACLs on Routers and Firewalls [\"https://sec.cloudapps.cisco.com/security/center/resources/ucs_hardening.html#15\"]\r\nCisco Firewall Best Practices - Securing the Management Plane [\"https://sec.cloudapps.cisco.com/security/center/resources/firewall_best_practices#15\"]\r\nCisco Firepower Threat Defense Hardening Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/70/hardening/ftd/FTD_Hardening_Guide_v70.html\"]\r\n\r\nFor additional hardening documentation, see Tactical Resources [\"https://sec.cloudapps.cisco.com/security/center/tacticalresources.x\"]."
+      },
+      {
+        "category": "general",
+        "title": "Workarounds",
+        "text": "Any workarounds will be documented in the product-specific Cisco bugs, which are identified in the Vulnerable Products [\"#vp\"] section of this advisory."
+      },
+      {
+        "category": "general",
+        "title": "Fixed Software",
+        "text": "For information about fixed software releases [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], consult the Cisco bugs identified in the Vulnerable Products [\"#vp\"] section of this advisory.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories [\"https://www.cisco.com/go/psirt\"] page, to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers."
+      },
+      {
+        "category": "general",
+        "title": "Vulnerability Policy",
+        "text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco."
+      },
+      {
+        "category": "general",
+        "title": "Exploitation and Public Announcements",
+        "text": "The Cisco PSIRT is aware that proof-of-concept exploit code is available for the vulnerability that is described in this advisory. However, customization is required for exploitation.\r\n\r\nThe Cisco PSIRT is not aware of any malicious use of the vulnerability that is described in this advisory."
+      },
+      {
+        "category": "general",
+        "title": "Source",
+        "text": "This vulnerability was publicly disclosed by the Qualys Threat Research Unit on July 1, 2024."
+      },
+      {
+        "category": "legal_disclaimer",
+        "title": "Legal Disclaimer",
+        "text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME. CISCO EXPECTS TO UPDATE THIS DOCUMENT AS NEW INFORMATION BECOMES AVAILABLE.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products."
+      }
+    ],
+    "publisher": {
+      "category": "vendor",
+      "contact_details": "psirt@cisco.com",
+      "issuing_authority": "Cisco PSIRT",
+      "name": "Cisco",
+      "namespace": "https://wwww.cisco.com"
+    },
+    "references": [
+      {
+        "category": "self",
+        "summary": "Remote Unauthenticated Code Execution Vulnerability in OpenSSH Server (regreSSHion): July 2024",
+        "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-openssh-rce-2024"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Security Vulnerability Policy",
+        "url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+      },
+      {
+        "category": "external",
+        "summary": "Qualys Security Advisory",
+        "url": "https://www.qualys.com/2024/07/01/cve-2024-6387/regresshion.txt"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Bug Search Tool",
+        "url": "https://bst.cloudapps.cisco.com/bugsearch/"
+      },
+      {
+        "category": "external",
+        "summary": "Fixed Release Availability",
+        "url": "https://tools.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62296",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62296"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62297",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62297"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk61938",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk61938"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk67866",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk67866"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63532",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63532"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63523",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63523"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk64073",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk64073"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62256",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62256"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62250",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62250"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62311",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62311"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62289",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62289"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62273",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62273"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62268",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62268"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62261",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62261"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62276",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62276"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62284",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62284"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62288",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62288"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62277",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62277"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62108",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62108"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63293",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63293"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk67488",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk67488"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk61216",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk61216"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62258",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62258"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk61235",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk61235"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62257",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62257"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62243",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62243"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62246",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62246"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62247",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62247"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62244",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62244"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63145",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63145"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62266",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62266"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62255",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62255"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62264",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62264"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62323",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62323"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63694",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63694"
+      },
+      {
+        "category": "external",
+        "summary": "ciscocm.V15_CVE-2024-6387_v1.1.zip",
+        "url": "https://software.cisco.com/download/home/286331940/type/286319173/release/COP-Files"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk64755",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk64755"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62318",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62318"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63634",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63634"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk63494",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk63494"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62317",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62317"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk80951",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk80951"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk70371",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk70371"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62286",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62286"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk61630",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk61630"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62269",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62269"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62270",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62270"
+      },
+      {
+        "category": "external",
+        "summary": "CSCwk62290",
+        "url": "https://tools.cisco.com/bugsearch/bug/CSCwk62290"
+      },
+      {
+        "category": "external",
+        "summary": "33654",
+        "url": "https://snort.org/rule_docs/1-33654"
+      },
+      {
+        "category": "external",
+        "summary": "63659",
+        "url": "https://snort.org/rule_docs/1-63659"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Guide to Harden Cisco IOS Devices - Limit Access to the Network with Infrastructure ACLs",
+        "url": "https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html#anc32"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Guide to Securing NX-OS Software Devices - Limiting Access to the Network with Infrastructure ACLs",
+        "url": "https://sec.cloudapps.cisco.com/security/center/resources/securing_nx_os.html#_Toc303633199"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco UCS Hardening Guide - Limit Network Access with ACLs on Routers and Firewalls",
+        "url": "https://sec.cloudapps.cisco.com/security/center/resources/ucs_hardening.html#15"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Firewall Best Practices - Securing the Management Plane",
+        "url": "https://sec.cloudapps.cisco.com/security/center/resources/firewall_best_practices#15"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Firepower Threat Defense Hardening Guide",
+        "url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/70/hardening/ftd/FTD_Hardening_Guide_v70.html"
+      },
+      {
+        "category": "external",
+        "summary": "Tactical Resources",
+        "url": "https://sec.cloudapps.cisco.com/security/center/tacticalresources.x"
+      },
+      {
+        "category": "external",
+        "summary": "fixed software releases",
+        "url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+      },
+      {
+        "category": "external",
+        "summary": "Cisco Security Advisories",
+        "url": "https://www.cisco.com/go/psirt"
+      },
+      {
+        "category": "external",
+        "summary": "Security Vulnerability Policy",
+        "url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+      }
+    ],
+    "title": "Remote Unauthenticated Code Execution Vulnerability in OpenSSH Server (regreSSHion): July 2024",
+    "tracking": {
+      "current_release_date": "2024-08-02T17:01:34+00:00",
+      "generator": {
+        "date": "2024-08-02T17:01:40+00:00",
+        "engine": {
+          "name": "TVCE"
+        }
+      },
+      "id": "cisco-sa-openssh-rce-2024",
+      "initial_release_date": "2024-07-02T16:00:00+00:00",
+      "revision_history": [
+        {
+          "date": "2024-07-02T19:52:21+00:00",
+          "number": "1.0.0",
+          "summary": "Initial public release."
+        },
+        {
+          "date": "2024-07-03T20:36:14+00:00",
+          "number": "1.1.0",
+          "summary": "Added lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable. Added Snort rules."
+        },
+        {
+          "date": "2024-07-04T16:48:22+00:00",
+          "number": "1.2.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-05T17:04:11+00:00",
+          "number": "1.3.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-08T16:11:35+00:00",
+          "number": "1.4.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-09T17:28:50+00:00",
+          "number": "1.5.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-10T16:15:44+00:00",
+          "number": "1.6.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-11T16:06:56+00:00",
+          "number": "1.7.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-12T15:48:54+00:00",
+          "number": "1.8.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-16T15:31:08+00:00",
+          "number": "1.9.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-19T16:52:03+00:00",
+          "number": "1.10.0",
+          "summary": "Updated the lists of products currently under investigation, products determined to be affected, and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-07-26T18:19:00+00:00",
+          "number": "1.11.0",
+          "summary": "Updated the lists of products determined to be affected and products determined to be not vulnerable."
+        },
+        {
+          "date": "2024-08-02T17:01:34+00:00",
+          "number": "1.12.0",
+          "summary": "Updated software fix information and lists of products determined to be affected and products determined to be not vulnerable."
+        }
+      ],
+      "status": "interim",
+      "version": "1.12.0"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "name": "Cisco",
+        "category": "vendor",
+        "branches": [
+          {
+            "name": "Cisco Catalyst SD-WAN",
+            "category": "product_family",
+            "product": {
+              "name": "Cisco Catalyst SD-WAN ",
+              "product_id": "CSAFPID-238692"
+            }
+          },
+          {
+            "name": "Cisco Catalyst SD-WAN Manager",
+            "category": "product_family",
+            "product": {
+              "name": "Cisco Catalyst SD-WAN Manager ",
+              "product_id": "CSAFPID-271450"
+            }
+          },
+          {
+            "name": "Cisco Catalyst SD-WAN Controller",
+            "category": "product_family",
+            "product": {
+              "name": "Cisco Catalyst SD-WAN Controller ",
+              "product_id": "CSAFPID-292518"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-6387",
+      "notes": [
+        {
+          "category": "other",
+          "title": "Affected Product Comprehensiveness",
+          "text": "Complete."
+        }
+      ],
+      "product_status": {
+        "known_affected": [
+          "CSAFPID-292518",
+          "CSAFPID-271450",
+          "CSAFPID-238692"
+        ]
+      },
+      "release_date": "2024-07-02T16:00:00+00:00",
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Cisco has released software updates that address this vulnerability.",
+          "product_ids": [
+            "CSAFPID-292518",
+            "CSAFPID-238692",
+            "CSAFPID-271450"
+          ],
+          "url": "https://software.cisco.com"
+        }
+      ],
+      "scores": [
+        {
+          "cvss_v3": {
+            "baseScore": 8.1,
+            "baseSeverity": "HIGH",
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "version": "3.1"
+          },
+          "products": [
+            "CSAFPID-292518",
+            "CSAFPID-271450",
+            "CSAFPID-238692"
+          ]
+        }
+      ],
+      "title": "OpenSSH Vulnerability Affecting Cisco Products: July 2024"
+    }
+  ]
+}

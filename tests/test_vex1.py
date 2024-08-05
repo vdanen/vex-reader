@@ -76,3 +76,38 @@ class TestCVE_2024_21626(TestVex):
 
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 25)
+
+class TestCVE_Cisco_rce_2024(TestVex):
+    def setUp(self):
+        with open('./cisco-sa-openssh-rce-2024.json') as fp:
+            jdata = json.load(fp)
+
+        self.vex      = Vex(jdata)
+        self.packages = VexPackages(jdata)
+
+    def test_cve_name(self):
+        self.assertEqual(self.vex.cve, 'CVE-2024-6387')
+
+    def test_public_date(self):
+        self.assertEqual(self.vex.release_date, '2024-07-02')
+
+    def test_impact(self):
+        self.assertIsNone(self.vex.global_impact)
+
+    def test_bzid(self):
+        self.assertIsNone(self.vex.bz_id)
+
+    def test_cvss_vector(self):
+        self.assertEqual(self.vex.global_cvss['vectorString'], 'CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H')
+
+    def test_number_of_refs(self):
+        self.assertEqual(len(self.vex.references), 0)
+
+    def test_number_of_mitigations(self):
+        self.assertEqual(len(self.packages.mitigation), 0)
+
+    def test_number_of_fixes(self):
+        self.assertEqual(len(self.packages.fixes), 1)
+
+    def test_number_of_noaffects(self):
+        self.assertEqual(len(self.packages.not_affected), 0)
