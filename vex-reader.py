@@ -46,10 +46,13 @@ def main():
                 nvd = NVD(None)
 
     print(vex.cve)
-    print(f'Public on {vex.release_date}')
-    print(f'{vex.global_impact} Impact')
+    print('-' * len(vex.cve))
+    print()
+    print(f'Public on : {vex.release_date}')
+    if vex.global_impact:
+        print(f'Impact    : {vex.global_impact}')
     if vex.global_cvss:
-        print(f"{vex.global_cvss['baseScore']} CVSS Score")
+        print(f"CVSS Score: {vex.global_cvss['baseScore']}")
     print()
     print('Description:')
     print(f'  {vex.description}')
@@ -130,27 +133,34 @@ def main():
         print(f'{' ':26} {publisher:<10} NVD')
         if vex.cvss_type == 'v3':
             print(f"  {'CVSS v3 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
-            print(f"  {'Attack Vector':24} {vex.global_cvss['attackVector'].capitalize():10} {nvd.attackVector}")
-            print(f"  {'Attack Complexity':24} {vex.global_cvss['attackComplexity'].capitalize():10} {nvd.attackComplexity}")
-            print(f"  {'Privileges Required':24} {vex.global_cvss['privilegesRequired'].capitalize():10} {nvd.privilegesRequired}")
-            print(f"  {'User Interaction':24} {vex.global_cvss['userInteraction'].capitalize():10} {nvd.userInteraction}")
-            print(f"  {'Scope':24} {vex.global_cvss['scope'].capitalize():10} {nvd.scope}")
+            if 'attackVector' in vex.global_cvss:
+                # not all VEX will break down the metrics
+                print(f"  {'Attack Vector':24} {vex.global_cvss['attackVector'].capitalize():10} {nvd.attackVector}")
+                print(f"  {'Attack Complexity':24} {vex.global_cvss['attackComplexity'].capitalize():10} {nvd.attackComplexity}")
+                print(f"  {'Privileges Required':24} {vex.global_cvss['privilegesRequired'].capitalize():10} {nvd.privilegesRequired}")
+                print(f"  {'User Interaction':24} {vex.global_cvss['userInteraction'].capitalize():10} {nvd.userInteraction}")
+                print(f"  {'Scope':24} {vex.global_cvss['scope'].capitalize():10} {nvd.scope}")
         elif vex.cvss_type == 'v2':
             print(f"  {'CVSS v2 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
-            print(f"  {'Access Vector':24} {vex.global_cvss['accessVector'].capitalize():10} {nvd.accessVector}")
-            print(f"  {'Access Complexity':24} {vex.global_cvss['accessComplexity'].capitalize():10} {nvd.accessComplexity}")
-            print(f"  {'Authentication':24} {vex.global_cvss['authentication'].capitalize():10} {nvd.authentication}")
-        print(f"  {'Confidentiality Impact':24} {vex.global_cvss['confidentialityImpact'].capitalize():10} {nvd.confidentialityImpact}")
-        print(f"  {'Integrity Impact':24} {vex.global_cvss['integrityImpact'].capitalize():10} {nvd.integrityImpact}")
-        print(f"  {'Availability Impact':24} {vex.global_cvss['availabilityImpact'].capitalize():10} {nvd.availabilityImpact}")
+            if 'accessVector' in vex.global_cvss:
+                # not all VEX will break down the metrics
+                print(f"  {'Access Vector':24} {vex.global_cvss['accessVector'].capitalize():10} {nvd.accessVector}")
+                print(f"  {'Access Complexity':24} {vex.global_cvss['accessComplexity'].capitalize():10} {nvd.accessComplexity}")
+                print(f"  {'Authentication':24} {vex.global_cvss['authentication'].capitalize():10} {nvd.authentication}")
+        if 'confidentialityImpact' in vex.global_cvss:
+            # not all VEX will break down the metrics
+            print(f"  {'Confidentiality Impact':24} {vex.global_cvss['confidentialityImpact'].capitalize():10} {nvd.confidentialityImpact}")
+            print(f"  {'Integrity Impact':24} {vex.global_cvss['integrityImpact'].capitalize():10} {nvd.integrityImpact}")
+            print(f"  {'Availability Impact':24} {vex.global_cvss['availabilityImpact'].capitalize():10} {nvd.availabilityImpact}")
         print()
 
     if vex.acks:
         print('Acknowledgements:')
-        print(f'  Red Hat would like to thank {vex.acks} for reporting this issue.')
+        print(f'  {vex.acks}')
         print()
 
-    print(vex.distribution)
+    if vex.distribution:
+        print(vex.distribution)
 
 if __name__ == '__main__':
     main()
