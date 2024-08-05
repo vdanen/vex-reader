@@ -36,7 +36,9 @@ def main():
         nvd_cve  = response.json()
         if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
             # we got the right result
-            if 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+            if 'cvssMetricV31' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'])
+            elif 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
                 nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
             elif 'cvssMetricV2' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
                 nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'])
