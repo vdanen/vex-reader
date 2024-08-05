@@ -6,8 +6,10 @@
 import argparse
 import os
 import json
+import requests
 from vex import Vex
 from vex import VexPackages
+from vex import NVD
 
 def main():
     parser = argparse.ArgumentParser(description='VEX Parser')
@@ -25,6 +27,14 @@ def main():
 
     vex      = Vex(jdata)
     packages = VexPackages(jdata)
+
+    response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={vex.cve}')
+    nvd_cve  = response.json()
+    if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
+        # we got the right result
+        nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
+    else:
+        nvd = None
 
     print(vex.cve)
     print(f'Public on {vex.release_date}')
@@ -98,22 +108,25 @@ def main():
 
     if vex.global_cvss:
         print(f'CVSS {vex.cvss_type} Vector')
-        print(f"Red Hat: {vex.global_cvss['vectorString']}")
-        print('NVD:      **NOT YET**')
+        plen = 4
+        if len(publisher) > 4:
+            plen = len(publisher)
+        print(f"  {publisher:{plen}}: {vex.global_cvss['vectorString']}")
+        print(f'  {"NVD":{plen}}: {nvd.vectorString}')
         print()
 
         print(f'CVSS {vex.cvss_type} Score Breakdown')
         # TODO: string padding
-        print(f'                        {vendor}    NVD')
-        print(f"CVSS v3 Base Score      {vex.global_cvss['baseScore']}        0.0")
-        print(f"Attack Vector           {vex.global_cvss['attackVector'].capitalize()}")
-        print(f"Attack Complexity       {vex.global_cvss['attackComplexity'].capitalize()}")
-        print(f"Privileges Required     {vex.global_cvss['privilegesRequired'].capitalize()}")
-        print(f"User Interaction        {vex.global_cvss['userInteraction'].capitalize()}")
-        print(f"Scope                   {vex.global_cvss['scope'].capitalize()}")
-        print(f"Confidentiality Impact  {vex.global_cvss['confidentialityImpact'].capitalize()}")
-        print(f"Integrity Impact        {vex.global_cvss['integrityImpact'].capitalize()}")
-        print(f"Availability Impact     {vex.global_cvss['availabilityImpact'].capitalize()}")
+        print(f'{' ':26} {publisher:<10} NVD')
+        print(f"  {'CVSS v3 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
+        print(f"  {'Attack Vector':24} {vex.global_cvss['attackVector'].capitalize():10} {nvd.attackVector}")
+        print(f"  {'Attack Complexity':24} {vex.global_cvss['attackComplexity'].capitalize():10} {nvd.attackComplexity}")
+        print(f"  {'Privileges Required':24} {vex.global_cvss['privilegesRequired'].capitalize():10} {nvd.privilegesRequired}")
+        print(f"  {'User Interaction':24} {vex.global_cvss['userInteraction'].capitalize():10} {nvd.userInteraction}")
+        print(f"  {'Scope':24} {vex.global_cvss['scope'].capitalize():10} {nvd.scope}")
+        print(f"  {'Confidentiality Impact':24} {vex.global_cvss['confidentialityImpact'].capitalize():10} {nvd.confidentialityImpact}")
+        print(f"  {'Integrity Impact':24} {vex.global_cvss['integrityImpact'].capitalize():10} {nvd.integrityImpact}")
+        print(f"  {'Availability Impact':24} {vex.global_cvss['availabilityImpact'].capitalize():10} {nvd.availabilityImpact}")
         print()
 
     if vex.acks:

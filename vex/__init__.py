@@ -3,5 +3,6 @@
 
 from .vex1 import Vex
 from .package import VexPackages
+from .simplenvd import NVD
 
 __version__ = '0.1'
