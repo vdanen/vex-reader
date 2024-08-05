@@ -1,3 +1,4 @@
 *.json
 .idea
 vex/__pycache__/
+.venv
