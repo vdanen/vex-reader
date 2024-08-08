@@ -36,7 +36,8 @@ class Fix(object):
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
                 else:
-                    (product, component, version) = y.split(':')
+                    # modular components can have 7 colons
+                    (product, component, version) = y.split(':', maxsplit=2)
                     self.components.append(':'.join([component, version]))
                     self.product = product_lookup(product, pmap)
 
