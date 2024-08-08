@@ -9,11 +9,8 @@ class TestVex(TestCase):
 
 class TestCVE_2024_40951(TestVex):
     def setUp(self):
-        with open('./cve-2024-40951.json') as fp:
-            jdata = json.load(fp)
-
-        self.vex      = Vex(jdata)
-        self.packages = VexPackages(jdata)
+        self.vex      = Vex('./cve-2024-40951.json')
+        self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, 'CVE-2024-40951')
@@ -44,11 +41,8 @@ class TestCVE_2024_40951(TestVex):
 
 class TestCVE_2024_21626(TestVex):
     def setUp(self):
-        with open('./cve-2024-21626.json') as fp:
-            jdata = json.load(fp)
-
-        self.vex      = Vex(jdata)
-        self.packages = VexPackages(jdata)
+        self.vex      = Vex('./cve-2024-21626.json')
+        self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, 'CVE-2024-21626')
@@ -79,11 +73,8 @@ class TestCVE_2024_21626(TestVex):
 
 class TestCVE_Cisco_rce_2024(TestVex):
     def setUp(self):
-        with open('./cisco-sa-openssh-rce-2024.json') as fp:
-            jdata = json.load(fp)
-
-        self.vex      = Vex(jdata)
-        self.packages = VexPackages(jdata)
+        self.vex      = Vex('./cisco-sa-openssh-rce-2024.json')
+        self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, 'CVE-2024-6387')
