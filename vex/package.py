@@ -37,10 +37,8 @@ class Fix(object):
 
             for y in filter_components(x['product_ids']):
                 if len(y.split(':')) == 1:
-                    print(y)
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
-                    print(self.product)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
@@ -150,7 +148,7 @@ class VexPackages(object):
                         # which has two vendor_fix statements, but the second has more than one product_ids; this will
                         # require some rejiggering to make it show products and not just None
                         self.fixes.append(Fix(x, self.pmap))
-                        print(f'Appended: {x}')
+                        #print(f'Appended: {x}')
 
                     if x['category'] == 'workaround':
                         self.mitigation.append(Mitigation(x))
