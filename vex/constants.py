@@ -22,7 +22,8 @@ SEVERITY_COLOR = OrderedDict(
         ("Critical", 'red'),
         ("Important", 'yellow'),
         ("Moderate", 'blue'),
-        ("Low", 'green')
+        ("Low", 'green'),
+        ("None", 'green')
     ]
 )
 
