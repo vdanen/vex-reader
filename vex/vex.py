@@ -2,6 +2,9 @@
 # License: GPLv3+
 
 from datetime import datetime
+import json
+import os
+import requests
 
 from .constants import (
     SEVERITY_MAP,
@@ -16,7 +19,31 @@ class Vex(object):
     Class to hold VEX object
     """
 
-    def __init__(self, vexdata):
+    def __init__(self, vexfile):
+        if 'http' in vexfile:
+            response = requests.get(f'{vexfile}')
+            if response.status_code == 200:
+                vexdata = response.json()
+            elif response.status_code == 404:
+                print(f'Not found: {vexfile}')
+                exit(1)
+            else:
+                print(f'Cannot load {vexfile}')
+                print(f'Response code: {response.status_code}')
+                exit(1)
+
+        else:
+            if not os.path.exists(vexfile):
+                print(f'Missing VEX file: {vexfile}.')
+                exit(1)
+
+            with open(vexfile) as fp:
+                vexdata = json.load(fp)
+
+        if not vexdata:
+            print(f'Unable to load VEX data from {vexfile}.')
+            exit(1)
+
         self.raw = vexdata
 
         # some VEX documents do not have very much information...

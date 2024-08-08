@@ -4,8 +4,6 @@
 # i.e. https://access.redhat.com/security/data/csaf/beta/vex/2024/cve-2024-21626.json
 
 import argparse
-import os
-import json
 import requests
 from rich.console import Console
 from rich.markdown import Markdown
@@ -22,16 +20,9 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.vex):
-        print(f'Missing VEX file: {args.vex}.')
-        exit(1)
-
-    with open(args.vex) as fp:
-        jdata = json.load(fp)
-
     console  = Console()
-    vex      = Vex(jdata)
-    packages = VexPackages(jdata)
+    vex      = Vex(args.vex)
+    packages = VexPackages(vex.raw)  # we need the raw json data
 
     if args.no_nvd:
         nvd = NVD(None)
