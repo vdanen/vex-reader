@@ -80,3 +80,5 @@ is undesirable (for testing, etc) you can pass the `--no-nvd` argument to
 prevent lookups.  Currently vex-reader.py requires the VEX file to parse to
 be on-disk.
 
+A good place to find some VEX documents to play with is here: https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
+
