@@ -43,7 +43,8 @@ def main():
     console.print(f'[bold red]{vex.cve}[/bold red]')
     print('-' * len(vex.cve))
     print()
-    console.print(f'Public on : [cyan]{vex.release_date}[/cyan]', highlight=False)
+    if vex.release_date:
+        console.print(f'Public on : [cyan]{vex.release_date}[/cyan]', highlight=False)
     if vex.global_impact:
         console.print(f'Impact    : [{SEVERITY_COLOR[vex.global_impact]}]{vex.global_impact}[/{SEVERITY_COLOR[vex.global_impact]}]')
     if vex.global_cvss:

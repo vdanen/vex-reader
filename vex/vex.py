@@ -46,15 +46,16 @@ class Vex(object):
 
         self.raw = vexdata
 
+        self.distribution  = None
+        self.global_impact = None
+
         # some VEX documents do not have very much information...
         if 'aggregate_severity' in self.raw['document']:
             self.global_impact = self.raw['document']['aggregate_severity']['text'].capitalize()
-        else:
-            self.global_impact = None
         if 'distribution' in self.raw['document']:
-            self.distribution = self.raw['document']['distribution']['text']
-        else:
-            self.distribution = None
+            if 'text' in self.raw['document']['distribution']:
+                self.distribution = self.raw['document']['distribution']['text']
+
         self.title     = self.raw['document']['title']
         self.publisher = self.raw['document']['publisher']['name']
 
@@ -96,16 +97,21 @@ class Vex(object):
             self.discovery_date = None
             self.bz_id          = None
             self.bz_url         = None
+            self.title          = None
+            self.release_date   = None
 
-            self.title          = k['title']
+            if 'title' in k:
+                self.title          = k['title']
             self.cve            = k['cve']
             if 'cwe' in k:
                 self.cwe_id     = k['cwe']['id']
                 self.cwe_name   = k['cwe']['name']
             if 'discovery_date' in k:
                 self.discovery_date = k['discovery_date']
-            rd                  = datetime.fromisoformat(k['release_date'])
-            self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
+            if 'release_date' in k:
+                # you'd think this would be mandatory and important but it isn't
+                rd                  = datetime.fromisoformat(k['release_date'])
+                self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
 
         # Acknowledgements
         self.acks = None

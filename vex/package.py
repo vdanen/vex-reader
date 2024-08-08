@@ -8,6 +8,7 @@ from .constants import (
 
 def product_lookup(product, pmap):
     # lookup the product name by identifier
+    #print(f'product:{product}, pmap:{pmap}')
     for x in pmap:
         if product in x.keys():
             return x[product]
@@ -19,8 +20,11 @@ class Fix(object):
 
     def __init__(self, x, pmap):
             self.id         = None
-            self.url        = x['url']
+            self.url        = ''
             self.components = []
+
+            if 'url' in x:
+                self.url = x['url']
 
             for v in VENDOR_ADVISORY:
                 if v in self.url:
@@ -33,8 +37,10 @@ class Fix(object):
 
             for y in filter_components(x['product_ids']):
                 if len(y.split(':')) == 1:
+                    print(y)
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
+                    print(self.product)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
@@ -118,7 +124,12 @@ class VexPackages(object):
                         if 'category' in c.keys():
                             if c['category'] == 'product_name':
                                 name = c['name']
-                                id   = c['product']['product_id']
+                                # seems we can also nest branches here?
+                                if 'branches' in c.keys():
+                                    for d in c['branches']:
+                                        id = d['product']['product_id']
+                                else:
+                                    id   = c['product']['product_id']
                                 self.pmap.append({id: name})
 
 
@@ -134,7 +145,12 @@ class VexPackages(object):
             if 'remediations' in k:
                 for x in k['remediations']:
                     if x['category'] == 'vendor_fix':
+                        # TODO: the assumption here is that there is one product, and potentially many components
+                        # which doesn't seem to be the case, see https://www.sick.com/.well-known/csaf/white/2024/sca-2024-0001.json
+                        # which has two vendor_fix statements, but the second has more than one product_ids; this will
+                        # require some rejiggering to make it show products and not just None
                         self.fixes.append(Fix(x, self.pmap))
+                        print(f'Appended: {x}')
 
                     if x['category'] == 'workaround':
                         self.mitigation.append(Mitigation(x))
