@@ -46,6 +46,16 @@ class Vex(object):
 
         self.raw = vexdata
 
+        self.csaf                 = {'type': '', 'csaf_version': ''}
+        self.csaf['type']         = self.raw['document']['category']
+        self.csaf['csaf_version'] = self.raw['document']['csaf_version']
+
+        # only support csaf_vex 2.0
+        # TODO: should we add support to csaf_security_advisory in the future if nothing else exists?
+        if self.csaf['type'] != 'csaf_vex':
+            print(f"Sorry, I can only handle csaf_vex 2.0 documents, this one is {self.csaf['type']} {self.csaf['csaf_version']}")
+            exit(1)
+
         self.distribution  = None
         self.global_impact = None
 

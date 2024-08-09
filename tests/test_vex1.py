@@ -71,6 +71,7 @@ class TestCVE_2024_21626(TestVex):
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 25)
 
+"""
 class TestCVE_Cisco_rce_2024(TestVex):
     def setUp(self):
         self.vex      = Vex('./cisco-sa-openssh-rce-2024.json')
@@ -102,3 +103,5 @@ class TestCVE_Cisco_rce_2024(TestVex):
 
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 0)
+
+"""
