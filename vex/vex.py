@@ -146,7 +146,10 @@ class Vex(object):
             for x in k['notes']:
                 if x['category'] not in self.notes:
                     self.notes[x['category']] = ''
-                self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
+                if 'title' in x:
+                    self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
+                else:
+                    self.notes[x['category']] += f"{x['text']}\n\n"
 
         # external references
         self.references = []
