@@ -18,6 +18,9 @@ dependencies = [
     "rich>=13.7.1",
 ]
 
+[project.scripts]
+vex-reader = "vex.vex_reader:main"
+
 [project.urls]
 Homepage = "https://github.com/vdanen/vex-reader"
 Issues = "https://github.com/vdanen/vex-reader/issues"

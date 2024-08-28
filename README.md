@@ -10,15 +10,30 @@ You can install [vex-reader](https://pypi.org/project/vex-reader/) by:
 
 ## Installation
 
-```pip install vex-reader```
+Install from PyPI:
+
+```shell
+pip install vex-reader
+```
+
+Development setup:
+
+```shell
+git clone https://github.com/vdanen/vex-reader.git
+cd vex-reader
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -e .
+```
 
 ## Usage
 
 You can use the vex library in your own python applications or you can
 clone this repo and use the vex-reader.py script to parse VEX files.
 
-```
-python3 vex-reader.py --vex tests/cve-2002-2443.json
+```shell
+$ vex-reader --vex tests/cve-2002-2443.json
 CVE-2002-2443
 -------------
 

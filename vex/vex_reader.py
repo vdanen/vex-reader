@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Read and process a VEX document
 # i.e. https://access.redhat.com/security/data/csaf/beta/vex/2024/cve-2024-21626.json
 
@@ -7,10 +5,12 @@ import argparse
 import requests
 from rich.console import Console
 from rich.markdown import Markdown
-from vex import Vex
-from vex import VexPackages
-from vex import NVD
-from vex.constants import SEVERITY_COLOR
+
+from .vex import Vex
+from .package import VexPackages
+from .simplenvd import NVD
+from .constants import SEVERITY_COLOR
+
 
 def main():
     parser = argparse.ArgumentParser(description='VEX Parser')
@@ -134,7 +134,7 @@ def main():
 
         console.print(f'[green]CVSS {vex.cvss_type} Score Breakdown[/green]')
         # TODO: string padding
-        print(f'{' ':26} {publisher:<10} NVD')
+        print(f"{' ':26} {publisher:<10} NVD")
         if vex.cvss_type == 'v3':
             print(f"  {'CVSS v3 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
             if 'attackVector' in vex.global_cvss:
