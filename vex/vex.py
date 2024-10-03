@@ -122,6 +122,8 @@ class Vex(object):
                 # you'd think this would be mandatory and important but it isn't
                 rd                  = datetime.fromisoformat(k['release_date'])
                 self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
+            else:
+                print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
         # Acknowledgements
         self.acks = None
