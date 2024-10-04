@@ -13,6 +13,10 @@ def product_lookup(product, pmap):
         if product in x.keys():
             return x[product]
 
+def dedupe(component_list):
+    return list(dict.fromkeys(component_list))
+
+
 class Fix(object):
     """
     class to handle vendor fixes
@@ -44,6 +48,8 @@ class Fix(object):
                     (product, component, version) = y.split(':', maxsplit=2)
                     self.components.append(':'.join([component, version]))
                     self.product = product_lookup(product, pmap)
+
+            self.components = dedupe(self.components)
 
 
 class WontFix(object):
