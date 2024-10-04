@@ -16,6 +16,23 @@ def product_lookup(product, pmap):
 def dedupe(component_list):
     return list(dict.fromkeys(component_list))
 
+def strip_arch(oldComponent):
+    xl = len(oldComponent.split('.')) - 1
+    if xl == 0:
+        newComponent = oldComponent
+    else:
+        newComponent = '.'.join(oldComponent.split('.')[:xl])
+
+    return newComponent
+
+def product_and_components(y):
+    components = []
+    t = y.split(':')
+    product = t[0]
+    components.append(':'.join(t[1:]))
+
+    return (product, components)
+
 
 class Fix(object):
     """
@@ -59,9 +76,10 @@ class WontFix(object):
     """
 
     def __init__(self, y, x, pmap):
-        self.reason     = x['details']
         (product, self.component) = y.split(':')
-        self.product = product_lookup(product, pmap)
+        self.raw                  = y
+        self.reason               = x['details']
+        self.product              = product_lookup(product, pmap)
 
 
 class NotAffected(object):
@@ -70,11 +88,10 @@ class NotAffected(object):
     """
 
     def __init__(self, y, pmap):
-        self.components = []
-        t       = y.split(':')
-        product = t[0]
-        self.components.append(':'.join(t[1:]))
-        self.product = product_lookup(product, pmap)
+        (product, components) = product_and_components(y)
+        self.raw              = y
+        self.components       = components
+        self.product          = product_lookup(product, pmap)
 
 
 class Affected(object):
@@ -83,11 +100,10 @@ class Affected(object):
     """
 
     def __init__(self, y, pmap):
-        self.components = []
-        t       = y.split(':')
-        product = t[0]
-        self.components.append(':'.join(t[1:]))
-        self.product = product_lookup(product, pmap)
+        (product, components) = product_and_components(y)
+        self.raw              = y
+        self.components       = components
+        self.product          = product_lookup(product, pmap)
 
 
 class Mitigation(object):
@@ -100,7 +116,7 @@ class Mitigation(object):
     """
 
     def __init__(self, x):
-        self.details = x['details']
+        self.details  = x['details']
         self.packages = filter_components(x['product_ids'])
 
 class VexPackages(object):
@@ -172,5 +188,10 @@ class VexPackages(object):
                             self.affected.append(Affected(y, self.pmap))
                     if x == 'known_not_affected':
                         for y in filter_components(k['product_status']['known_not_affected']):
-                            self.not_affected.append(NotAffected(y, self.pmap))
-
+                            # check to make sure we're not adding a dupe
+                            addMe = True
+                            for na in self.not_affected:
+                                if strip_arch(y) in na.raw:
+                                    addMe = False
+                            if addMe:
+                                self.not_affected.append(NotAffected(strip_arch(y), self.pmap))
