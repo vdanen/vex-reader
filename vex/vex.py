@@ -68,6 +68,8 @@ class Vex(object):
 
         self.title     = self.raw['document']['title']
         self.publisher = self.raw['document']['publisher']['name']
+        ud             = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
+        self.updated   = ud.astimezone().strftime('%B %d, %Y at %I:%M:%S %p UTC') # TODO: force this to be Eastern
 
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
