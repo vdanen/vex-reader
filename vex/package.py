@@ -60,6 +60,9 @@ class Fix(object):
                 if len(y.split(':')) == 1:
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
+                elif len(y.split(':')) == 2:
+                    # bloody containers without versions
+                    self.product = product_lookup(y, pmap)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
@@ -76,7 +79,7 @@ class WontFix(object):
     """
 
     def __init__(self, y, x, pmap):
-        (product, self.component) = y.split(':')
+        (product, self.component) = y.split(':', maxsplit=1)
         self.raw                  = y
         self.reason               = x['details']
         self.product              = product_lookup(product, pmap)
