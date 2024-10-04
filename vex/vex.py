@@ -76,7 +76,6 @@ class Vex(object):
                 if x['category'] not in self.notes:
                     self.notes[x['category']] = {}
                 self.notes[x['category']][x['title']] = x['text']
-            print(self.notes)
 
         self.parse_vulns()
 
