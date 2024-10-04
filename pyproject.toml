@@ -1,6 +1,6 @@
 [project]
 name = "vex-reader"
-version = "0.4"
+version = "0.5"
 authors = [
   { name="Vincent Danen", email="vdanen@annvix.com" },
 ]

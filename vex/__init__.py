@@ -5,4 +5,4 @@ from .vex import Vex
 from .package import VexPackages
 from .simplenvd import NVD
 
-__version__ = '0.4'
+__version__ = '0.5'
