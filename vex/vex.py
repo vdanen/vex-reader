@@ -74,8 +74,9 @@ class Vex(object):
         if 'notes' in self.raw['document']:
             for x in self.raw['document']['notes']:
                 if x['category'] not in self.notes:
-                    self.notes[x['category']] = ''
-                self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
+                    self.notes[x['category']] = {}
+                self.notes[x['category']][x['title']] = x['text']
+            print(self.notes)
 
         self.parse_vulns()
 
@@ -157,11 +158,11 @@ class Vex(object):
         if 'notes' in k:
             for x in k['notes']:
                 if x['category'] not in self.notes:
-                    self.notes[x['category']] = ''
+                    self.notes[x['category']] = {}
                 if 'title' in x:
-                    self.notes[x['category']] += f"[green]{x['title']}[/green]\n{x['text']}\n\n"
+                    self.notes[x['category']][x['title']] = x['text']
                 else:
-                    self.notes[x['category']] += f"{x['text']}\n\n"
+                    self.notes[x['category']]['None'] = x['text']
 
         # external references
         self.references = []

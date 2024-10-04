@@ -53,13 +53,17 @@ def main():
 
     # print the notes from the VEX document
     if 'summary' in vex.notes:
-        console.print(vex.notes['summary'], highlight=False)
+        for (title, text) in vex.notes['summary'].items():
+            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
     if 'description' in vex.notes:
-        console.print(vex.notes['description'], highlight=False)
+        for (title, text) in vex.notes['description'].items():
+            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
     if 'general' in vex.notes:
-        console.print(vex.notes['general'], highlight=False)
+        for (title, text) in vex.notes['general'].items():
+            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
     if 'legal_disclaimer' in vex.notes:
-        console.print(vex.notes['legal_disclaimer'], highlight=False)
+        for (title, text) in vex.notes['legal_disclaimer'].items():
+            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
 
     if vex.statement:
         console.print('[green]Statement[/green]')
@@ -134,7 +138,7 @@ def main():
 
         console.print(f'[green]CVSS {vex.cvss_type} Score Breakdown[/green]')
         # TODO: string padding
-        print(f'{' ':26} {publisher:<10} NVD')
+        print(f"{' ':26} {publisher:<10} NVD")
         if vex.cvss_type == 'v3':
             print(f"  {'CVSS v3 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
             if 'attackVector' in vex.global_cvss:
