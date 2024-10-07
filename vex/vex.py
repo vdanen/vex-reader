@@ -58,6 +58,7 @@ class Vex(object):
 
         self.distribution  = None
         self.global_impact = None
+        self.publisher     = None
 
         # some VEX documents do not have very much information...
         if 'aggregate_severity' in self.raw['document']:
@@ -67,7 +68,8 @@ class Vex(object):
                 self.distribution = self.raw['document']['distribution']['text']
 
         self.title     = self.raw['document']['title']
-        self.publisher = self.raw['document']['publisher']['name']
+        if 'publisher' in self.raw['document']:
+            self.publisher = self.raw['document']['publisher']['name']
         ud             = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
         self.updated   = ud.astimezone().strftime('%B %d, %Y at %I:%M:%S %p UTC') # TODO: force this to be Eastern
 

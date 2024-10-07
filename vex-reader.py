@@ -104,15 +104,16 @@ def main():
             print(f'  {url}')
         print()
 
-    vendor = 'Unknown'
-    if packages.fixes:
-        # the vendor for Red Hat VEX is Red Hat Product Security which isn't right,
-        # so we'll override until there's a fix
+    publisher = 'Unknown'
+    # the vendor for Red Hat VEX is Red Hat Product Security which isn't right,
+    # so we'll override until there's a fix
+    if vex.publisher:
         if vex.publisher == 'Red Hat Product Security':
             publisher = 'Red Hat'
         else:
             publisher = vex.publisher
 
+    if packages.fixes:
         console.print(f'[green]{publisher} affected packages and issued errata[/green]')
         for x in packages.fixes:
             console.print(f"  [blue]{x.id}[/blue] -- {x.product}", highlight=False)
