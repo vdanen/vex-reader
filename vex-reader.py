@@ -55,7 +55,10 @@ def main():
     if len(vex.exploits) > 0:
         console.print(f"[red]Known to be exploited![/red]")
         for ex in vex.exploits:
-            print(f"  {ex['date']} - {ex['details']}")
+            if ex['source']:
+                print(f"  {ex['date']} - {ex['source']} ({ex['url']})")
+            else:
+                print(f"  {ex['date']} - {ex['details']}")
         print()
 
     # print the notes from the VEX document

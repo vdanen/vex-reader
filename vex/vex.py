@@ -4,6 +4,7 @@
 from datetime import datetime
 import json
 import os
+import re
 import requests
 
 from .constants import (
@@ -134,7 +135,17 @@ class Vex(object):
             if 'threats' in k:
                 for x in k['threats']:
                     if x['category'] == 'exploit_status':
-                        self.exploits.append({'date': x['date'], 'details': x['details']})
+                        source = ''
+                        url    = ''
+                        xd     = datetime.fromisoformat(x['date'])
+                        xdate  = xd.astimezone().strftime('%B %d, %Y')  # TODO: force this to be Eastern
+                        # be clever for CISA
+                        if 'CISA' in x['details']:
+                            source = 'CISA'
+                        if 'http' in x['details']:
+                            # extract any urls
+                            url = re.search("(?P<url>https?://[^\s]+)", x['details']).group('url')
+                        self.exploits.append({'date': xdate, 'details': x['details'], 'url': url, 'source': source})
 
         # Acknowledgements
         self.acks = None
