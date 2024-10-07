@@ -51,6 +51,13 @@ def main():
         console.print(f"CVSS Score: [cyan]{vex.global_cvss['baseScore']}[/cyan]", highlight=False)
     print()
 
+    # any known exploits?
+    if len(vex.exploits) > 0:
+        console.print(f"[red]Known to be exploited![/red]")
+        for ex in vex.exploits:
+            print(f"  {ex['date']} - {ex['details']}")
+        print()
+
     # print the notes from the VEX document
     if 'summary' in vex.notes:
         for (title, text) in vex.notes['summary'].items():

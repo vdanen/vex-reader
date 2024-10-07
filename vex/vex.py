@@ -127,6 +127,13 @@ class Vex(object):
             else:
                 print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
+            # exploit information
+            self.exploits = []
+            if 'threats' in k:
+                for x in k['threats']:
+                    if x['category'] == 'exploit_status':
+                        self.exploits.append({'date': x['date'], 'details': x['details']})
+
         # Acknowledgements
         self.acks = None
         summary   = None
