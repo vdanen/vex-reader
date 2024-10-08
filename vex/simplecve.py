@@ -23,7 +23,10 @@ class CVE(object):
         # empty to start
         self.cvss31 = CVSSv3(None, '3.1')
         self.cvss30 = CVSSv3(None, '3.0')
-        self.cvss20 = CVSSv3(None, '2.0')
+        self.cvss20 = CVSSv2(None, '2.0')
+
+        if self.raw is None:
+            return
 
         if 'metrics' in cve_data['containers']['adp'][0]:
             if 'cvssV3_1' in cve_data['containers']['adp'][0]['metrics'][0]:
