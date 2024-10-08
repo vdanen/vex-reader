@@ -44,7 +44,7 @@ def main():
     if vex.global_impact:
         console.print(f'Impact    : [{SEVERITY_COLOR[vex.global_impact]}]{vex.global_impact}[/{SEVERITY_COLOR[vex.global_impact]}]')
     if vex.global_cvss:
-        console.print(f"CVSS Score: [cyan]{vex.global_cvss['baseScore']}[/cyan]", highlight=False)
+        console.print(f"CVSS Score: [cyan]{vex.global_cvss.baseScore}[/cyan]", highlight=False)
     print()
 
     # any known exploits?
@@ -135,12 +135,12 @@ def main():
 
     if vex.global_cvss:
         # which version of CVSS are we using?
-        cvssVersion = 0
-        if vex.global_cvss['version'] is not None:
+        cvssVersion = ''
+        if vex.global_cvss.version is not None:
             # this is our default
-            cvssVersion = vex.global_cvss['version']
+            cvssVersion = vex.global_cvss.version
 
-        if cvssVersion == 0:
+        if cvssVersion == '':
             if nvd.cvss31.version is not None:
                 cvssVersion = '3.1'
 
@@ -157,34 +157,33 @@ def main():
         plen = 4
         if len(publisher) > 4:
             plen = len(publisher)
-        print(f"  {publisher:{plen}}: {vex.global_cvss['vectorString']}")
+        print(f"  {publisher:{plen}}: {vex.global_cvss.vectorString}")
         if not args.no_nvd:
             print(f'  {"NVD":{plen}}: {nvd.vectorString}')
         print()
 
         console.print(f'[green]CVSS {cvssVersion} Score Breakdown[/green]')
         print(f"{' ':26} {publisher:<10} NVD")
-        if vex.cvss_type == 'v3':
-            print(f"  {f'CVSS {cvssVersion} Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
-            if 'attackVector' in vex.global_cvss:
-                # not all VEX will break down the metrics
-                print(f"  {'Attack Vector':24} {vex.global_cvss['attackVector'].capitalize():10} {nvd.attackVector}")
-                print(f"  {'Attack Complexity':24} {vex.global_cvss['attackComplexity'].capitalize():10} {nvd.attackComplexity}")
-                print(f"  {'Privileges Required':24} {vex.global_cvss['privilegesRequired'].capitalize():10} {nvd.privilegesRequired}")
-                print(f"  {'User Interaction':24} {vex.global_cvss['userInteraction'].capitalize():10} {nvd.userInteraction}")
-                print(f"  {'Scope':24} {vex.global_cvss['scope'].capitalize():10} {nvd.scope}")
-        elif vex.cvss_type == 'v2':
-            print(f"  {'CVSS v2 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
-            if 'accessVector' in vex.global_cvss:
-                # not all VEX will break down the metrics
-                print(f"  {'Access Vector':24} {vex.global_cvss['accessVector'].capitalize():10} {nvd.accessVector}")
-                print(f"  {'Access Complexity':24} {vex.global_cvss['accessComplexity'].capitalize():10} {nvd.accessComplexity}")
-                print(f"  {'Authentication':24} {vex.global_cvss['authentication'].capitalize():10} {nvd.authentication}")
-        if 'confidentialityImpact' in vex.global_cvss:
+        if cvssVersion == '3.0' or cvssVersion == '3.1':
             # not all VEX will break down the metrics
-            print(f"  {'Confidentiality Impact':24} {vex.global_cvss['confidentialityImpact'].capitalize():10} {nvd.confidentialityImpact}")
-            print(f"  {'Integrity Impact':24} {vex.global_cvss['integrityImpact'].capitalize():10} {nvd.integrityImpact}")
-            print(f"  {'Availability Impact':24} {vex.global_cvss['availabilityImpact'].capitalize():10} {nvd.availabilityImpact}")
+            if vex.global_cvss.attackVector:
+                print(f"  {f'CVSS {cvssVersion} Base Score':24} {vex.global_cvss.baseScore:<10} {nvd.baseScore}")
+                print(f"  {'Attack Vector':24} {vex.global_cvss.attackVector.capitalize():10} {nvd.attackVector}")
+                print(f"  {'Attack Complexity':24} {vex.global_cvss.attackComplexity.capitalize():10} {nvd.attackComplexity}")
+                print(f"  {'Privileges Required':24} {vex.global_cvss.privilegesRequired.capitalize():10} {nvd.privilegesRequired}")
+                print(f"  {'User Interaction':24} {vex.global_cvss.userInteraction.capitalize():10} {nvd.userInteraction}")
+                print(f"  {'Scope':24} {vex.global_cvss.scope.capitalize():10} {nvd.scope}")
+        elif cvssVersion == '2.0':
+            if vex.global_cvss.accessVector:
+                # not all VEX will break down the metrics
+                print(f"  {'CVSS v2 Base Score':24} {vex.global_cvss.baseScore:<10} {nvd.baseScore}")
+                print(f"  {'Access Vector':24} {vex.global_cvss.accessVector.capitalize():10} {nvd.accessVector}")
+                print(f"  {'Access Complexity':24} {vex.global_cvss.accessComplexity.capitalize():10} {nvd.accessComplexity}")
+                print(f"  {'Authentication':24} {vex.global_cvss.authentication.capitalize():10} {nvd.authentication}")
+        if vex.global_cvss.confidentialityImpact:
+            print(f"  {'Confidentiality Impact':24} {vex.global_cvss.confidentialityImpact.capitalize():10} {nvd.confidentialityImpact}")
+            print(f"  {'Integrity Impact':24} {vex.global_cvss.integrityImpact.capitalize():10} {nvd.integrityImpact}")
+            print(f"  {'Availability Impact':24} {vex.global_cvss.availabilityImpact.capitalize():10} {nvd.availabilityImpact}")
         print()
 
     if vex.acks:

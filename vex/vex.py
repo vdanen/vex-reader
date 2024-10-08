@@ -6,6 +6,7 @@ import json
 import os
 import re
 import requests
+from .simplecvss import CVSSv3, CVSSv2
 
 from .constants import (
     SEVERITY_MAP,
@@ -205,37 +206,23 @@ class Vex(object):
                 elif 'cvss_v2' in x:
                     self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
-        self.global_cvss = {'version': None,
-                            'baseScore': '',
-                            'vectorString': 'NOT AVAILABLE',
-                            'attackVector': '',
-                            'attackComplexity': '',
-                            'privilegesRequired': '',
-                            'userInteraction': '',
-                            'scope': '',
-                            'confidentialityImpact': '',
-                            'integrityImpact': '',
-                            'availabilityImpact': '',
-                            'baseSeverity': '',
-                            'accessVector': '',
-                            'accessComplexity': '',
-                            'authentication': '',
-                            'cvss_type': None,
-                            }
+        self.global_cvss = CVSSv3(None)
+
         if self.cvss_v3:
             self.cvss_type = 'v3'
             if len(self.cvss_v3) == 1:
-                self.global_cvss = self.cvss_v3[0]['scores']
+                self.global_cvss = CVSSv3(self.cvss_v3[0]['scores'])
+                    #self.cvss_v3[0]['scores']
             #else:
             # TODO: something fancy to assign alternate CVSS to other packages
             #print(cvss_v3)
 
         if self.cvss_v2:
             self.cvss_type = 'v2'
-            print(self.cvss_v2[0]['scores'])
             if len(self.cvss_v2) == 1:
-                if self.global_cvss['version'] is None:
-                    self.global_cvss = self.cvss_v2[0]['scores']
+                if self.global_cvss.version is None:
+                    self.global_cvss = CVSSv2(self.cvss_v2[0]['scores'])
+                    #self.cvss_v2[0]['scores']
             #else:
             # TODO: something fancy like above
             #print(self.global_cvss)
