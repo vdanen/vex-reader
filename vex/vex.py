@@ -205,8 +205,23 @@ class Vex(object):
                 elif 'cvss_v2' in x:
                     self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
-        self.global_cvss = None
-        self.cvss_type   = None
+        self.global_cvss = {'version': None,
+                            'baseScore': '',
+                            'vectorString': 'NOT AVAILABLE',
+                            'attackVector': '',
+                            'attackComplexity': '',
+                            'privilegesRequired': '',
+                            'userInteraction': '',
+                            'scope': '',
+                            'confidentialityImpact': '',
+                            'integrityImpact': '',
+                            'availabilityImpact': '',
+                            'baseSeverity': '',
+                            'accessVector': '',
+                            'accessComplexity': '',
+                            'authentication': '',
+                            'cvss_type': None,
+                            }
         if self.cvss_v3:
             self.cvss_type = 'v3'
             if len(self.cvss_v3) == 1:
@@ -217,12 +232,13 @@ class Vex(object):
 
         if self.cvss_v2:
             self.cvss_type = 'v2'
+            print(self.cvss_v2[0]['scores'])
             if len(self.cvss_v2) == 1:
-                if not self.global_cvss:
+                if self.global_cvss['version'] is None:
                     self.global_cvss = self.cvss_v2[0]['scores']
             #else:
             # TODO: something fancy like above
-            #print(cvss_v2)
+            #print(self.global_cvss)
 
         self.impacts = {'Critical': [], 'Important': [], 'Moderate': [], 'Low': []}
         if 'threats' in k:

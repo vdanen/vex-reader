@@ -1,17 +1,18 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
-from datetime import datetime
-
 class NVD(object):
     """
     Class to hold NVD object
+
+    #TODO: refactor this so we can do like comparisons; i.e. if the VEX has CVSSv2 and NVD has v2 and v3, we should show
+    #something similar to what VEX has, or at least expose all the scores maybe as nvd.v30.baseScore, etc
     """
 
     def __init__(self, nvd_data):
         self.raw                   = nvd_data
         if self.raw == None:
-            self.version = 'None'
+            self.version               = None
             self.baseScore             = ''
             self.vectorString          = 'NOT AVAILABLE '
             self.attackVector          = ''
