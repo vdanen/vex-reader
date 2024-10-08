@@ -33,7 +33,7 @@ class CVSSv3(object):
     Class to hold CVSSv3 metrics
     """
 
-    def __init__(self, metrics, version):
+    def __init__(self, metrics, version='3.1'):
         self.version               = None
         self.baseScore             = ''
         self.vectorString          = 'NOT AVAILABLE '
