@@ -29,16 +29,13 @@ def main():
     else:
         response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={vex.cve}')
         nvd_cve  = response.json()
+        print(nvd_cve)
         if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
+
             # we got the right result
-            if 'cvssMetricV31' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'])
-            elif 'cvssMetricV30' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'])
-            elif 'cvssMetricV2' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-                nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'])
-            else:
-                nvd = NVD(None)
+            nvd = NVD(nvd_cve)
+        else:
+            nvd = NVD(None)
 
     console.print(f'[bold red]{vex.cve}[/bold red]')
     print('-' * len(vex.cve))
@@ -138,7 +135,29 @@ def main():
         print()
 
     if vex.global_cvss:
-        console.print(f'[green]CVSS {vex.cvss_type} Vector[/green]')
+        # which version of CVSS are we using?
+        cvssVersion = 0
+        if vex.global_cvss['version'] is not None:
+            # this is our default
+            cvssVersion = vex.global_cvss['version']
+
+        if cvssVersion == 0:
+            if nvd.cvss31.version is not None:
+                cvssVersion = '3.1'
+
+        if cvssVersion == '3.1':
+            if nvd.cvss31.version is not None:
+                nvd = nvd.cvss31
+
+        if cvssVersion == '3.0':
+            if nvd.cvss30.version is not None:
+                nvd = nvd.cvss30
+
+        if cvssVersion == '2.0':
+            if nvd.cvss20.version is not None:
+                nvd = nvd.cvss20
+
+        console.print(f'[green]CVSS {cvssVersion} Vector[/green]')
         plen = 4
         if len(publisher) > 4:
             plen = len(publisher)
@@ -147,11 +166,10 @@ def main():
             print(f'  {"NVD":{plen}}: {nvd.vectorString}')
         print()
 
-        console.print(f'[green]CVSS {vex.cvss_type} Score Breakdown[/green]')
-        # TODO: string padding
+        console.print(f'[green]CVSS {cvssVersion} Score Breakdown[/green]')
         print(f"{' ':26} {publisher:<10} NVD")
         if vex.cvss_type == 'v3':
-            print(f"  {'CVSS v3 Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
+            print(f"  {f'CVSS {cvssVersion} Base Score':24} {vex.global_cvss['baseScore']:<10} {nvd.baseScore}")
             if 'attackVector' in vex.global_cvss:
                 # not all VEX will break down the metrics
                 print(f"  {'Attack Vector':24} {vex.global_cvss['attackVector'].capitalize():10} {nvd.attackVector}")

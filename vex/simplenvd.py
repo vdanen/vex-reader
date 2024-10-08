@@ -1,76 +1,40 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
+from .simplecvss import CVSSv2, CVSSv3
+
 class NVD(object):
     """
     Class to hold NVD object
 
-    #TODO: refactor this so we can do like comparisons; i.e. if the VEX has CVSSv2 and NVD has v2 and v3, we should show
-    #something similar to what VEX has, or at least expose all the scores maybe as nvd.v30.baseScore, etc
+    This takes the JSON data from NVD's API, i.e.:
+
+    response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve}')
+    nvd_cve  = response.json()
+    if nvd_cve['vulnerabilities'][0]['cve']['id'] == cve:
+        # we got the right result
+        if 'cvssMetricV31' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
+            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'])
     """
 
     def __init__(self, nvd_data):
-        self.raw                   = nvd_data
-        if self.raw == None:
-            self.version               = None
-            self.baseScore             = ''
-            self.vectorString          = 'NOT AVAILABLE '
-            self.attackVector          = ''
-            self.attackComplexity      = ''
-            self.privilegesRequired    = ''
-            self.userInteraction       = ''
-            self.scope                 = ''
-            self.confidentialityImpact = ''
-            self.integrityImpact       = ''
-            self.availabilityImpact    = ''
-            self.baseSeverity          = ''
-            # v2 placeholders
-            self.accessVector          = ''
-            self.accessComplexity      = ''
-            self.authentication        = ''
-        else:
-            self.version               = nvd_data['version']
+        self.raw     = nvd_data
+        self.version = None
 
-        if self.version == '3.1':
-            self.baseScore             = nvd_data['baseScore']
-            self.vectorString          = nvd_data['vectorString']
-            self.attackVector          = nvd_data['attackVector'].capitalize()
-            self.attackComplexity      = nvd_data['attackComplexity'].capitalize()
-            self.privilegesRequired    = nvd_data['privilegesRequired'].capitalize()
-            self.userInteraction       = nvd_data['userInteraction'].capitalize()
-            self.scope                 = nvd_data['scope'].capitalize()
-            self.confidentialityImpact = nvd_data['confidentialityImpact'].capitalize()
-            self.integrityImpact       = nvd_data['integrityImpact'].capitalize()
-            self.availabilityImpact    = nvd_data['availabilityImpact'].capitalize()
-            self.baseSeverity          = nvd_data['baseSeverity'].capitalize()
+        # empty to start
+        self.cvss31 = CVSSv3(None, '3.1')
+        self.cvss30 = CVSSv3(None, '3.0')
+        self.cvss20 = CVSSv3(None, '2.0')
 
-        #        >> > nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData']
-        #        {'version': '3.0', 'vectorString': 'CVSS:3.0/AV:P/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H', 'attackVector': 'PHYSICAL',
-        #         'attackComplexity': 'HIGH', 'privilegesRequired': 'NONE', 'userInteraction': 'NONE', 'scope': 'UNCHANGED',
-        #         'confidentialityImpact': 'HIGH', 'integrityImpact': 'HIGH', 'availabilityImpact': 'HIGH', 'baseScore': 6.4,
-        #         'baseSeverity': 'MEDIUM'}
-        if self.version == '3.0':
-            self.baseScore             = nvd_data['baseScore']
-            self.vectorString          = nvd_data['vectorString']
-            self.attackVector          = nvd_data['attackVector'].capitalize()
-            self.attackComplexity      = nvd_data['attackComplexity'].capitalize()
-            self.privilegesRequired    = nvd_data['privilegesRequired'].capitalize()
-            self.userInteraction       = nvd_data['userInteraction'].capitalize()
-            self.scope                 = nvd_data['scope'].capitalize()
-            self.confidentialityImpact = nvd_data['confidentialityImpact'].capitalize()
-            self.integrityImpact       = nvd_data['integrityImpact'].capitalize()
-            self.availabilityImpact    = nvd_data['availabilityImpact'].capitalize()
-            self.baseSeverity          = nvd_data['baseSeverity'].capitalize()
+        if 'metrics' in nvd_data['vulnerabilities'][0]['cve']:
+            if 'cvssMetricV31' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
+                print('3.1')
+                self.cvss31 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'], '3.1')
 
-        # {'version': '2.0', 'vectorString': 'AV:N/AC:L/Au:N/C:P/I:N/A:N', 'accessVector': 'NETWORK',
-        # 'accessComplexity': 'LOW', 'authentication': 'NONE', 'confidentialityImpact': 'PARTIAL',
-        # 'integrityImpact': 'NONE', 'availabilityImpact': 'NONE', 'baseScore': 5.0}
-        elif self.version == '2.0':
-            self.baseScore             = nvd_data['baseScore']
-            self.vectorString          = nvd_data['vectorString']
-            self.accessVector          = nvd_data['accessVector'].capitalize()
-            self.accessComplexity      = nvd_data['accessComplexity'].capitalize()
-            self.authentication        = nvd_data['authentication'].capitalize()
-            self.confidentialityImpact = nvd_data['confidentialityImpact'].capitalize()
-            self.integrityImpact       = nvd_data['integrityImpact'].capitalize()
-            self.availabilityImpact    = nvd_data['availabilityImpact'].capitalize()
+            if 'cvssMetricV30' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
+                print('3.0')
+                self.cvss30 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'], '3.0')
+
+            if 'cvssMetricV2' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
+                print('2.0')
+                self.cvss20 = CVSSv2(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'], '2.0')
