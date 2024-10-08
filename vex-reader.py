@@ -31,7 +31,6 @@ def main():
         nvd_cve  = response.json()
         print(nvd_cve)
         if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
-
             # we got the right result
             nvd = NVD(nvd_cve)
         else:
@@ -146,16 +145,13 @@ def main():
                 cvssVersion = '3.1'
 
         if cvssVersion == '3.1':
-            if nvd.cvss31.version is not None:
-                nvd = nvd.cvss31
+            nvd = nvd.cvss31
 
         if cvssVersion == '3.0':
-            if nvd.cvss30.version is not None:
-                nvd = nvd.cvss30
+            nvd = nvd.cvss30
 
         if cvssVersion == '2.0':
-            if nvd.cvss20.version is not None:
-                nvd = nvd.cvss20
+            nvd = nvd.cvss20
 
         console.print(f'[green]CVSS {cvssVersion} Vector[/green]')
         plen = 4
