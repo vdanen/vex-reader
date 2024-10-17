@@ -30,13 +30,10 @@ class CVE(object):
 
         if 'metrics' in cve_data['containers']['adp'][0]:
             if 'cvssV3_1' in cve_data['containers']['adp'][0]['metrics'][0]:
-                print('3.1')
                 self.cvss31 = CVSSv3(cve_data['containers']['adp'][0]['metrics'][0]['cvssV3_1'], '3.1')
 
             if 'cvssV3_0' in cve_data['containers']['adp'][0]['metrics'][0]:
-                print('3.0')
                 self.cvss30 = CVSSv3(cve_data['containers']['adp'][0]['metrics'][0]['cvssV3_0'], '3.0')
 
             if 'cvssV_2' in cve_data['containers']['adp'][0]['metrics'][0]:
-                print('2.0')
                 self.cvss20 = CVSSv2(cve_data['containers']['adp'][0]['metrics'][0]['cvssV2'], '2.0')

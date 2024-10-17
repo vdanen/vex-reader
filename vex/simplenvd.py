@@ -31,13 +31,10 @@ class NVD(object):
 
         if 'metrics' in nvd_data['vulnerabilities'][0]['cve']:
             if 'cvssMetricV31' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                print('3.1')
                 self.cvss31 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'], '3.1')
 
             if 'cvssMetricV30' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                print('3.0')
                 self.cvss30 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'], '3.0')
 
             if 'cvssMetricV2' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                print('2.0')
                 self.cvss20 = CVSSv2(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'], '2.0')
