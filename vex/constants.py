@@ -40,6 +40,8 @@ SEVERITIES = OrderedDict(
 VENDOR_ADVISORY = OrderedDict(
     [
         ("RHSA", "Red Hat"),
+        ("RHEA", "Red Hat"),
+        ("RHBA", "Red Hat"),
         ("USN", "Ubuntu"),
         ("SUSE-SU", "SUSE"),
         ("GLSA", "Gentoo")
