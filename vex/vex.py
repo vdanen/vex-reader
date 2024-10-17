@@ -202,7 +202,7 @@ class Vex(object):
                 if 'products' in x:
                     filtered_products = filter_components(x['products'])
                 if 'cvss_v3' in x:
-                    self.cvss_v3.append({'scores': x['cvss_v3'], 'products': filtered_products})
+                    self.cvss_v3.append({'scores': x['cvss_v3'], 'version': x['cvss_v3']['version'], 'products': filtered_products})
                 elif 'cvss_v2' in x:
                     self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
@@ -211,7 +211,7 @@ class Vex(object):
         if self.cvss_v3:
             self.cvss_type = 'v3'
             if len(self.cvss_v3) == 1:
-                self.global_cvss = CVSSv3(self.cvss_v3[0]['scores'])
+                self.global_cvss = CVSSv3(self.cvss_v3[0]['scores'], self.cvss_v3[0]['version'])
                     #self.cvss_v3[0]['scores']
             #else:
             # TODO: something fancy to assign alternate CVSS to other packages
