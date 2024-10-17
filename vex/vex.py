@@ -151,7 +151,6 @@ class Vex(object):
 
         # Acknowledgements
         self.acks = None
-        summary   = None
         if 'acknowledgments' in k:
             for x in k['acknowledgments']:
                 # we should always have names, but may not always have an organization
