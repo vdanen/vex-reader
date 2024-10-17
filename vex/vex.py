@@ -121,6 +121,7 @@ class Vex(object):
             self.cve            = k['cve']
             if 'cwe' in k:
                 self.cwe_id     = k['cwe']['id']
+                self.cwe_sid    = k['cwe']['id'].split('-')[1]
                 self.cwe_name   = k['cwe']['name']
             if 'discovery_date' in k:
                 self.discovery_date = k['discovery_date']
