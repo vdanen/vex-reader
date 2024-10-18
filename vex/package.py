@@ -4,7 +4,9 @@
 from .constants import (
     filter_components,
     VENDOR_ADVISORY,
+    ARCHES
 )
+
 
 def product_lookup(product, pmap):
     # lookup the product name by identifier
@@ -13,17 +15,31 @@ def product_lookup(product, pmap):
         if product in x.keys():
             return x[product]
 
+
 def dedupe(component_list):
     return list(dict.fromkeys(component_list))
 
+
 def strip_arch(oldComponent):
-    xl = len(oldComponent.split('.')) - 1
-    if xl == 0:
+    """
+    Strip any reference to an architecture from the component name; this will help to reduce duplicates, i.e.
+    foo-1.2-1.x86_64 and foo-1.2-1.ppc64 should be one entry, not two, so iterate through ARCHES to see if they
+    are present and if so, remove them and return a new component name
+
+    :param oldComponent: the component string to remove architecture references from
+    :return: string of the component without architecture
+    """
+    newComponent = None
+
+    for a in ARCHES:
+        if a in oldComponent:
+            newComponent = oldComponent.replace(f'.{a}', '')
+
+    if not newComponent:
         newComponent = oldComponent
-    else:
-        newComponent = '.'.join(oldComponent.split('.')[:xl])
 
     return newComponent
+
 
 def product_and_components(y):
     components = []
