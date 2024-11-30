@@ -4,6 +4,7 @@
 from datetime import datetime
 import json
 import os
+import pytz
 import re
 import requests
 from .simplecvss import CVSSv3, CVSSv2
@@ -14,6 +15,7 @@ from .constants import (
     ARCHES,
     OrderedDict,
     filter_components,
+    TZ
 )
 
 class Vex(object):
@@ -73,7 +75,7 @@ class Vex(object):
         if 'publisher' in self.raw['document']:
             self.publisher = self.raw['document']['publisher']['name']
         ud             = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
-        self.updated   = ud.astimezone().strftime('%B %d, %Y at %I:%M:%S %p UTC') # TODO: force this to be Eastern
+        self.updated   = ud.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y at %I:%M:%S %p UTC')
 
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
@@ -120,6 +122,7 @@ class Vex(object):
                 self.title          = k['title']
             self.cve            = k['cve']
             if 'cwe' in k:
+                # TODO https://issues.redhat.com/browse/SECDATA-760 and support for CWE chains
                 self.cwe_id     = k['cwe']['id']
                 self.cwe_sid    = k['cwe']['id'].split('-')[1]
                 self.cwe_name   = k['cwe']['name']
@@ -128,7 +131,7 @@ class Vex(object):
             if 'release_date' in k:
                 # you'd think this would be mandatory and important but it isn't
                 rd                  = datetime.fromisoformat(k['release_date'])
-                self.release_date   = rd.astimezone().strftime('%Y-%m-%d') # TODO: force this to be Eastern
+                self.release_date   = rd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
             else:
                 print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
@@ -140,7 +143,7 @@ class Vex(object):
                         source = ''
                         url    = ''
                         xd     = datetime.fromisoformat(x['date'])
-                        xdate  = xd.astimezone().strftime('%B %d, %Y')  # TODO: force this to be Eastern
+                        xdate  = xd.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y')
                         # be clever for CISA
                         if 'CISA' in x['details']:
                             source = 'CISA'

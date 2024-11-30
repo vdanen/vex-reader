@@ -16,6 +16,8 @@ SEVERITY_MAP = OrderedDict(
     ]
 )
 
+# Display all times in US/Eastern  TODO: make this configurable one day
+TZ = 'US/Eastern'
 
 SEVERITY_COLOR = OrderedDict(
     [

@@ -1,10 +1,13 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
+from datetime import datetime
+import pytz
 from .constants import (
     filter_components,
     VENDOR_ADVISORY,
-    ARCHES
+    ARCHES,
+    TZ
 )
 
 
@@ -58,10 +61,15 @@ class Fix(object):
     def __init__(self, x, pmap):
             self.id         = None
             self.url        = ''
+            self.date       = None
             self.components = []
 
             if 'url' in x:
                 self.url = x['url']
+
+            if 'date' in x:
+                pd        = datetime.fromisoformat(x['date'])
+                self.date = pd.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y')
 
             for v in VENDOR_ADVISORY:
                 if v in self.url:
