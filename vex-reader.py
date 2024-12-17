@@ -128,9 +128,15 @@ def main():
         print()
 
     if packages.wontfix:
-        console.print('[green]Affected packages without fixes[/green]')
+        console.print('[green]Affected packages that will not be fixed[/green]')
         for x in packages.wontfix:
             console.print(f"  {x.product} ({x.component}): [red]{x.reason}[/red]")
+        print()
+
+    if packages.affected:
+        console.print('[green]Affected packages without fixes[/green]')
+        for x in packages.affected:
+            console.print(f"  {x.product} ({', '.join(x.components)})")
         print()
 
     if vex.global_cvss:
