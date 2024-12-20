@@ -1,24 +1,38 @@
 # vex-reader
-Utility to read Red Hat VEX files that are located at https://access.redhat.com/security/data/csaf/v2/vex/2024/
+
+Utility to read Red Hat VEX files that are located at https://access.redhat.com/security/data/csaf/v2/vex/.
 
 I'm (slowly) aiming to make this a bit more extensible so that it can be
 used with other VEX files beyond just Red Hat, but I'm basing all of this
 off of Red Hat VEX files to aim to make this a proper parsing library for
 any VEX documents.
 
-You can install [vex-reader](https://pypi.org/project/vex-reader/) by:
-
 ## Installation
 
-```pip install vex-reader```
+Install [vex-reader](https://pypi.org/project/vex-reader/) from PyPI:
+
+```shell
+pip install vex-reader
+```
+
+Development setup:
+
+```shell
+git clone https://github.com/vdanen/vex-reader.git
+cd vex-reader
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -e .
+```
 
 ## Usage
 
-You can use the vex library in your own python applications or you can
-clone this repo and use the vex-reader.py script to parse VEX files.
+You can use the vex library in your own Python applications, or you can
+clone this repo and use the `vex-reader` command to parse VEX files.
 
 ```
-python3 vex-reader.py --vex tests/cve-2002-2443.json
+vex-reader --vex tests/cve-2002-2443.json
 CVE-2002-2443
 -------------
 
@@ -75,10 +89,9 @@ CVSS v2 Score Breakdown
 Copyright © Red Hat, Inc. All rights reserved
 ```
 
-By detault, vex-reader.py will pull the CVSS score from NVD's API.  If this
+By default, `vex-reader` will pull the CVSS score from NVD's API.  If this
 is undesirable (for testing, etc) you can pass the `--no-nvd` argument to
-prevent lookups.  Currently vex-reader.py requires the VEX file to parse to
+prevent lookups. Currently, `vex-reader` requires the VEX file to parse to
 be on-disk.
 
 A good place to find some VEX documents to play with is here: https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
-

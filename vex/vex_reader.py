@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Read and process a VEX document
 # i.e. https://access.redhat.com/security/data/csaf/beta/vex/2024/cve-2024-21626.json
 
@@ -7,10 +5,12 @@ import argparse
 import requests
 from rich.console import Console
 from rich.markdown import Markdown
-from vex import Vex
-from vex import VexPackages
-from vex import NVD
-from vex.constants import SEVERITY_COLOR
+
+from .vex import Vex
+from .package import VexPackages
+from .simplenvd import NVD
+from .constants import SEVERITY_COLOR
+
 
 def main():
     parser = argparse.ArgumentParser(description='VEX Parser')
@@ -60,16 +60,16 @@ def main():
     # print the notes from the VEX document
     if 'summary' in vex.notes:
         for (title, text) in vex.notes['summary'].items():
-            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
+            console.print(f"[green]{title}[/green]\n{text}\n", highlight=False)
     if 'description' in vex.notes:
         for (title, text) in vex.notes['description'].items():
-            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
+            console.print(f"[green]{title}[/green]\n{text}\n", highlight=False)
     if 'general' in vex.notes:
         for (title, text) in vex.notes['general'].items():
-            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
+            console.print(f"[green]{title}[/green]\n{text}\n", highlight=False)
     if 'legal_disclaimer' in vex.notes:
         for (title, text) in vex.notes['legal_disclaimer'].items():
-            console.print(f"[green]{title}[/green]\n{text}\n\n", highlight=False)
+            console.print(f"[green]{title}[/green]\n{text}\n", highlight=False)
 
     if vex.statement:
         console.print('[green]Statement[/green]')
