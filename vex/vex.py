@@ -24,7 +24,32 @@ class Vex(object):
     """
 
     def __init__(self, vexfile):
-        if 'http' in vexfile:
+        # handle loading VEX a few different ways; we can obtain from remote, we can load a file, or we can read JSON
+
+        def is_json(jdata):
+            try:
+                json.loads(jdata)
+            except Exception as e:
+                return False
+            return True
+
+        def is_dict(jdata):
+            if isinstance(jdata, dict):
+                return True
+            return False
+
+        if is_json(vexfile):
+            # we received JSON data that needs to be loaded
+            print('got json')
+            vexdata = vexfile
+
+        elif is_dict(vexfile):
+            # we received JSON data that was already loaded and is now a dict
+            print('got dict')
+            vexdata = vexfile
+
+        elif 'http' in vexfile:
+            # load a remove VEX document
             response = requests.get(f'{vexfile}')
             if response.status_code == 200:
                 vexdata = response.json()
@@ -37,6 +62,7 @@ class Vex(object):
                 exit(1)
 
         else:
+            # load a file
             if not os.path.exists(vexfile):
                 print(f'Missing VEX file: {vexfile}.')
                 exit(1)
