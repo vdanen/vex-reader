@@ -40,12 +40,10 @@ class Vex(object):
 
         if is_json(vexfile):
             # we received JSON data that needs to be loaded
-            print('got json')
             vexdata = vexfile
 
         elif is_dict(vexfile):
             # we received JSON data that was already loaded and is now a dict
-            print('got dict')
             vexdata = vexfile
 
         elif 'http' in vexfile:
