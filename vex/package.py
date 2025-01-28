@@ -68,7 +68,11 @@ class Fix(object):
                 self.url = x['url']
 
             if 'date' in x:
-                pd        = datetime.fromisoformat(x['date'])
+                if x['date'].endswith('Z'):
+                    pd       = datetime.fromisoformat(x['date'][:-1])
+                    pd       = pd.replace(tzinfo=pytz.timezone('UTC'))
+                else:
+                    pd        = datetime.fromisoformat(x['date'])
                 self.date = pd.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y')
 
             for v in VENDOR_ADVISORY:
