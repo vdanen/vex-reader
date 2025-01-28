@@ -98,7 +98,11 @@ class Vex(object):
         self.title     = self.raw['document']['title']
         if 'publisher' in self.raw['document']:
             self.publisher = self.raw['document']['publisher']['name']
-        ud             = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
+        if self.raw['document']['tracking']['current_release_date'].endswith('Z'):
+            parsed_date = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'][:-1])
+            ud = parsed_date.replace(tzinfo=pytz.timezone('UTC'))
+        else:
+            ud = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
         self.updated   = ud.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y at %I:%M:%S %p UTC')
 
         # Notes build up the bulk of our text, we should include them all
@@ -154,7 +158,11 @@ class Vex(object):
                 self.discovery_date = k['discovery_date']
             if 'release_date' in k:
                 # you'd think this would be mandatory and important but it isn't
-                rd                  = datetime.fromisoformat(k['release_date'])
+                if k['release_date'].endswith('Z'):
+                    rd              = datetime.fromisoformat(k['release_date'][:-1])
+                    rd              = rd.replace(tzinfo=pytz.timezone('UTC'))
+                else:
+                    rd              = datetime.fromisoformat(k['release_date'])
                 self.release_date   = rd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
             else:
                 print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
@@ -166,7 +174,11 @@ class Vex(object):
                     if x['category'] == 'exploit_status':
                         source = ''
                         url    = ''
-                        xd     = datetime.fromisoformat(x['date'])
+                        if x['date'].endswith('Z'):
+                            xd = datetime.fromisoformat(x['date'][:-1])
+                            xd = xd.replace(tzinfo=pytz.timezone('UTC'))
+                        else:
+                            xd = datetime.fromisoformat(x['date'])
                         xdate  = xd.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y')
                         # be clever for CISA
                         if 'CISA' in x['details']:
@@ -225,12 +237,13 @@ class Vex(object):
         self.cvss_v3 = []
         self.cvss_v2 = []
         if 'scores' in k:
+            filtered_products = None
             for x in k['scores']:
                 if 'products' in x:
                     filtered_products = filter_components(x['products'])
-                if 'cvss_v3' in x:
+                if filtered_products and 'cvss_v3' in x:
                     self.cvss_v3.append({'scores': x['cvss_v3'], 'version': x['cvss_v3']['version'], 'products': filtered_products})
-                elif 'cvss_v2' in x:
+                elif filtered_products and 'cvss_v2' in x:
                     self.cvss_v2.append({'scores': x['cvss_v2'], 'products': filtered_products})
 
         self.global_cvss = CVSSv3(None)
