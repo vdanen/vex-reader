@@ -29,7 +29,7 @@ def main():
     else:
         response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={vex.cve}')
         nvd_cve  = response.json()
-        print(nvd_cve)
+        #print(nvd_cve)
         if nvd_cve['vulnerabilities'][0]['cve']['id'] == vex.cve:
             # we got the right result
             nvd = NVD(nvd_cve)
