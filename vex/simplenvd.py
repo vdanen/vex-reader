@@ -1,40 +1,64 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
+from typing import Optional, Dict, Any
+from dataclasses import dataclass
 from .simplecvss import CVSSv2, CVSSv3
 
-class NVD(object):
+@dataclass
+class NVD:
+    """Class to handle NVD vulnerability data.
+
+    Parses and stores CVSS scoring data from NVD's API response.
+
+    Example:
+        >>> response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}')
+        >>> nvd_data = response.json()
+        >>> if nvd_data['vulnerabilities'][0]['cve']['id'] == cve_id:
+        >>>     if 'cvssMetricV31' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
+        >>>         nvd = NVD(nvd_data)
+
+    Attributes:
+        raw: Raw JSON data from NVD API
+        cvss31: CVSS 3.1 scoring data
+        cvss30: CVSS 3.0 scoring data
+        cvss20: CVSS 2.0 scoring data
     """
-    Class to hold NVD object
 
-    This takes the JSON data from NVD's API, i.e.:
+    raw: Optional[Dict[str, Any]]
+    cvss31: CVSSv3
+    cvss30: CVSSv3
+    cvss20: CVSSv2
 
-    response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve}')
-    nvd_cve  = response.json()
-    if nvd_cve['vulnerabilities'][0]['cve']['id'] == cve:
-        # we got the right result
-        if 'cvssMetricV31' in nvd_cve['vulnerabilities'][0]['cve']['metrics']:
-            nvd = NVD(nvd_cve['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'])
-    """
+    def __init__(self, nvd_data: Optional[Dict[str, Any]] = None) -> None:
+        """Initialize NVD object with data from NVD API.
 
-    def __init__(self, nvd_data):
-        self.raw     = nvd_data
-        self.version = None
+        Args:
+            nvd_data: JSON response data from NVD API
+        """
+        self.raw = nvd_data
 
-        # empty to start
+        # Initialize empty CVSS objects
         self.cvss31 = CVSSv3(None, '3.1')
         self.cvss30 = CVSSv3(None, '3.0')
         self.cvss20 = CVSSv2(None, '2.0')
 
-        if self.raw is None:
+        if not nvd_data:
             return
 
-        if 'metrics' in nvd_data['vulnerabilities'][0]['cve']:
-            if 'cvssMetricV31' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                self.cvss31 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData'], '3.1')
+        try:
+            metrics = nvd_data['vulnerabilities'][0]['cve'].get('metrics', {})
 
-            if 'cvssMetricV30' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                self.cvss30 = CVSSv3(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV30'][0]['cvssData'], '3.0')
+            # Parse CVSS data if available
+            if cvss31_data := metrics.get('cvssMetricV31', [{}])[0].get('cvssData'):
+                self.cvss31 = CVSSv3(cvss31_data, '3.1')
 
-            if 'cvssMetricV2' in nvd_data['vulnerabilities'][0]['cve']['metrics']:
-                self.cvss20 = CVSSv2(nvd_data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV2'][0]['cvssData'], '2.0')
+            if cvss30_data := metrics.get('cvssMetricV30', [{}])[0].get('cvssData'):
+                self.cvss30 = CVSSv3(cvss30_data, '3.0')
+
+            if cvss2_data := metrics.get('cvssMetricV2', [{}])[0].get('cvssData'):
+                self.cvss20 = CVSSv2(cvss2_data, '2.0')
+
+        except (KeyError, IndexError) as e:
+            # Log error or handle invalid data structure
+            pass
