@@ -94,4 +94,10 @@ is undesirable (for testing, etc) you can pass the `--no-nvd` argument to
 prevent lookups. Currently, `vex-reader` requires the VEX file to parse to
 be on-disk.
 
+When working from the git repository for development, use:
+
+```
+$ python -m vex.vex_reader --vex tests/cve-2002-2443.json
+```
+
 A good place to find some VEX documents to play with is here: https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
