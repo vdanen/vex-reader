@@ -1,121 +1,67 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
-from typing import Optional, Dict, Any
-from dataclasses import dataclass, field
-
-@dataclass
-class CVSSv2:
-    """Class to handle CVSS v2 vulnerability metrics.
-
-    Attributes:
-        version: CVSS version (default: 2.0)
-        baseScore: Base vulnerability score
-        vectorString: CVSS vector string
-        accessVector: Network access vector
-        accessComplexity: Complexity of attack
-        authentication: Authentication requirements
-        confidentialityImpact: Impact on confidentiality
-        integrityImpact: Impact on integrity
-        availabilityImpact: Impact on availability
+class CVSSv2(object):
     """
+    Class to hold CVSSv2 metrics
+    """
+    def __init__(self, metrics, version='2.0'):
+        self.version               = None
+        self.baseScore             = ''
+        self.vectorString          = 'NOT AVAILABLE '
+        self.accessVector          = ''
+        self.accessComplexity      = ''
+        self.authentication        = ''
+        self.confidentialityImpact = ''
+        self.integrityImpact       = ''
+        self.availabilityImpact    = ''
 
-    version:               Optional[str] = None
-    baseScore:             str = field(default='')
-    vectorString:          str = field(default='NOT AVAILABLE')
-    accessVector:          str = field(default='')
-    accessComplexity:      str = field(default='')
-    authentication:        str = field(default='')
-    confidentialityImpact: str = field(default='')
-    integrityImpact:       str = field(default='')
-    availabilityImpact:    str = field(default='')
-
-    def __init__(self, metrics: Optional[Dict[str, Any]] = None, version: str = '2.0') -> None:
-        """Initialize CVSS v2 metrics.
-
-        Args:
-            metrics: Dictionary containing CVSS v2 metric values
-            version: CVSS version string (default: '2.0')
-        """
-        # Set default values
-        self.__dict__.update(self.__class__.__dataclass_fields__)  # type: ignore
-
-        if not metrics:
-            return
-
-        try:
+        if metrics is not None:
             self.version      = version
             self.baseScore    = metrics['baseScore']
             self.vectorString = metrics['vectorString']
-
-            # Capitalize all metric values for consistency
-            for field in ['accessVector', 'accessComplexity', 'authentication',
-                         'confidentialityImpact', 'integrityImpact', 'availabilityImpact']:
-                if value := metrics.get(field):
-                    setattr(self, field, value.capitalize())
-
-        except (KeyError, AttributeError) as e:
-            # Reset to defaults on error
-            self.__dict__.update(self.__class__.__dataclass_fields__)  # type: ignore
+            # not all VEX files may break out the specific metrics
+            if 'accessVector' in metrics:
+                self.accessVector          = metrics['accessVector'].capitalize()
+                self.accessComplexity      = metrics['accessComplexity'].capitalize()
+                self.authentication        = metrics['authentication'].capitalize()
+                self.confidentialityImpact = metrics['confidentialityImpact'].capitalize()
+                self.integrityImpact       = metrics['integrityImpact'].capitalize()
+                self.availabilityImpact    = metrics['availabilityImpact'].capitalize()
 
 
-@dataclass
-class CVSSv3:
-    """Class to handle CVSS v3 vulnerability metrics.
-
-    Attributes:
-        version: CVSS version (default: 3.1)
-        baseScore: Base vulnerability score
-        vectorString: CVSS vector string
-        attackVector: Attack vector type
-        attackComplexity: Complexity of attack
-        privilegesRequired: Required privileges
-        userInteraction: User interaction needed
-        scope: Scope of impact
-        confidentialityImpact: Impact on confidentiality
-        integrityImpact: Impact on integrity
-        availabilityImpact: Impact on availability
-        baseSeverity: Overall severity rating
+class CVSSv3(object):
+    """
+    Class to hold CVSSv3 metrics
     """
 
-    version:               Optional[str] = None
-    baseScore:             str = field(default='')
-    vectorString:          str = field(default='NOT AVAILABLE')
-    attackVector:          str = field(default='')
-    attackComplexity:      str = field(default='')
-    privilegesRequired:    str = field(default='')
-    userInteraction:       str = field(default='')
-    scope:                 str = field(default='')
-    confidentialityImpact: str = field(default='')
-    integrityImpact:       str = field(default='')
-    availabilityImpact:    str = field(default='')
-    baseSeverity:          str = field(default='')
+    def __init__(self, metrics, version='3.1'):
+        self.version               = None
+        self.baseScore             = ''
+        self.vectorString          = 'NOT AVAILABLE '
+        self.attackVector          = ''
+        self.attackComplexity      = ''
+        self.privilegesRequired    = ''
+        self.userInteraction       = ''
+        self.scope                 = ''
+        self.confidentialityImpact = ''
+        self.integrityImpact       = ''
+        self.availabilityImpact    = ''
+        self.baseSeverity          = ''
 
-    def __init__(self, metrics: Optional[Dict[str, Any]] = None, version: str = '3.1') -> None:
-        """Initialize CVSS v3 metrics.
-
-        Args:
-            metrics: Dictionary containing CVSS v3 metric values
-            version: CVSS version string (default: '3.1')
-        """
-        # Set default values
-        self.__dict__.update(self.__class__.__dataclass_fields__)  # type: ignore
-
-        if not metrics:
-            return
-
-        try:
+        if metrics is not None:
             self.version      = version
             self.baseScore    = metrics['baseScore']
             self.vectorString = metrics['vectorString']
+            self.baseSeverity = metrics['baseSeverity'].capitalize()
+            # not all VEX files may break out the specific metrics
+            if 'attackVector' in metrics:
+                self.attackVector          = metrics['attackVector'].capitalize()
+                self.attackComplexity      = metrics['attackComplexity'].capitalize()
+                self.privilegesRequired    = metrics['privilegesRequired'].capitalize()
+                self.userInteraction       = metrics['userInteraction'].capitalize()
+                self.scope                 = metrics['scope'].capitalize()
+                self.confidentialityImpact = metrics['confidentialityImpact'].capitalize()
+                self.integrityImpact       = metrics['integrityImpact'].capitalize()
+                self.availabilityImpact    = metrics['availabilityImpact'].capitalize()
 
-            # Capitalize all metric values for consistency
-            for field in ['attackVector', 'attackComplexity', 'privilegesRequired',
-                         'userInteraction', 'scope', 'confidentialityImpact',
-                         'integrityImpact', 'availabilityImpact', 'baseSeverity']:
-                if value := metrics.get(field):
-                    setattr(self, field, value.capitalize())
-
-        except (KeyError, AttributeError) as e:
-            # Reset to defaults on error
-            self.__dict__.update(self.__class__.__dataclass_fields__)  # type: ignore
