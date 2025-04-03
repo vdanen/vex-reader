@@ -218,6 +218,10 @@ class Vex(object):
         # Notes including descriptions, summaries, statements as part of the vulnerabilities section
         if 'notes' in k:
             for x in k['notes']:
+                # pull the statement out separately
+                if x['category'] == 'other' and x['title'] == 'Statement':
+                    self.statement = x['text']
+
                 if x['category'] not in self.notes:
                     self.notes[x['category']] = {}
                 if 'title' in x:
