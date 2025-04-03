@@ -275,9 +275,10 @@ class Vex(object):
         if 'threats' in k:
             for x in k['threats']:
                 if x['category'] == 'impact':
-                    # need to map impacts to products
-                    for y in filter_components(x['product_ids']):
-                        self.impacts[x['details']].append(y)
+                    # need to map impacts to products if they're listed
+                    if 'product_ids' in x:
+                        for y in filter_components(x['product_ids']):
+                            self.impacts[x['details']].append(y)
                     #self.impacts.append({x['details']: filter_products(x['product_ids'])})
 
         # we can drop those that match the "global" impact by setting the list to empty
