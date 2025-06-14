@@ -1,0 +1,44 @@
+header:
+  schema-version: 2.0.0
+  last-updated: '2025-06-14'
+  last-reviewed: '2025-06-14'
+  url: https://github.com/vdanen/vex-server
+  comment: |
+    This file contains the minimum information for both project and repository.
+    It not required to include both a project and repository section if the project
+    section is intended to be inherited by repositories via header.project-si-source
+
+project:
+  name: vex-server
+  administrators:
+    - name: Vincent Danen
+      social: https://x.com/vdanen
+      primary: true
+  repositories:
+    - name: vex-server
+      url: https://github.com/vdanen/vex-server
+      comment: |
+        vex-server is the core repository for the vex-server demo project
+  vulnerability-reporting:
+    reports-accepted: true
+    bug-bounty-available: false
+    comment: |
+      Any vulnerabilities can be reported in GitHub issues
+
+repository:
+  url: https://github.com/vdanen/vex-server
+  status: active
+  accepts-change-request: true
+  accepts-automated-change-request: false
+  core-team:
+    - name:        Vincent Danen
+      social:      https://x.com/vdanen
+      primary:     true
+  license:
+    url: https://github.com/vdanen/vex-server/blob/main/LICENSE
+    expression: GPL-3.0-or-later
+  security:
+    assessments:
+      self:
+        comment: |
+          Self assessment has not yet been completed.
