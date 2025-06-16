@@ -1,5 +1,8 @@
 # vex-reader
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/vdanen/vex-reader/badge)](https://scorecard.dev/viewer/?uri=github.com/vdanen/vex-reader)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/vdanen/vex-reader?sort=semver)
+
 Utility to read Red Hat VEX files that are located at https://access.redhat.com/security/data/csaf/v2/vex/.
 
 I'm (slowly) aiming to make this a bit more extensible so that it can be
