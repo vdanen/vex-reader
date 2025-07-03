@@ -185,7 +185,7 @@ class Vex(object):
                             source = 'CISA'
                         if 'http' in x['details']:
                             # extract any urls
-                            url = re.search("(?P<url>https?://[^\s]+)", x['details']).group('url')
+                            url = re.search(r"(?P<url>https?://[^\s]+)", x['details']).group('url')
                         self.exploits.append({'date': xdate, 'details': x['details'], 'url': url, 'source': source})
 
         # Acknowledgements
