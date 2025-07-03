@@ -18,21 +18,12 @@ Install [vex-reader](https://pypi.org/project/vex-reader/) from PyPI:
 pip install vex-reader
 ```
 
-Development setup:
-
-```shell
-git clone https://github.com/vdanen/vex-reader.git
-cd vex-reader
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -e .
-```
-
 ## Usage
 
-You can use the vex library in your own Python applications, or you can
-clone this repo and use the `vex-reader` command to parse VEX files.
+The best way to use vex-reader is to install the Python module.  It provides
+the `vex-reader` binary and you can import the library for use in your own
+applications.
+
 
 ```
 vex-reader --vex tests/cve-2002-2443.json
@@ -96,6 +87,25 @@ By default, `vex-reader` will pull the CVSS score from NVD's API.  If this
 is undesirable (for testing, etc) you can pass the `--no-nvd` argument to
 prevent lookups. Currently, `vex-reader` requires the VEX file to parse to
 be on-disk.
+
+## Development
+
+Contributions to vex-reader are welcome.  Currently it works predominantly with
+Red Hat's VEX files and has limited success with othe VEX files (such as from
+Cisco).  If `vex-reader` fails to parse the VEX file you're feeding it, you can
+either submit a patch or open an issue and link to the VEX file you're trying
+to parse.
+
+### Development setup:
+
+```shell
+git clone https://github.com/vdanen/vex-reader.git
+cd vex-reader
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -e .
+```
 
 When working from the git repository for development, use:
 
