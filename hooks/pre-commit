@@ -1,0 +1,65 @@
+#!/bin/bash
+# Pre-commit hook to run tests before committing
+# To install: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+set -e
+
+echo "🔍 Running pre-commit hooks..."
+
+# Check if we're in a git repository
+if [ ! -d ".git" ]; then
+    echo "❌ Not in a git repository"
+    exit 1
+fi
+
+# Change to the repository root
+cd "$(git rev-parse --show-toplevel)"
+
+# Check if Python is available
+if ! command -v python &> /dev/null; then
+    echo "❌ Python is not installed or not in PATH"
+    exit 1
+fi
+
+# Check if there are any Python files being committed
+if ! git diff --cached --name-only | grep -q "\.py$"; then
+    echo "✅ No Python files to check"
+    exit 0
+fi
+
+echo "🧪 Running tests..."
+
+# Run tests with unittest (most reliable)
+if python -m unittest discover tests -v > /dev/null 2>&1; then
+    echo "✅ All tests passed"
+else
+    echo "❌ Tests failed! Please fix the issues before committing."
+    echo "Run 'python -m unittest discover tests -v' to see the details."
+    exit 1
+fi
+
+# Optional: Run basic syntax check
+echo "🔍 Checking Python syntax..."
+python_files=$(git diff --cached --name-only --diff-filter=ACM | grep "\.py$" | tr '\n' ' ')
+if [ -n "$python_files" ]; then
+    for file in $python_files; do
+        if [ -f "$file" ]; then
+            python -m py_compile "$file"
+        fi
+    done
+    echo "✅ Python syntax check passed"
+fi
+
+# Optional: Run quick lint check if flake8 is available
+if command -v flake8 &> /dev/null; then
+    echo "🔍 Running quick lint check..."
+    if flake8 --select=E9,F63,F7,F82 $python_files > /dev/null 2>&1; then
+        echo "✅ Basic lint check passed"
+    else
+        echo "⚠️  Some linting issues found, but not blocking commit"
+        echo "Consider running 'make lint' to see details"
+    fi
+fi
+
+echo "🎉 Pre-commit checks completed successfully!"
+exit 0 

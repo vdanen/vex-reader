@@ -52,25 +52,20 @@ class Vex(object):
             if response.status_code == 200:
                 vexdata = response.json()
             elif response.status_code == 404:
-                print(f'Not found: {vexfile}')
-                exit(1)
+                raise FileNotFoundError(f'Not found: {vexfile}')
             else:
-                print(f'Cannot load {vexfile}')
-                print(f'Response code: {response.status_code}')
-                exit(1)
+                raise ConnectionError(f'Cannot load {vexfile}. Response code: {response.status_code}')
 
         else:
             # load a file
             if not os.path.exists(vexfile):
-                print(f'Missing VEX file: {vexfile}.')
-                exit(1)
+                raise FileNotFoundError(f'Missing VEX file: {vexfile}.')
 
             with open(vexfile) as fp:
                 vexdata = json.load(fp)
 
         if not vexdata:
-            print(f'Unable to load VEX data from {vexfile}.')
-            exit(1)
+            raise ValueError(f'Unable to load VEX data from {vexfile}.')
 
         self.raw = vexdata
 
@@ -81,8 +76,7 @@ class Vex(object):
         # only support csaf_vex 2.0
         # TODO: should we add support to csaf_security_advisory in the future if nothing else exists?
         if self.csaf['type'] != 'csaf_vex':
-            print(f"Sorry, I can only handle csaf_vex 2.0 documents, this one is {self.csaf['type']} {self.csaf['csaf_version']}")
-            exit(1)
+            raise ValueError(f"Sorry, I can only handle csaf_vex 2.0 documents, this one is {self.csaf['type']} {self.csaf['csaf_version']}")
 
         self.distribution  = None
         self.global_impact = None
@@ -185,7 +179,7 @@ class Vex(object):
                             source = 'CISA'
                         if 'http' in x['details']:
                             # extract any urls
-                            url = re.search("(?P<url>https?://[^\s]+)", x['details']).group('url')
+                            url = re.search(r"(?P<url>https?://[^\s]+)", x['details']).group('url')
                         self.exploits.append({'date': xdate, 'details': x['details'], 'url': url, 'source': source})
 
         # Acknowledgements
