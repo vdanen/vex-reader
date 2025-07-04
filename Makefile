@@ -12,6 +12,7 @@ help:
 	@echo "  lint        - Run linting checks"
 	@echo "  clean       - Clean build artifacts"
 	@echo "  build       - Build the package"
+	@echo "  upload      - Upload the package to PyPI"
 
 # Install the package
 install:
