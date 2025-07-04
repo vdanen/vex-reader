@@ -35,8 +35,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[test]
         pip install -r requirements.txt
+        # Install exact versions from development environment
+        pip install pytest==8.4.1 pytest-cov==6.2.1 pytest-xdist==3.8.0 coverage==7.9.2
     
     - name: Run tests with unittest (fallback)
       run: |
@@ -74,7 +75,8 @@ jobs:
     - name: Install linting dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 black isort
+        # Install exact versions from development environment
+        pip install flake8==7.3.0 black==25.1.0 isort==6.0.1
     
     - name: Run flake8
       run: flake8 vex/ --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -125,7 +127,8 @@ jobs:
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build twine
+        # Install exact versions from development environment
+        pip install pkginfo==1.12.1.2 build==1.2.1 twine==6.0.1
     
     - name: Build package
       run: python -m build

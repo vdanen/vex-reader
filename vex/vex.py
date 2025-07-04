@@ -48,7 +48,7 @@ class Vex(object):
 
         elif 'http' in vexfile:
             # load a remove VEX document
-            response = requests.get(f'{vexfile}')
+            response = requests.get(f'{vexfile}', timeout=10)
             if response.status_code == 200:
                 vexdata = response.json()
             elif response.status_code == 404:
