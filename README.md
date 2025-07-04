@@ -1,5 +1,6 @@
 # vex-reader
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10865/badge)](https://www.bestpractices.dev/projects/10865)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/vdanen/vex-reader/badge)](https://scorecard.dev/viewer/?uri=github.com/vdanen/vex-reader)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/vdanen/vex-reader?sort=semver)
 
