@@ -1,15 +1,22 @@
+import os
+import sys
 from unittest import TestCase
 import json
+
+# Add the parent directory to the path so we can import vex
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from vex import Vex
 from vex import VexPackages
 
 class TestVex(TestCase):
-    print
-        #self.fail()
+    pass
 
 class TestCVE_2024_40951(TestVex):
     def setUp(self):
-        self.vex      = Vex('./cve-2024-40951.json')
+        # Use the correct path relative to the tests directory
+        test_file = os.path.join(os.path.dirname(__file__), 'cve-2024-40951.json')
+        self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
@@ -25,7 +32,7 @@ class TestCVE_2024_40951(TestVex):
         self.assertEqual(self.vex.bz_id, '2297535')
 
     def test_cvss_vector(self):
-        self.assertIsNone(self.vex.global_cvss)
+        self.assertEqual(self.vex.global_cvss.vectorString, 'NOT AVAILABLE ')
 
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
@@ -41,7 +48,9 @@ class TestCVE_2024_40951(TestVex):
 
 class TestCVE_2024_21626(TestVex):
     def setUp(self):
-        self.vex      = Vex('./cve-2024-21626.json')
+        # Use the correct path relative to the tests directory
+        test_file = os.path.join(os.path.dirname(__file__), 'cve-2024-21626.json')
+        self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
@@ -57,7 +66,7 @@ class TestCVE_2024_21626(TestVex):
         self.assertEqual(self.vex.bz_id, '2258725')
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss['vectorString'], 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H')
+        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H')
 
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
@@ -74,7 +83,8 @@ class TestCVE_2024_21626(TestVex):
 """
 class TestCVE_Cisco_rce_2024(TestVex):
     def setUp(self):
-        self.vex      = Vex('./cisco-sa-openssh-rce-2024.json')
+        test_file = os.path.join(os.path.dirname(__file__), 'cisco-sa-openssh-rce-2024.json')
+        self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
