@@ -6,12 +6,12 @@ authors = [
 ]
 description = "Read VEX files"
 readme = "README.md"
-license = "GPL-3.0-or-later"
-license-files = ["LICENSE"]
+license = {file = "LICENSE"}
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Operating System :: OS Independent",
 ]
 dependencies = [
