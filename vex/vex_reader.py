@@ -142,6 +142,8 @@ def main():
     if vex.global_cvss:
         # which version of CVSS are we using?
         cvssVersion = ''
+        nvd_cvss = None
+
         if vex.global_cvss.version is not None:
             # this is our default
             cvssVersion = vex.global_cvss.version
@@ -149,47 +151,63 @@ def main():
         if cvssVersion == '':
             if nvd.cvss31.version is not None:
                 cvssVersion = '3.1'
+            elif nvd.cvss30.version is not None:
+                cvssVersion = '3.0'
+            elif nvd.cvss20.version is not None:
+                cvssVersion = '2.0'
 
         if cvssVersion == '3.1':
-            nvd = nvd.cvss31
-
-        if cvssVersion == '3.0':
-            nvd = nvd.cvss30
-
-        if cvssVersion == '2.0':
-            nvd = nvd.cvss20
+            nvd_cvss = nvd.cvss31
+        elif cvssVersion == '3.0':
+            nvd_cvss = nvd.cvss30
+        elif cvssVersion == '2.0':
+            nvd_cvss = nvd.cvss20
+        else:
+            # Fallback to first available CVSS version
+            if nvd.cvss31.version is not None:
+                nvd_cvss = nvd.cvss31
+                cvssVersion = '3.1'
+            elif nvd.cvss30.version is not None:
+                nvd_cvss = nvd.cvss30
+                cvssVersion = '3.0'
+            elif nvd.cvss20.version is not None:
+                nvd_cvss = nvd.cvss20
+                cvssVersion = '2.0'
+            else:
+                # No CVSS data available from NVD, create empty object
+                nvd_cvss = nvd.cvss31  # Use the default empty object
 
         console.print(f'[green]CVSS {cvssVersion} Vector[/green]')
         plen = 4
         if len(publisher) > 4:
             plen = len(publisher)
         print(f"  {publisher:{plen}}: {vex.global_cvss.vectorString}")
-        if not args.no_nvd:
-            print(f'  {"NVD":{plen}}: {nvd.vectorString}')
+        if not args.no_nvd and nvd_cvss:
+            print(f'  {"NVD":{plen}}: {nvd_cvss.vectorString}')
         print()
 
         console.print(f'[green]CVSS {cvssVersion} Score Breakdown[/green]')
         print(f"{' ':26} {publisher:<10} NVD")
         if cvssVersion == '3.0' or cvssVersion == '3.1':
             # not all VEX will break down the metrics
-            if vex.global_cvss.attackVector:
-                print(f"  {f'CVSS {cvssVersion} Base Score':24} {vex.global_cvss.baseScore:<10} {nvd.baseScore}")
-                print(f"  {'Attack Vector':24} {vex.global_cvss.attackVector:10} {nvd.attackVector}")
-                print(f"  {'Attack Complexity':24} {vex.global_cvss.attackComplexity:10} {nvd.attackComplexity}")
-                print(f"  {'Privileges Required':24} {vex.global_cvss.privilegesRequired:10} {nvd.privilegesRequired}")
-                print(f"  {'User Interaction':24} {vex.global_cvss.userInteraction:10} {nvd.userInteraction}")
-                print(f"  {'Scope':24} {vex.global_cvss.scope:10} {nvd.scope}")
+            if hasattr(vex.global_cvss, 'attackVector') and vex.global_cvss.attackVector:
+                print(f"  {f'CVSS {cvssVersion} Base Score':24} {vex.global_cvss.baseScore:<10} {nvd_cvss.baseScore if nvd_cvss else 'N/A'}")
+                print(f"  {'Attack Vector':24} {vex.global_cvss.attackVector:10} {nvd_cvss.attackVector if nvd_cvss else 'N/A'}")
+                print(f"  {'Attack Complexity':24} {vex.global_cvss.attackComplexity:10} {nvd_cvss.attackComplexity if nvd_cvss else 'N/A'}")
+                print(f"  {'Privileges Required':24} {vex.global_cvss.privilegesRequired:10} {nvd_cvss.privilegesRequired if nvd_cvss else 'N/A'}")
+                print(f"  {'User Interaction':24} {vex.global_cvss.userInteraction:10} {nvd_cvss.userInteraction if nvd_cvss else 'N/A'}")
+                print(f"  {'Scope':24} {vex.global_cvss.scope:10} {nvd_cvss.scope if nvd_cvss else 'N/A'}")
         elif cvssVersion == '2.0':
-            if vex.global_cvss.accessVector:
+            if hasattr(vex.global_cvss, 'accessVector') and vex.global_cvss.accessVector:
                 # not all VEX will break down the metrics
-                print(f"  {'CVSS v2 Base Score':24} {vex.global_cvss.baseScore:<10} {nvd.baseScore}")
-                print(f"  {'Access Vector':24} {vex.global_cvss.accessVector:10} {nvd.accessVector}")
-                print(f"  {'Access Complexity':24} {vex.global_cvss.accessComplexity:10} {nvd.accessComplexity}")
-                print(f"  {'Authentication':24} {vex.global_cvss.authentication:10} {nvd.authentication}")
-        if vex.global_cvss.confidentialityImpact:
-            print(f"  {'Confidentiality Impact':24} {vex.global_cvss.confidentialityImpact:10} {nvd.confidentialityImpact}")
-            print(f"  {'Integrity Impact':24} {vex.global_cvss.integrityImpact:10} {nvd.integrityImpact}")
-            print(f"  {'Availability Impact':24} {vex.global_cvss.availabilityImpact:10} {nvd.availabilityImpact}")
+                print(f"  {'CVSS v2 Base Score':24} {vex.global_cvss.baseScore:<10} {nvd_cvss.baseScore if nvd_cvss else 'N/A'}")
+                print(f"  {'Access Vector':24} {vex.global_cvss.accessVector:10} {nvd_cvss.accessVector if nvd_cvss else 'N/A'}")
+                print(f"  {'Access Complexity':24} {vex.global_cvss.accessComplexity:10} {nvd_cvss.accessComplexity if nvd_cvss else 'N/A'}")
+                print(f"  {'Authentication':24} {vex.global_cvss.authentication:10} {nvd_cvss.authentication if nvd_cvss else 'N/A'}")
+        if hasattr(vex.global_cvss, 'confidentialityImpact') and vex.global_cvss.confidentialityImpact:
+            print(f"  {'Confidentiality Impact':24} {vex.global_cvss.confidentialityImpact:10} {nvd_cvss.confidentialityImpact if nvd_cvss else 'N/A'}")
+            print(f"  {'Integrity Impact':24} {vex.global_cvss.integrityImpact:10} {nvd_cvss.integrityImpact if nvd_cvss else 'N/A'}")
+            print(f"  {'Availability Impact':24} {vex.global_cvss.availabilityImpact:10} {nvd_cvss.availabilityImpact if nvd_cvss else 'N/A'}")
         print()
 
     if vex.acks:
