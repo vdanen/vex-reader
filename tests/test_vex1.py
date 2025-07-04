@@ -152,7 +152,7 @@ class TestCVE_2002_0803(TestVex):
 class TestCVE_2021_44228(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'cve-2021-44228.json')
+        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2021-44228.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
