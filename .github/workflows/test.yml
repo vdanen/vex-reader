@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -134,4 +137,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: dist/ 
+        path: dist/
+
