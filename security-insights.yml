@@ -37,8 +37,22 @@ repository:
   license:
     url: https://github.com/vdanen/vex-reader/blob/main/LICENSE
     expression: GPL-3.0-or-later
+  release:
+    changelog: https://github.com/vdanen/vex-reader/releases
+    automated-pipeline: false
+    distribution-points:
+      - uri:  https://github.com/vdanen/vex-reader/releases
+        comment: GitHub Release Page
+      - uri: https://pypi.org/project/vex-reader/
+        comment: PyPI Package
+    license:
+      url: https://example.com/release/{version}#license
+      expression: MIT AND Apache-2.0
   security:
     assessments:
       self:
+        evidence: https://www.bestpractices.dev/projects/10865
+        date: '2025-07-04'
         comment: |
-          Self assessment has not yet been completed.
+          OpenSSF best practices badge
+
