@@ -16,14 +16,31 @@ def product_lookup(product, pmap):
     #print(f'product:{product}, pmap:{pmap}')
     for x in pmap:
         if product in x.keys():
-            return x[product]['name']
+            if 'name' in x[product]:
+                return x[product]['name']
+            else:
+                return None
 
 def cpe_lookup(product, pmap):
     # lookup the product name by identifier
     #print(f'product:{product}, pmap:{pmap}')
     for x in pmap:
         if product in x.keys():
-            return x[product]['cpe']
+            if 'cpe' in x[product]:
+                return x[product]['cpe']
+            else:
+                return None
+
+
+def purl_lookup(product, pmap):
+    # lookup the product name by identifier
+    #print(f'product:{product}, pmap:{pmap}')
+    for x in pmap:
+        if product in x.keys():
+            if 'purl' in x[product]:
+                return x[product]['purl']
+            else:
+                return None
 
 
 def dedupe(component_list):
@@ -95,20 +112,23 @@ class Fix(object):
                 if len(y.split(':')) == 1:
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
-                    self.cpe = cpe_lookup(y, pmap)
-                    self.pid = y
+                    self.cpe  = cpe_lookup(y, pmap)
+                    self.purl = purl_lookup(y, pmap)
+                    self.pid  = y
                 elif len(y.split(':')) == 2:
                     # bloody containers without versions
                     self.product = product_lookup(y, pmap)
-                    self.pid = y
-                    self.cpe = cpe_lookup(y, pmap)
+                    self.pid  = y
+                    self.cpe  = cpe_lookup(y, pmap)
+                    self.purl = purl_lookup(y, pmap)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
                     self.components.append(':'.join([component, version]))
                     self.product = product_lookup(product, pmap)
-                    self.pid = product
-                    self.cpe = cpe_lookup(product, pmap)
+                    self.pid  = product
+                    self.cpe  = cpe_lookup(product, pmap)
+                    self.purl = purl_lookup(product, pmap)
 
             self.components = dedupe(self.components)
 
@@ -126,6 +146,7 @@ class WontFix(object):
         self.product              = product_lookup(product, pmap)
         self.pid                  = product
         self.cpe                  = cpe_lookup(product, pmap)
+        self.purl                 = purl_lookup(product, pmap)
 
 
 class NotAffected(object):
@@ -140,6 +161,7 @@ class NotAffected(object):
         self.product          = product_lookup(product, pmap)
         self.pid              = product
         self.cpe              = cpe_lookup(product, pmap)
+        self.purl             = purl_lookup(product, pmap)
 
 
 class Affected(object):
@@ -154,6 +176,7 @@ class Affected(object):
         self.product          = product_lookup(product, pmap)
         self.pid              = product
         self.cpe              = cpe_lookup(product, pmap)
+        self.purl             = purl_lookup(product, pmap)
 
 
 class Mitigation(object):
@@ -198,11 +221,19 @@ class VexPackages(object):
                                 if 'branches' in c.keys():
                                     for d in c['branches']:
                                         id  = d['product']['product_id']
-                                        cpe = d['product']['product_identification_helper']['cpe']
+                                        if 'product_identification_helper' in d['product']:
+                                            if 'cpe' in d['product']['product_identification_helper']:
+                                                cpe = d['product']['product_identification_helper']['cpe']
+                                            if 'purl' in d['product']['product_identification_helper']:
+                                                purl = d['product']['product_identification_helper']['purl']
                                 else:
                                     id  = c['product']['product_id']
-                                    cpe = c['product']['product_identification_helper']['cpe']
-                                self.pmap.append({id: {'name': name, 'cpe': cpe}})
+                                    if 'product_identification_helper' in c['product']:
+                                        if 'cpe' in c['product']['product_identification_helper']:
+                                            cpe = c['product']['product_identification_helper']['cpe']
+                                        if 'purl' in c['product']['product_identification_helper']:
+                                            purl = c['product']['product_identification_helper']['purl']
+                                self.pmap.append({id: {'name': name, 'cpe': cpe, 'purl': purl}})
 
 
     def parse_packages(self):
