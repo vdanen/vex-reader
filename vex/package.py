@@ -16,7 +16,14 @@ def product_lookup(product, pmap):
     #print(f'product:{product}, pmap:{pmap}')
     for x in pmap:
         if product in x.keys():
-            return x[product]
+            return x[product]['name']
+
+def cpe_lookup(product, pmap):
+    # lookup the product name by identifier
+    #print(f'product:{product}, pmap:{pmap}')
+    for x in pmap:
+        if product in x.keys():
+            return x[product]['cpe']
 
 
 def dedupe(component_list):
@@ -88,14 +95,20 @@ class Fix(object):
                 if len(y.split(':')) == 1:
                     # we may not have a component or version, just a product name
                     self.product = product_lookup(y, pmap)
+                    self.cpe = cpe_lookup(y, pmap)
+                    self.pid = y
                 elif len(y.split(':')) == 2:
                     # bloody containers without versions
                     self.product = product_lookup(y, pmap)
+                    self.pid = y
+                    self.cpe = cpe_lookup(y, pmap)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
                     self.components.append(':'.join([component, version]))
                     self.product = product_lookup(product, pmap)
+                    self.pid = product
+                    self.cpe = cpe_lookup(product, pmap)
 
             self.components = dedupe(self.components)
 
@@ -111,6 +124,8 @@ class WontFix(object):
         self.raw                  = y
         self.reason               = x['details']
         self.product              = product_lookup(product, pmap)
+        self.pid                  = product
+        self.cpe                  = cpe_lookup(product, pmap)
 
 
 class NotAffected(object):
@@ -123,6 +138,8 @@ class NotAffected(object):
         self.raw              = y
         self.components       = components
         self.product          = product_lookup(product, pmap)
+        self.pid              = product
+        self.cpe              = cpe_lookup(product, pmap)
 
 
 class Affected(object):
@@ -135,6 +152,8 @@ class Affected(object):
         self.raw              = y
         self.components       = components
         self.product          = product_lookup(product, pmap)
+        self.pid              = product
+        self.cpe              = cpe_lookup(product, pmap)
 
 
 class Mitigation(object):
@@ -178,10 +197,12 @@ class VexPackages(object):
                                 # seems we can also nest branches here?
                                 if 'branches' in c.keys():
                                     for d in c['branches']:
-                                        id = d['product']['product_id']
+                                        id  = d['product']['product_id']
+                                        cpe = d['product']['product_identification_helper']['cpe']
                                 else:
-                                    id   = c['product']['product_id']
-                                self.pmap.append({id: name})
+                                    id  = c['product']['product_id']
+                                    cpe = c['product']['product_identification_helper']['cpe']
+                                self.pmap.append({id: {'name': name, 'cpe': cpe}})
 
 
     def parse_packages(self):
