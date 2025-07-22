@@ -12,35 +12,21 @@ from .constants import (
 
 
 def product_lookup(product, pmap):
-    # lookup the product name by identifier
-    #print(f'product:{product}, pmap:{pmap}')
+    # lookup product information by identifier, return a tuple of (name, cpe, purl)
+    name = None
+    cpe  = None
+    purl = None
+
     for x in pmap:
         if product in x.keys():
             if 'name' in x[product]:
-                return x[product]['name']
-            else:
-                return None
-
-def cpe_lookup(product, pmap):
-    # lookup the product name by identifier
-    #print(f'product:{product}, pmap:{pmap}')
-    for x in pmap:
-        if product in x.keys():
+                name = x[product]['name']
             if 'cpe' in x[product]:
-                return x[product]['cpe']
-            else:
-                return None
-
-
-def purl_lookup(product, pmap):
-    # lookup the product name by identifier
-    #print(f'product:{product}, pmap:{pmap}')
-    for x in pmap:
-        if product in x.keys():
+                cpe = x[product]['cpe']
             if 'purl' in x[product]:
-                return x[product]['purl']
-            else:
-                return None
+                purl = x[product]['purl']
+
+            return (name, cpe, purl)
 
 
 def dedupe(component_list):
@@ -111,24 +97,18 @@ class Fix(object):
             for y in filter_components(x['product_ids']):
                 if len(y.split(':')) == 1:
                     # we may not have a component or version, just a product name
-                    self.product = product_lookup(y, pmap)
-                    self.cpe  = cpe_lookup(y, pmap)
-                    self.purl = purl_lookup(y, pmap)
-                    self.pid  = y
+                    self.pid = y
+                    (self.product, self.cpe, self.purl) = product_lookup(y, pmap)
                 elif len(y.split(':')) == 2:
                     # bloody containers without versions
-                    self.product = product_lookup(y, pmap)
-                    self.pid  = y
-                    self.cpe  = cpe_lookup(y, pmap)
-                    self.purl = purl_lookup(y, pmap)
+                    self.pid = y
+                    (self.product, self.cpe, self.purl) = product_lookup(y, pmap)
                 else:
                     # modular components can have 7 colons
                     (product, component, version) = y.split(':', maxsplit=2)
+                    self.pid = product
                     self.components.append(':'.join([component, version]))
-                    self.product = product_lookup(product, pmap)
-                    self.pid  = product
-                    self.cpe  = cpe_lookup(product, pmap)
-                    self.purl = purl_lookup(product, pmap)
+                    (self.product, self.cpe, self.purl) = product_lookup(product, pmap)
 
             self.components = dedupe(self.components)
 
@@ -143,10 +123,8 @@ class WontFix(object):
         (product, self.component) = y.split(':', maxsplit=1)
         self.raw                  = y
         self.reason               = x['details']
-        self.product              = product_lookup(product, pmap)
         self.pid                  = product
-        self.cpe                  = cpe_lookup(product, pmap)
-        self.purl                 = purl_lookup(product, pmap)
+        (self.product, self.cpe, self.purl) = product_lookup(product, pmap)
 
 
 class NotAffected(object):
@@ -158,10 +136,8 @@ class NotAffected(object):
         (product, components) = product_and_components(y)
         self.raw              = y
         self.components       = components
-        self.product          = product_lookup(product, pmap)
         self.pid              = product
-        self.cpe              = cpe_lookup(product, pmap)
-        self.purl             = purl_lookup(product, pmap)
+        (self.product, self.cpe, self.purl) = product_lookup(product, pmap)
 
 
 class Affected(object):
@@ -173,10 +149,8 @@ class Affected(object):
         (product, components) = product_and_components(y)
         self.raw              = y
         self.components       = components
-        self.product          = product_lookup(product, pmap)
         self.pid              = product
-        self.cpe              = cpe_lookup(product, pmap)
-        self.purl             = purl_lookup(product, pmap)
+        (self.product, self.cpe, self.purl) = product_lookup(product, pmap)
 
 
 class Mitigation(object):
@@ -191,6 +165,7 @@ class Mitigation(object):
     def __init__(self, x):
         self.details  = x['details']
         self.packages = filter_components(x['product_ids'])
+
 
 class VexPackages(object):
     """
