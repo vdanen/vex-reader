@@ -220,6 +220,8 @@ class VexPackages(object):
                                 # seems we can also nest branches here?
                                 if 'branches' in c.keys():
                                     for d in c['branches']:
+                                        cpe  = None
+                                        purl = None
                                         id  = d['product']['product_id']
                                         if 'product_identification_helper' in d['product']:
                                             if 'cpe' in d['product']['product_identification_helper']:
@@ -227,6 +229,8 @@ class VexPackages(object):
                                             if 'purl' in d['product']['product_identification_helper']:
                                                 purl = d['product']['product_identification_helper']['purl']
                                 else:
+                                    cpe  = None
+                                    purl = None
                                     id  = c['product']['product_id']
                                     if 'product_identification_helper' in c['product']:
                                         if 'cpe' in c['product']['product_identification_helper']:
