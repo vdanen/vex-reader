@@ -29,7 +29,8 @@ test = [
     "flake8==7.3.0",
     "black==25.1.0",
     "build==1.2.1",
-    "twine==5.1.1",
+    "twine==6.1.0",
+    "pkginfo==1.12.1.2"
 ]
 
 [project.scripts]
