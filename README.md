@@ -1,7 +1,10 @@
 # vex-reader
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10865/badge)](https://www.bestpractices.dev/projects/10865)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/vdanen/vex-reader/badge)](https://scorecard.dev/viewer/?uri=github.com/vdanen/vex-reader)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/vdanen/vex-reader?sort=semver)
+![PyPI release](https://img.shields.io/pypi/v/vex-reader)
+![Downloads](https://static.pepy.tech/badge/vex-reader)
 
 Utility to read Red Hat VEX files that are located at https://access.redhat.com/security/data/csaf/v2/vex/.
 
