@@ -20,8 +20,8 @@ def main():
 
     args = parser.parse_args()
 
-    console  = Console()
-    vex      = Vex(args.vex)
+    console = Console()
+    vex = Vex(args.vex)
     packages = VexPackages(vex.raw)  # we need the raw json data
 
     if args.no_nvd:

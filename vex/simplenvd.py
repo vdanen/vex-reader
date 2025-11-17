@@ -50,8 +50,10 @@ class NVD:
             metrics = nvd_data['vulnerabilities'][0]['cve'].get('metrics', {})
 
             # Parse CVSS data if available
-            if cvss31_data := metrics.get('cvssMetricV31', [{}])[0].get('cvssData'):
-                self.cvss31 = CVSSv3(cvss31_data, '3.1')
+            if cvss31_data := metrics.get('cvssMetricV31', [{}]):
+                for i in cvss31_data:
+                    if i.get('source') == 'nvd@nist.gov':
+                        self.cvss31 = CVSSv3(i.get('cvssData'), '3.1')
 
             if cvss30_data := metrics.get('cvssMetricV30', [{}])[0].get('cvssData'):
                 self.cvss30 = CVSSv3(cvss30_data, '3.0')

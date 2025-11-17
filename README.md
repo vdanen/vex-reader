@@ -93,8 +93,8 @@ be on-disk.
 
 ## Development
 
-Contributions to vex-reader are welcome.  Currently it works predominantly with
-Red Hat's VEX files and has limited success with othe VEX files (such as from
+Contributions to vex-reader are welcome.  Currently, it works predominantly with
+Red Hat's VEX files and has limited success with other VEX files (such as from
 Cisco).  If `vex-reader` fails to parse the VEX file you're feeding it, you can
 either submit a patch or open an issue and link to the VEX file you're trying
 to parse.
