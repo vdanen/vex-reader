@@ -49,17 +49,24 @@ class NVD:
         try:
             metrics = nvd_data['vulnerabilities'][0]['cve'].get('metrics', {})
 
-            # Parse CVSS data if available
-            if cvss31_data := metrics.get('cvssMetricV31', [{}]):
-                for i in cvss31_data:
-                    if i.get('source') == 'nvd@nist.gov':
-                        self.cvss31 = CVSSv3(i.get('cvssData'), '3.1')
+            # Parse CVSS data if available, only from NVD source
+            if cvss31_metrics := metrics.get('cvssMetricV31', []):
+                for metric in cvss31_metrics:
+                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
+                        self.cvss31 = CVSSv3(metric['cvssData'], '3.1')
+                        break
 
-            if cvss30_data := metrics.get('cvssMetricV30', [{}])[0].get('cvssData'):
-                self.cvss30 = CVSSv3(cvss30_data, '3.0')
+            if cvss30_metrics := metrics.get('cvssMetricV30', []):
+                for metric in cvss30_metrics:
+                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
+                        self.cvss30 = CVSSv3(metric['cvssData'], '3.0')
+                        break
 
-            if cvss2_data := metrics.get('cvssMetricV2', [{}])[0].get('cvssData'):
-                self.cvss20 = CVSSv2(cvss2_data, '2.0')
+            if cvss2_metrics := metrics.get('cvssMetricV2', []):
+                for metric in cvss2_metrics:
+                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
+                        self.cvss20 = CVSSv2(metric['cvssData'], '2.0')
+                        break
 
         except (KeyError, IndexError) as e:
             # Log error or handle invalid data structure
