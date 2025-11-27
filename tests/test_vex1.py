@@ -206,6 +206,7 @@ class TestCVE_2021_44228(TestVex):
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 130)
 
+
 class TestCVE_2025_29087(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
@@ -265,6 +266,69 @@ class TestCVE_2025_29087(TestVex):
 
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 3)
+
+
+class TestCVE_2025_59840(TestVex):
+    def setUp(self):
+        # Use the correct path relative to the tests directory
+        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2025-59840.json')
+        self.vex      = Vex(test_file)
+        self.packages = VexPackages(self.vex.raw)
+
+    def test_cve_name(self):
+        self.assertEqual(self.vex.cve, 'CVE-2025-59840')
+
+    def test_public_date(self):
+        self.assertEqual(self.vex.release_date, '2025-11-13')
+
+    def test_impact(self):
+        self.assertEqual(self.vex.global_impact, 'Important')
+
+    def test_bzid(self):
+        self.assertEqual(self.vex.bz_id, '2414907')
+
+    def test_cvss_vector(self):
+        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N')
+
+    def test_cvss_base_score(self):
+        self.assertEqual(self.vex.global_cvss.baseScore, 8.1)
+
+    def test_nvd_cvss_vector(self):
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-59840')
+        self.nvd_cve  = response.json()
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-59840':
+            # we got the right result
+            self.nvd = NVD(self.nvd_cve)
+        else:
+            self.nvd = NVD(None)
+        # as of 2025/11/27 NVD has not assigned a CVSS
+        self.assertEqual(self.nvd.cvss31.vectorString, 'NOT AVAILABLE ')
+
+    def test_nvd_cvss_base_score(self):
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-59840')
+        self.nvd_cve  = response.json()
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-59840':
+            # we got the right result
+            self.nvd = NVD(self.nvd_cve)
+        else:
+            self.nvd = NVD(None)
+        self.assertEqual(self.nvd.cvss31.baseScore, '')
+
+    def test_number_of_refs(self):
+        self.assertEqual(len(self.vex.references), 4)
+
+    def test_number_of_mitigations(self):
+        self.assertEqual(len(self.packages.mitigation), 1)
+
+    def test_number_of_fixes(self):
+        self.assertEqual(len(self.packages.fixes), 0)
+
+    def test_number_of_affects(self):
+        self.assertEqual(len(self.packages.affected), 1)
+
+    def test_number_of_noaffects(self):
+        self.assertEqual(len(self.packages.not_affected), 5)
+
 
 """
 class TestCVE_Cisco_rce_2024(TestVex):
