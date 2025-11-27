@@ -18,12 +18,13 @@ class TestVex(TestCase):
 class TestCVE_2024_40951(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'cve-2024-40951.json')
+        self.cve = 'CVE-2024-40951'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2024-40951')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2024-07-11')
@@ -56,12 +57,13 @@ class TestCVE_2024_40951(TestVex):
 class TestCVE_2024_21626(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'cve-2024-21626.json')
+        self.cve = 'CVE-2024-21626'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2024-21626')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2024-01-31')
@@ -79,9 +81,9 @@ class TestCVE_2024_21626(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.6)
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2024-21626')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2024-21626':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -89,9 +91,9 @@ class TestCVE_2024_21626(TestVex):
         self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2024-21626')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2024-21626':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -114,12 +116,13 @@ class TestCVE_2024_21626(TestVex):
 class TestCVE_2002_0803(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'cve-2002-0803.json')
+        self.cve = 'CVE-2002-0803'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2002-0803')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2002-06-07')
@@ -152,12 +155,13 @@ class TestCVE_2002_0803(TestVex):
 class TestCVE_2021_44228(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2021-44228.json')
+        self.cve = 'CVE-2021-44228'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2021-44228')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2021-12-09')
@@ -175,9 +179,9 @@ class TestCVE_2021_44228(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, 9.8)
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-44228')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2021-44228':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -185,9 +189,9 @@ class TestCVE_2021_44228(TestVex):
         self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-44228')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2021-44228':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -210,12 +214,13 @@ class TestCVE_2021_44228(TestVex):
 class TestCVE_2025_29087(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2025-29087.json')
+        self.cve = 'CVE-2025-29087'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2025-29087')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2025-04-06')
@@ -233,9 +238,9 @@ class TestCVE_2025_29087(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, 5.5)
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-29087')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-29087':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -243,9 +248,9 @@ class TestCVE_2025_29087(TestVex):
         self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-29087')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-29087':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -271,12 +276,13 @@ class TestCVE_2025_29087(TestVex):
 class TestCVE_2025_59840(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2025-59840.json')
+        self.cve = 'CVE-2025-59840'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
-        self.assertEqual(self.vex.cve, 'CVE-2025-59840')
+        self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
         self.assertEqual(self.vex.release_date, '2025-11-13')
@@ -294,9 +300,9 @@ class TestCVE_2025_59840(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.1)
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-59840')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-59840':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
@@ -305,9 +311,9 @@ class TestCVE_2025_59840(TestVex):
         self.assertEqual(self.nvd.cvss31.vectorString, 'NOT AVAILABLE ')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-59840')
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
         self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-59840':
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
             # we got the right result
             self.nvd = NVD(self.nvd_cve)
         else:
