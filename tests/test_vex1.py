@@ -206,6 +206,65 @@ class TestCVE_2021_44228(TestVex):
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 130)
 
+class TestCVE_2025_29087(TestVex):
+    def setUp(self):
+        # Use the correct path relative to the tests directory
+        test_file = os.path.join(os.path.dirname(__file__), 'CVE-2025-29087.json')
+        self.vex      = Vex(test_file)
+        self.packages = VexPackages(self.vex.raw)
+
+    def test_cve_name(self):
+        self.assertEqual(self.vex.cve, 'CVE-2025-29087')
+
+    def test_public_date(self):
+        self.assertEqual(self.vex.release_date, '2025-04-06')
+
+    def test_impact(self):
+        self.assertEqual(self.vex.global_impact, 'Moderate')
+
+    def test_bzid(self):
+        self.assertEqual(self.vex.bz_id, '2358028')
+
+    def test_cvss_vector(self):
+        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H')
+
+    def test_cvss_base_score(self):
+        self.assertEqual(self.vex.global_cvss.baseScore, 5.5)
+
+    def test_nvd_cvss_vector(self):
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-29087')
+        self.nvd_cve  = response.json()
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-29087':
+            # we got the right result
+            self.nvd = NVD(self.nvd_cve)
+        else:
+            self.nvd = NVD(None)
+        self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H')
+
+    def test_nvd_cvss_base_score(self):
+        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-29087')
+        self.nvd_cve  = response.json()
+        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == 'CVE-2025-29087':
+            # we got the right result
+            self.nvd = NVD(self.nvd_cve)
+        else:
+            self.nvd = NVD(None)
+        self.assertEqual(self.nvd.cvss31.baseScore, 7.5)
+
+    def test_number_of_refs(self):
+        self.assertEqual(len(self.vex.references), 4)
+
+    def test_number_of_mitigations(self):
+        self.assertEqual(len(self.packages.mitigation), 1)
+
+    def test_number_of_fixes(self):
+        self.assertEqual(len(self.packages.fixes), 0)
+
+    def test_number_of_wontfixes(self):
+        self.assertEqual(len(self.packages.wontfix), 12)
+
+    def test_number_of_noaffects(self):
+        self.assertEqual(len(self.packages.not_affected), 3)
 
 """
 class TestCVE_Cisco_rce_2024(TestVex):
