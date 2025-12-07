@@ -166,17 +166,19 @@ class Vex(object):
                 else:
                     rd              = datetime.fromisoformat(k['release_date'])
                 self.release_date   = rd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
-            elif self.initial_date:
-                # set the release date to the initial date if available; it might not be the true public date, but
-                # it's all we have to work with
-                self.release_date = self.initial_date
-            else:
-                print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
             # exploit information
             self.exploits = []
             if 'threats' in k:
                 for x in k['threats']:
+                    # this gets a little tricky; some put the discovery date in "threats" (SUSE does)
+                    if 'date' in x and not self.release_date:
+                        if x['date'].endswith('Z'):
+                            xd = datetime.fromisoformat(x['date'][:-1])
+                            xd = xd.replace(tzinfo=pytz.timezone('UTC'))
+                        else:
+                            xd = datetime.fromisoformat(x['date'])
+                        self.release_date = xd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
                     if x['category'] == 'exploit_status':
                         source = ''
                         url    = ''
