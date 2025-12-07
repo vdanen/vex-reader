@@ -397,6 +397,45 @@ class TestCVE_2025_58443(TestVex):
     def test_number_of_noaffects(self):
         self.assertEqual(len(self.packages.not_affected), 0)
 
+
+class TestSUSECVE_2014_0160(TestVex):
+    def setUp(self):
+        # Use the correct path relative to the tests directory
+        self.cve = 'CVE-2014-0160'
+        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
+        self.vex      = Vex(test_file)
+        self.packages = VexPackages(self.vex.raw)
+
+    def test_cve_name(self):
+        self.assertEqual(self.vex.cve, self.cve)
+
+    def test_public_date(self):
+        self.assertEqual(self.vex.release_date, '2014-04-07')
+
+    def test_impact(self):
+        self.assertEqual(self.vex.global_impact, 'Important')
+
+    def test_cvss_vector(self):
+        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N')
+
+    def test_cvss_base_score(self):
+        self.assertEqual(self.vex.global_cvss.baseScore, 7.5)
+
+    def test_number_of_refs(self):
+        self.assertEqual(len(self.vex.references), 31)
+
+    def test_number_of_mitigations(self):
+        self.assertEqual(len(self.packages.mitigation), 0)
+
+    def test_number_of_fixes(self):
+        self.assertEqual(len(self.packages.fixes), 1)
+
+    def test_number_of_affects(self):
+        self.assertEqual(len(self.packages.affected), 0)
+
+    def test_number_of_noaffects(self):
+        self.assertEqual(len(self.packages.not_affected), 492)
+
 """
 class TestCVE_Cisco_rce_2024(TestVex):
     def setUp(self):
