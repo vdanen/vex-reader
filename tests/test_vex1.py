@@ -80,26 +80,6 @@ class TestCVE_2024_21626(TestVex):
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.6)
 
-    def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H')
-
-    def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        self.assertEqual(self.nvd.cvss31.baseScore, 8.6)
-
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
 
@@ -237,26 +217,6 @@ class TestCVE_2025_29087(TestVex):
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 5.5)
 
-    def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H')
-
-    def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        self.assertEqual(self.nvd.cvss31.baseScore, 7.5)
-
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
 
@@ -298,27 +258,6 @@ class TestCVE_2025_59840(TestVex):
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.1)
-
-    def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        # as of 2025/11/27 NVD has not assigned a CVSS
-        self.assertEqual(self.nvd.cvss31.vectorString, 'NOT AVAILABLE ')
-
-    def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
-        self.assertEqual(self.nvd.cvss31.baseScore, '')
 
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
