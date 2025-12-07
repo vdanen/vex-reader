@@ -146,7 +146,6 @@ class Vex(object):
         :return:
         """
 
-
         for k in self.raw['vulnerabilities']:
             if 'title' in k:
                 self.title          = k['title']
@@ -241,8 +240,7 @@ class Vex(object):
         self.references = []
         if 'references' in k:
             for x in k['references']:
-                if x['category'] == 'self':
-                    continue
+                # we only want the external references
                 if x['category'] == 'external':
                     self.references.append(x['url'])
 
