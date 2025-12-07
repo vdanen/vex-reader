@@ -89,7 +89,6 @@ class CVSSv3(object):
             else:
                 # derive these from the metrics
                 metriclist = metrics['vectorString'].split('/')
-                print(metriclist)
                 for m in metriclist:
                     if m.startswith('AV:'):
                         key = {'N': 'Network', 'A': 'Adjacent', 'L': 'Local', 'P': 'Physical'}
