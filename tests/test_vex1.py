@@ -402,7 +402,7 @@ class TestSUSECVE_2014_0160(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
         self.cve = 'CVE-2014-0160'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
+        test_file = os.path.join(os.path.dirname(__file__), f'suse-{self.cve.lower()}.json')
         self.vex      = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
