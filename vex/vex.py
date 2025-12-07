@@ -78,9 +78,21 @@ class Vex(object):
         if self.csaf['type'] != 'csaf_vex':
             raise ValueError(f"Sorry, I can only handle csaf_vex 2.0 documents, this one is {self.csaf['type']} {self.csaf['csaf_version']}")
 
-        self.distribution  = None
-        self.global_impact = None
-        self.publisher     = None
+        # defaults
+        self.cwe_id         = None
+        self.cwe_name       = None
+        self.description    = None
+        self.summary        = None
+        self.statement      = None
+        self.discovery_date = None
+        self.bz_id          = None
+        self.bz_url         = None
+        self.title          = None
+        self.release_date   = None
+        self.initial_date   = None
+        self.distribution   = None
+        self.global_impact  = None
+        self.publisher      = None
 
         # some VEX documents do not have very much information...
         if 'aggregate_severity' in self.raw['document']:
@@ -98,6 +110,13 @@ class Vex(object):
         else:
             ud = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
         self.updated   = ud.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y at %I:%M:%S %p UTC')
+
+        if self.raw['document']['tracking']['initial_release_date'].endswith('Z'):
+            parsed_date = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'][:-1])
+            id = parsed_date.replace(tzinfo=pytz.timezone('UTC'))
+        else:
+            id = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'])
+        self.initial_date = id.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
 
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
@@ -127,19 +146,8 @@ class Vex(object):
         :return:
         """
 
-        for k in self.raw['vulnerabilities']:
-            # defaults
-            self.cwe_id         = None
-            self.cwe_name       = None
-            self.description    = None
-            self.summary        = None
-            self.statement      = None
-            self.discovery_date = None
-            self.bz_id          = None
-            self.bz_url         = None
-            self.title          = None
-            self.release_date   = None
 
+        for k in self.raw['vulnerabilities']:
             if 'title' in k:
                 self.title          = k['title']
             self.cve            = k['cve']
@@ -151,13 +159,17 @@ class Vex(object):
             if 'discovery_date' in k:
                 self.discovery_date = k['discovery_date']
             if 'release_date' in k:
-                # you'd think this would be mandatory and important but it isn't
+                # you'd think this would be mandatory and important, but it isn't
                 if k['release_date'].endswith('Z'):
                     rd              = datetime.fromisoformat(k['release_date'][:-1])
                     rd              = rd.replace(tzinfo=pytz.timezone('UTC'))
                 else:
                     rd              = datetime.fromisoformat(k['release_date'])
                 self.release_date   = rd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
+            elif self.initial_date:
+                # set the release date to the initial date if available; it might not be the true public date, but
+                # it's all we have to work with
+                self.release_date = self.initial_date
             else:
                 print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
