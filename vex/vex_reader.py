@@ -187,7 +187,7 @@ def main():
         print()
 
         console.print(f'[green]CVSS {cvssVersion} Score Breakdown[/green]')
-        width = len(publisher) + 1
+        width = len(publisher) + 1 if len(publisher) + 1 >= 10 else 10
         print(f"{' ':26} {publisher:{width}} NVD")
         # Check if NVD has valid CVSS data (version is set when data exists)
         has_nvd_data = nvd_cvss.version is not None
