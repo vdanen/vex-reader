@@ -28,6 +28,9 @@ def product_lookup(product, pmap):
 
             return (name, cpe, purl)
 
+    # our pmap has no products so return an empty tuple
+    return (name, cpe, purl)
+
 
 def dedupe(component_list):
     return list(dict.fromkeys(component_list))
@@ -185,6 +188,9 @@ class VexPackages(object):
 
         self.pmap = []
         for p in self.raw['product_tree']['branches']:
+            if not 'branches' in p:
+                # there are no product branches, meaning no products
+                continue
             # TODO there seems to be a bug in the VEX output respective to branch nesting, it's very convoluted =(
             for b in p['branches']:
                 if 'branches' in b.keys():
@@ -250,6 +256,10 @@ class VexPackages(object):
                             self.affected.append(Affected(y, self.pmap))
                     if x == 'known_not_affected':
                         for y in filter_components(k['product_status']['known_not_affected']):
+                            # this is for those "does not affect us CVEs"; at least Red Hat does this so if we see this
+                            # we don't build a not-affects list, we just leave it empty
+                            if y == 'red_hat_products':
+                                continue
                             # check to make sure we're not adding a dupe
                             addMe = True
                             for na in self.not_affected:
