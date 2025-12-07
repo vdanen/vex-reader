@@ -1,6 +1,6 @@
 [project]
 name = "vex-reader"
-version = "0.9.4.2"
+version = "0.9.5"
 authors = [
   { name="Vincent Danen", email="vdanen@annvix.com" },
 ]
@@ -17,7 +17,7 @@ classifiers = [
 dependencies = [
     "requests==2.32.4",
     "rich>=13.8.1",
-    "pytz==2024.1"
+    "pytz>=2024.1"
 ]
 
 [project.optional-dependencies]
