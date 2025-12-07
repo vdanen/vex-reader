@@ -117,7 +117,6 @@ class Vex(object):
         else:
             id = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'])
         self.initial_date = id.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
-        print(f'initial date: {self.initial_date}')
 
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
