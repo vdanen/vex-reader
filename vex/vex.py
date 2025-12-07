@@ -117,6 +117,7 @@ class Vex(object):
         else:
             id = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'])
         self.initial_date = id.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
+        print(f'initial date: {self.initial_date}')
 
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
@@ -127,6 +128,12 @@ class Vex(object):
                 self.notes[x['category']][x['title']] = x['text']
 
         self.parse_vulns()
+
+        # if we still have not discovered a release_date (either as a release_date or a threat date, but we have
+        # an initial release date, let's use that (Microsoft does this)
+        if not self.release_date:
+            if self.initial_date:
+                self.release_date = self.initial_date
 
         if not self.acks:
             # there is another place where acknowledgements can be found as per the spec, apparently
