@@ -39,6 +39,8 @@ def main():
     console.print(f'[bold red]{vex.cve}[/bold red]')
     print('-' * len(vex.cve))
     print()
+    if vex.title:
+        console.print(f"Title     : {vex.title}", highlight=False)
     if vex.release_date:
         console.print(f'Public on : [cyan]{vex.release_date}[/cyan]', highlight=False)
     if vex.global_impact:
