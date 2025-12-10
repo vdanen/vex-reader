@@ -141,8 +141,10 @@ class Vex(object):
                 for x in self.raw['document']['acknowledgments']:
                     if 'summary' in x:
                         self.acks = x['summary']
+                        self.acks_is_summary = True
         else:
-            if self.publisher == 'Red Hat Product Security':
+            # Only apply Red Hat wrapper if the acknowledgement is names, not a complete summary
+            if self.publisher == 'Red Hat Product Security' and not self.acks_is_summary:
                 # throw the Red Hat-ism in here (maybe they could do like Cisco does as one statement?)
                 self.acks = f'Red Hat would like to thank {self.acks} for reporting this issue.'
 
@@ -203,23 +205,30 @@ class Vex(object):
 
         # Acknowledgements
         self.acks = None
+        self.acks_is_summary = False  # Track if acks is a complete summary statement
         if 'acknowledgments' in k:
             for x in k['acknowledgments']:
-                # we should always have names, but may not always have an organization
-                # (if the credit is to an org, the org is the name)
-                if 'organization' not in x:
-                    x['organization'] = ''
-                ack_list = {'names': x['names'], 'org': x['organization']}
-                if len(ack_list['names']) > 1:
-                    # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
-                    names = " and ".join(ack_list['names'])
-                else:
-                    names = ack_list['names'][0]
+                # Check if we have 'names' field; if not, check for 'summary' field
+                if 'names' in x:
+                    # we should always have names, but may not always have an organization
+                    # (if the credit is to an org, the org is the name)
+                    if 'organization' not in x:
+                        x['organization'] = ''
+                    ack_list = {'names': x['names'], 'org': x['organization']}
+                    if len(ack_list['names']) > 1:
+                        # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
+                        names = " and ".join(ack_list['names'])
+                    else:
+                        names = ack_list['names'][0]
 
-                if ack_list['org'] == '':
-                    self.acks = names
-                else:
-                    self.acks = f"{names} ({ack_list['org']})"
+                    if ack_list['org'] == '':
+                        self.acks = names
+                    else:
+                        self.acks = f"{names} ({ack_list['org']})"
+                elif 'summary' in x:
+                    # Some acknowledgments only have a summary field (complete statement)
+                    self.acks = x['summary']
+                    self.acks_is_summary = True
 
         # Bugzilla / bugtracking
         if 'ids' in k:
