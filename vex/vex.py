@@ -78,9 +78,21 @@ class Vex(object):
         if self.csaf['type'] != 'csaf_vex':
             raise ValueError(f"Sorry, I can only handle csaf_vex 2.0 documents, this one is {self.csaf['type']} {self.csaf['csaf_version']}")
 
-        self.distribution  = None
-        self.global_impact = None
-        self.publisher     = None
+        # defaults
+        self.cwe_id         = None
+        self.cwe_name       = None
+        self.description    = None
+        self.summary        = None
+        self.statement      = None
+        self.discovery_date = None
+        self.bz_id          = None
+        self.bz_url         = None
+        self.title          = None
+        self.release_date   = None
+        self.initial_date   = None
+        self.distribution   = None
+        self.global_impact  = None
+        self.publisher      = None
 
         # some VEX documents do not have very much information...
         if 'aggregate_severity' in self.raw['document']:
@@ -99,6 +111,13 @@ class Vex(object):
             ud = datetime.fromisoformat(self.raw['document']['tracking']['current_release_date'])
         self.updated   = ud.astimezone(pytz.timezone(TZ)).strftime('%B %d, %Y at %I:%M:%S %p UTC')
 
+        if self.raw['document']['tracking']['initial_release_date'].endswith('Z'):
+            parsed_date = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'][:-1])
+            id = parsed_date.replace(tzinfo=pytz.timezone('UTC'))
+        else:
+            id = datetime.fromisoformat(self.raw['document']['tracking']['initial_release_date'])
+        self.initial_date = id.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
+
         # Notes build up the bulk of our text, we should include them all
         self.notes = {}
         if 'notes' in self.raw['document']:
@@ -109,6 +128,12 @@ class Vex(object):
 
         self.parse_vulns()
 
+        # if we still have not discovered a release_date (either as a release_date or a threat date, but we have
+        # an initial release date, let's use that (Microsoft does this)
+        if not self.release_date:
+            if self.initial_date:
+                self.release_date = self.initial_date
+
         if not self.acks:
             # there is another place where acknowledgements can be found as per the spec, apparently
             # looking at you https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-openssh-rce-2024/csaf/cisco-sa-openssh-rce-2024.json
@@ -116,8 +141,10 @@ class Vex(object):
                 for x in self.raw['document']['acknowledgments']:
                     if 'summary' in x:
                         self.acks = x['summary']
+                        self.acks_is_summary = True
         else:
-            if self.publisher == 'Red Hat Product Security':
+            # Only apply Red Hat wrapper if the acknowledgement is names, not a complete summary
+            if self.publisher == 'Red Hat Product Security' and not self.acks_is_summary:
                 # throw the Red Hat-ism in here (maybe they could do like Cisco does as one statement?)
                 self.acks = f'Red Hat would like to thank {self.acks} for reporting this issue.'
 
@@ -128,18 +155,6 @@ class Vex(object):
         """
 
         for k in self.raw['vulnerabilities']:
-            # defaults
-            self.cwe_id         = None
-            self.cwe_name       = None
-            self.description    = None
-            self.summary        = None
-            self.statement      = None
-            self.discovery_date = None
-            self.bz_id          = None
-            self.bz_url         = None
-            self.title          = None
-            self.release_date   = None
-
             if 'title' in k:
                 self.title          = k['title']
             self.cve            = k['cve']
@@ -151,20 +166,26 @@ class Vex(object):
             if 'discovery_date' in k:
                 self.discovery_date = k['discovery_date']
             if 'release_date' in k:
-                # you'd think this would be mandatory and important but it isn't
+                # you'd think this would be mandatory and important, but it isn't
                 if k['release_date'].endswith('Z'):
                     rd              = datetime.fromisoformat(k['release_date'][:-1])
                     rd              = rd.replace(tzinfo=pytz.timezone('UTC'))
                 else:
                     rd              = datetime.fromisoformat(k['release_date'])
                 self.release_date   = rd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
-            else:
-                print(f'ERROR: {self.cve} is missing a release date!  This probably should not happen!')
 
             # exploit information
             self.exploits = []
             if 'threats' in k:
                 for x in k['threats']:
+                    # this gets a little tricky; some put the discovery date in "threats" (SUSE does)
+                    if 'date' in x and not self.release_date:
+                        if x['date'].endswith('Z'):
+                            xd = datetime.fromisoformat(x['date'][:-1])
+                            xd = xd.replace(tzinfo=pytz.timezone('UTC'))
+                        else:
+                            xd = datetime.fromisoformat(x['date'])
+                        self.release_date = xd.astimezone(pytz.timezone(TZ)).strftime('%Y-%m-%d')
                     if x['category'] == 'exploit_status':
                         source = ''
                         url    = ''
@@ -184,23 +205,30 @@ class Vex(object):
 
         # Acknowledgements
         self.acks = None
+        self.acks_is_summary = False  # Track if acks is a complete summary statement
         if 'acknowledgments' in k:
             for x in k['acknowledgments']:
-                # we should always have names, but may not always have an organization
-                # (if the credit is to an org, the org is the name)
-                if 'organization' not in x:
-                    x['organization'] = ''
-                ack_list = {'names': x['names'], 'org': x['organization']}
-                if len(ack_list['names']) > 1:
-                    # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
-                    names = " and ".join(ack_list['names'])
-                else:
-                    names = ack_list['names'][0]
+                # Check if we have 'names' field; if not, check for 'summary' field
+                if 'names' in x:
+                    # we should always have names, but may not always have an organization
+                    # (if the credit is to an org, the org is the name)
+                    if 'organization' not in x:
+                        x['organization'] = ''
+                    ack_list = {'names': x['names'], 'org': x['organization']}
+                    if len(ack_list['names']) > 1:
+                        # TODO: if there's 2, we can 'and' if there's more than 2 it should be '1, 2 and 3'
+                        names = " and ".join(ack_list['names'])
+                    else:
+                        names = ack_list['names'][0]
 
-                if ack_list['org'] == '':
-                    self.acks = names
-                else:
-                    self.acks = f"{names} ({ack_list['org']})"
+                    if ack_list['org'] == '':
+                        self.acks = names
+                    else:
+                        self.acks = f"{names} ({ack_list['org']})"
+                elif 'summary' in x:
+                    # Some acknowledgments only have a summary field (complete statement)
+                    self.acks = x['summary']
+                    self.acks_is_summary = True
 
         # Bugzilla / bugtracking
         if 'ids' in k:
@@ -227,8 +255,7 @@ class Vex(object):
         self.references = []
         if 'references' in k:
             for x in k['references']:
-                if x['category'] == 'self':
-                    continue
+                # we only want the external references
                 if x['category'] == 'external':
                     self.references.append(x['url'])
 

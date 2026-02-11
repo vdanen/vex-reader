@@ -28,6 +28,28 @@ class CVSSv2(object):
                 self.confidentialityImpact = metrics['confidentialityImpact'].capitalize()
                 self.integrityImpact       = metrics['integrityImpact'].capitalize()
                 self.availabilityImpact    = metrics['availabilityImpact'].capitalize()
+            else:
+                # derive these from the metrics
+                metriclist = metrics['vectorString'].split('/')
+                for m in metriclist:
+                    if m.startswith('AV:'):
+                        key = {'N': 'Network', 'A': 'Adjacent', 'L': 'Local'}
+                        self.accessVector = key[m.split(':')[1]]
+                    if m.startswith('AC:'):
+                        key = {'H': 'High', 'M': 'Medium', 'L': 'Low'}
+                        self.accessComplexity = key[m.split(':')[1]]
+                    if m.startswith('Au:'):
+                        key = {'M': 'Multiple', 'S': 'Single', 'N': 'None'}
+                        self.authentication = key[m.split(':')[1]]
+                    if m.startswith('C:'):
+                        key = {'C': 'Complete', 'P': 'Partial', 'N': 'None'}
+                        self.confidentialityImpact = key[m.split(':')[1]]
+                    if m.startswith('I:'):
+                        key = {'C': 'Complete', 'P': 'Partial', 'N': 'None'}
+                        self.integrityImpact = key[m.split(':')[1]]
+                    if m.startswith('A:'):
+                        key = {'C': 'Complete', 'P': 'Partial', 'N': 'None'}
+                        self.availabilityImpact = key[m.split(':')[1]]
 
 
 class CVSSv3(object):
@@ -64,4 +86,31 @@ class CVSSv3(object):
                 self.confidentialityImpact = metrics['confidentialityImpact'].capitalize()
                 self.integrityImpact       = metrics['integrityImpact'].capitalize()
                 self.availabilityImpact    = metrics['availabilityImpact'].capitalize()
-
+            else:
+                # derive these from the metrics
+                metriclist = metrics['vectorString'].split('/')
+                for m in metriclist:
+                    if m.startswith('AV:'):
+                        key = {'N': 'Network', 'A': 'Adjacent', 'L': 'Local', 'P': 'Physical'}
+                        self.attackVector = key[m.split(':')[1]]
+                    if m.startswith('AC:'):
+                        key = {'H': 'High', 'L': 'Low'}
+                        self.attackComplexity = key[m.split(':')[1]]
+                    if m.startswith('PR:'):
+                        key = {'H': 'High', 'L': 'Low', 'N': 'None'}
+                        self.privilegesRequired = key[m.split(':')[1]]
+                    if m.startswith('UI:'):
+                        key = {'R': 'Required', 'N': 'None'}
+                        self.userInteraction = key[m.split(':')[1]]
+                    if m.startswith('S:'):
+                        key = {'U': 'Unchanged', 'C': 'Changed'}
+                        self.scope = key[m.split(':')[1]]
+                    if m.startswith('C:'):
+                        key = {'H': 'High', 'L': 'Low', 'N': 'None'}
+                        self.confidentialityImpact = key[m.split(':')[1]]
+                    if m.startswith('I:'):
+                        key = {'H': 'High', 'L': 'Low', 'N': 'None'}
+                        self.integrityImpact = key[m.split(':')[1]]
+                    if m.startswith('A:'):
+                        key = {'H': 'High', 'L': 'Low', 'N': 'None'}
+                        self.availabilityImpact = key[m.split(':')[1]]
