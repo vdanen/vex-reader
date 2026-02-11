@@ -213,6 +213,20 @@ class VexPackages(object):
                                         if 'purl' in c['product']['product_identification_helper']:
                                             purl = c['product']['product_identification_helper']['purl']
                                 self.pmap.append({id: {'name': name, 'cpe': cpe, 'purl': purl}})
+                elif 'category' in b.keys() and 'product' in b.keys():
+                    # Handle branches that have product directly (no nested branches)
+                    # This handles both product_name and product_version categories
+                    if b['category'] in ['product_name', 'product_version']:
+                        name = b['name']
+                        cpe  = None
+                        purl = None
+                        id  = b['product']['product_id']
+                        if 'product_identification_helper' in b['product']:
+                            if 'cpe' in b['product']['product_identification_helper']:
+                                cpe = b['product']['product_identification_helper']['cpe']
+                            if 'purl' in b['product']['product_identification_helper']:
+                                purl = b['product']['product_identification_helper']['purl']
+                        self.pmap.append({id: {'name': name, 'cpe': cpe, 'purl': purl}})
 
 
     def parse_packages(self):
