@@ -110,7 +110,7 @@ python -m pytest tests/ --cov=vex --cov-report=html
 
 The project uses GitHub Actions for continuous integration:
 
-- **Multiple Python versions**: Tests run on Python 3.8, 3.9, 3.10, 3.11, and 3.12
+- **Multiple Python versions**: Tests run on Python 3.10, 3.11, 3.12, and 3.13
 - **Automatic testing**: Tests run on every push and pull request
 - **Code quality checks**: Includes linting and security scanning
 - **Build verification**: Ensures the package builds correctly
