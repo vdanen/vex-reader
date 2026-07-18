@@ -15,10 +15,18 @@ any VEX documents.
 
 ## Installation
 
+Requires Python 3.10 or later.
+
 Install [vex-reader](https://pypi.org/project/vex-reader/) from PyPI:
 
 ```shell
 pip install vex-reader
+```
+
+Or with [uv](https://docs.astral.sh/uv/):
+
+```shell
+uv pip install vex-reader
 ```
 
 ## Usage
@@ -101,19 +109,24 @@ to parse.
 
 ### Development setup:
 
+Requires [uv](https://docs.astral.sh/uv/).
+
 ```shell
 git clone https://github.com/vdanen/vex-reader.git
 cd vex-reader
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -e .
+uv sync
 ```
 
 When working from the git repository for development, use:
 
 ```
-$ python -m vex.vex_reader --vex tests/cve-2002-2443.json
+$ uv run vex-reader --vex tests/cve-2002-2443.json
+```
+
+To bump the package version, commit the change, and create a git tag:
+
+```shell
+make version VERSION=0.9.6
 ```
 
 A good place to find some VEX documents to play with is here: https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json

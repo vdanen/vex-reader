@@ -10,7 +10,8 @@ The project has been configured with a comprehensive testing setup that includes
 - **pytest** support for advanced testing features
 - **Coverage reporting** to track test coverage
 - **GitHub Actions** for continuous integration
-- **Multiple Python version support** (3.8 - 3.12)
+- **Multiple Python version support** (3.10 - 3.14)
+- **[uv](https://docs.astral.sh/uv/)** for dependency management
 
 ## Test Structure
 
@@ -25,35 +26,17 @@ tests/
 
 ## Running Tests
 
-### Option 1: Using the Test Runner Script
-
-The easiest way to run tests is using the provided test runner script:
-
-```bash
-# Run tests with unittest (default)
-python run_tests.py --verbose
-
-# Run tests with unittest only
-python run_tests.py --unittest --verbose
-
-# Run tests with pytest and coverage
-python run_tests.py --pytest --coverage --verbose
-
-# Install dependencies and run tests
-python run_tests.py --install-deps --verbose
-```
-
-### Option 2: Using Makefile
+### Option 1: Using Makefile
 
 ```bash
 # Show available targets
 make help
 
+# Install dependencies (uv sync)
+make install-dev
+
 # Run basic tests
 make test
-
-# Install development dependencies
-make install-dev
 
 # Run tests with coverage (requires pytest)
 make test-cov
@@ -66,32 +49,51 @@ make clean
 
 # Build the package
 make build
+
+# Bump version, commit, and tag
+make version VERSION=0.9.6
+```
+
+### Option 2: Using the Test Runner Script
+
+```bash
+# Run tests with unittest (default)
+uv run python run_tests.py --verbose
+
+# Run tests with unittest only
+uv run python run_tests.py --unittest --verbose
+
+# Run tests with pytest and coverage
+uv run python run_tests.py --pytest --coverage --verbose
+
+# Install dependencies and run tests
+uv run python run_tests.py --install-deps --verbose
 ```
 
 ### Option 3: Direct Commands
 
 ```bash
-# Using unittest (no additional dependencies required)
-python -m unittest discover tests -v
+# Sync the environment
+uv sync
 
-# Using pytest (requires pytest installation)
-python -m pytest tests/ -v
+# Using unittest
+uv run python -m unittest discover tests -v
+
+# Using pytest
+uv run pytest tests/ -v
 
 # Using pytest with coverage
-python -m pytest tests/ --cov=vex --cov-report=term-missing --cov-report=html
+uv run pytest tests/ --cov=vex --cov-report=term-missing --cov-report=html
 ```
 
-## Installing Test Dependencies
-
-To install the optional test dependencies:
+## Installing Dependencies
 
 ```bash
-# Install test dependencies
-pip install -e .[test]
-
-# Or install specific packages
-pip install pytest pytest-cov pytest-xdist
+uv sync
 ```
+
+This installs the package in editable mode plus the `dev` dependency group
+(pytest, coverage, linting tools, build/upload tools, etc.).
 
 ## Test Coverage
 
@@ -102,7 +104,7 @@ The project is configured to generate coverage reports:
 
 ```bash
 # Generate coverage report
-python -m pytest tests/ --cov=vex --cov-report=html
+uv run pytest tests/ --cov=vex --cov-report=html
 # Open htmlcov/index.html in your browser
 ```
 
@@ -110,7 +112,7 @@ python -m pytest tests/ --cov=vex --cov-report=html
 
 The project uses GitHub Actions for continuous integration:
 
-- **Multiple Python versions**: Tests run on Python 3.10, 3.11, 3.12, and 3.13
+- **Multiple Python versions**: Tests run on Python 3.10, 3.11, 3.12, 3.13, and 3.14
 - **Automatic testing**: Tests run on every push and pull request
 - **Code quality checks**: Includes linting and security scanning
 - **Build verification**: Ensures the package builds correctly
@@ -123,6 +125,21 @@ The CI workflow includes:
 2. **Lint job**: Checks code quality with flake8, black, and isort
 3. **Security job**: Scans for security vulnerabilities
 4. **Build job**: Builds and validates the package
+
+## Version Bumps
+
+To release a new version locally:
+
+```bash
+make version VERSION=0.9.6
+```
+
+This updates `pyproject.toml`, commits the change, and creates an annotated
+tag `v0.9.6`. Push when ready:
+
+```bash
+git push && git push origin v0.9.6
+```
 
 ## Test Data
 
@@ -168,10 +185,10 @@ class TestNewFeature(TestCase):
 
 ### Common Issues
 
-1. **Import errors**: Make sure the vex module is properly installed
+1. **Import errors**: Run `uv sync` so the package is installed into `.venv`
 2. **File not found**: Check that test data files exist in the tests directory
 3. **Permission errors**: Ensure you have read permissions for test files
-4. **Python version**: Some features may require specific Python versions
+4. **Python version**: Requires Python 3.10 or later
 
 ### Getting Help
 
@@ -179,7 +196,7 @@ If you encounter issues:
 
 1. Check the GitHub Actions logs for CI failures
 2. Run tests locally with verbose output
-3. Verify all dependencies are installed
+3. Verify dependencies with `uv sync`
 4. Check that test data files are present and accessible
 
 ## Best Practices
@@ -188,4 +205,4 @@ If you encounter issues:
 2. **Keep tests fast**: Unit tests should run quickly
 3. **Test edge cases**: Include tests for error conditions and edge cases
 4. **Maintain test data**: Keep test data files up to date
-5. **Document changes**: Update this guide when adding new testing features 
+5. **Document changes**: Update this guide when adding new testing features

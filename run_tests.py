@@ -47,11 +47,8 @@ def main():
     
     # Install dependencies if requested
     if args.install_deps:
-        print("Installing test dependencies...")
-        success &= run_command([sys.executable, "-m", "pip", "install", "-e", ".[test]"], 
-                              "Install test dependencies", ignore_errors=True)
-        success &= run_command([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], 
-                              "Install requirements", ignore_errors=True)
+        print("Installing dependencies with uv...")
+        success &= run_command(["uv", "sync"], "Install dependencies with uv", ignore_errors=True)
     
     # Run tests
     if args.unittest or (not args.pytest and not args.coverage):
