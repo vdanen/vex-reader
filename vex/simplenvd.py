@@ -1,9 +1,11 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
-from typing import Optional, Dict, Any
 from dataclasses import dataclass
+from typing import Any, Dict, Optional
+
 from .simplecvss import CVSSv2, CVSSv3
+
 
 @dataclass
 class NVD:
@@ -39,33 +41,39 @@ class NVD:
         self.raw = nvd_data
 
         # Initialize empty CVSS objects
-        self.cvss31 = CVSSv3(None, '3.1')
-        self.cvss30 = CVSSv3(None, '3.0')
-        self.cvss20 = CVSSv2(None, '2.0')
+        self.cvss31 = CVSSv3(None, "3.1")
+        self.cvss30 = CVSSv3(None, "3.0")
+        self.cvss20 = CVSSv2(None, "2.0")
 
         if not nvd_data:
             return
 
         try:
-            metrics = nvd_data['vulnerabilities'][0]['cve'].get('metrics', {})
+            metrics = nvd_data["vulnerabilities"][0]["cve"].get("metrics", {})
 
             # Parse CVSS data if available, only from NVD source
-            if cvss31_metrics := metrics.get('cvssMetricV31', []):
+            if cvss31_metrics := metrics.get("cvssMetricV31", []):
                 for metric in cvss31_metrics:
-                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
-                        self.cvss31 = CVSSv3(metric['cvssData'], '3.1')
+                    if metric.get("source") == "nvd@nist.gov" and metric.get(
+                        "cvssData"
+                    ):
+                        self.cvss31 = CVSSv3(metric["cvssData"], "3.1")
                         break
 
-            if cvss30_metrics := metrics.get('cvssMetricV30', []):
+            if cvss30_metrics := metrics.get("cvssMetricV30", []):
                 for metric in cvss30_metrics:
-                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
-                        self.cvss30 = CVSSv3(metric['cvssData'], '3.0')
+                    if metric.get("source") == "nvd@nist.gov" and metric.get(
+                        "cvssData"
+                    ):
+                        self.cvss30 = CVSSv3(metric["cvssData"], "3.0")
                         break
 
-            if cvss2_metrics := metrics.get('cvssMetricV2', []):
+            if cvss2_metrics := metrics.get("cvssMetricV2", []):
                 for metric in cvss2_metrics:
-                    if metric.get('source') == 'nvd@nist.gov' and metric.get('cvssData'):
-                        self.cvss20 = CVSSv2(metric['cvssData'], '2.0')
+                    if metric.get("source") == "nvd@nist.gov" and metric.get(
+                        "cvssData"
+                    ):
+                        self.cvss20 = CVSSv2(metric["cvssData"], "2.0")
                         break
 
         except (KeyError, IndexError) as e:
