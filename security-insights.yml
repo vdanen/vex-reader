@@ -1,7 +1,7 @@
 header:
   schema-version: 2.0.0
-  last-updated: '2025-06-15'
-  last-reviewed: '2025-06-15'
+  last-updated: '2026-07-18'
+  last-reviewed: '2026-07-18'
   url: https://github.com/vdanen/vex-reader
   comment: |
     This file contains the minimum information for both project and repository.
@@ -23,7 +23,8 @@ project:
     reports-accepted: true
     bug-bounty-available: false
     comment: |
-      Any vulnerabilities can be reported in GitHub issues
+      Report vulnerabilities via GitHub Security Advisories:
+      https://github.com/vdanen/vex-reader/security/advisories/new
 
 repository:
   url: https://github.com/vdanen/vex-reader
@@ -38,16 +39,16 @@ repository:
     url: https://github.com/vdanen/vex-reader/blob/main/LICENSE
     expression: GPL-3.0-or-later
   release:
-    changelog: https://github.com/vdanen/vex-reader/releases
-    automated-pipeline: false
+    changelog: https://github.com/vdanen/vex-reader/blob/main/CHANGELOG.md
+    automated-pipeline: true
     distribution-points:
       - uri:  https://github.com/vdanen/vex-reader/releases
         comment: GitHub Release Page
       - uri: https://pypi.org/project/vex-reader/
         comment: PyPI Package
     license:
-      url: https://example.com/release/{version}#license
-      expression: MIT AND Apache-2.0
+      url: https://github.com/vdanen/vex-reader/blob/main/LICENSE
+      expression: GPL-3.0-or-later
   security:
     assessments:
       self:
@@ -55,4 +56,3 @@ repository:
         date: '2025-07-04'
         comment: |
           OpenSSF best practices badge
-
