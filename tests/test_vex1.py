@@ -2,7 +2,6 @@ import os
 import sys
 from unittest import TestCase
 import json
-import requests
 
 # Add the parent directory to the path so we can import vex
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -10,6 +9,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from vex import Vex
 from vex import VexPackages
 from vex import NVD
+
+
+def load_nvd_fixture(cve_id):
+    """Load a mocked NVD API response for the given CVE id."""
+    path = os.path.join(os.path.dirname(__file__), 'nvd', f'{cve_id.lower()}.json')
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
+
 
 class TestVex(TestCase):
     pass
@@ -159,23 +166,11 @@ class TestCVE_2021_44228(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, 9.8)
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
+        self.nvd = NVD(load_nvd_fixture(self.cve))
         self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
+        self.nvd = NVD(load_nvd_fixture(self.cve))
         self.assertEqual(self.nvd.cvss31.baseScore, 10.0)
 
     def test_number_of_refs(self):
@@ -302,23 +297,11 @@ class TestCVE_2025_58443(TestVex):
         self.assertEqual(self.vex.global_cvss.baseScore, '')
 
     def test_nvd_cvss_vector(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
+        self.nvd = NVD(load_nvd_fixture(self.cve))
         self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N')
 
     def test_nvd_cvss_base_score(self):
-        response = requests.get(f'https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={self.cve}')
-        self.nvd_cve  = response.json()
-        if self.nvd_cve['vulnerabilities'][0]['cve']['id'] == self.cve:
-            # we got the right result
-            self.nvd = NVD(self.nvd_cve)
-        else:
-            self.nvd = NVD(None)
+        self.nvd = NVD(load_nvd_fixture(self.cve))
         self.assertEqual(self.nvd.cvss31.baseScore, 9.1)
 
     def test_number_of_refs(self):
