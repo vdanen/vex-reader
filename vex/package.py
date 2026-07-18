@@ -2,10 +2,24 @@
 # License: GPLv3+
 
 from datetime import datetime
+from urllib.parse import urlparse
 
 import pytz
 
 from .constants import ARCHES, TZ, VENDOR_ADVISORY, filter_components
+
+
+def _url_host_matches(url, domain):
+    """Return True if the URL hostname is domain or a subdomain of it."""
+    try:
+        host = urlparse(url).hostname
+    except ValueError:
+        return False
+    if not host:
+        return False
+    host = host.lower()
+    domain = domain.lower()
+    return host == domain or host.endswith("." + domain)
 
 
 def product_lookup(product, pmap):
@@ -95,7 +109,7 @@ class Fix(object):
                     self.id = f"{v}-{self.id}"
 
         # Handle MSRC/Microsoft URLs that don't have traditional errata IDs
-        if self.id is None and "microsoft.com" in self.url:
+        if self.id is None and _url_host_matches(self.url, "microsoft.com"):
             # Try to extract version info from details field
             if "details" in x:
                 details = x["details"]
