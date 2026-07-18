@@ -47,6 +47,8 @@ vex-reader = "vex.vex_reader:main"
 [project.urls]
 Homepage = "https://github.com/vdanen/vex-reader"
 Issues = "https://github.com/vdanen/vex-reader/issues"
+Changelog = "https://github.com/vdanen/vex-reader/blob/main/CHANGELOG.md"
+Repository = "https://github.com/vdanen/vex-reader"
 
 [build-system]
 requires = ["setuptools>=45", "wheel"]
@@ -56,6 +58,14 @@ build-backend = "setuptools.build_meta"
 where = ["."]
 include = ["vex*"]
 exclude = ["tests*", "hooks*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
