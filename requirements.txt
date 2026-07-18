@@ -7,4 +7,4 @@ Pygments==2.20.0
 pytz>=2024.1
 requests==2.33.0
 rich>=13.8.1
-urllib3>=2.6.0
+urllib3>=2.7.0
