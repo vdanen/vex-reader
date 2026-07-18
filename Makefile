@@ -12,8 +12,8 @@ help:
 	@echo "  lint        - Run linting checks"
 	@echo "  clean       - Clean build artifacts"
 	@echo "  build       - Build the package"
-	@echo "  upload      - Upload the package to PyPI"
-	@echo "  version     - Bump version, commit, and tag (VERSION=x.y.z)"
+	@echo "  upload      - Emergency manual PyPI upload (prefer Trusted Publishing)"
+	@echo "  version     - Bump version, commit, and tag vX.Y.Z (VERSION=x.y.z)"
 
 # Install the package and dependencies
 install:
@@ -58,12 +58,16 @@ clean:
 build: clean
 	uv build
 
-# Upload the package
+# Emergency manual upload. Prefer: make version VERSION=x.y.z && git push && git push origin vX.Y.Z
+# which publishes via GitHub Actions Trusted Publishing.
 upload: build
+	@echo "WARNING: Prefer Trusted Publishing (push a v* tag). Continuing with twine..."
 	uv run twine upload dist/*
 
 # Bump version, commit, and create an annotated git tag.
 # Usage: make version VERSION=1.2.3
+# Then: git push && git push origin v$(VERSION)
+# CI publishes to PyPI via Trusted Publishing.
 version:
 ifndef VERSION
 	$(error VERSION is required. Usage: make version VERSION=1.2.3)
@@ -72,7 +76,9 @@ endif
 	git add pyproject.toml uv.lock
 	git commit -m "Bump version to $(VERSION)"
 	git tag -a "v$(VERSION)" -m "v$(VERSION)"
-	@echo "Created commit and tag v$(VERSION). Push with: git push && git push origin v$(VERSION)"
+	@echo "Created commit and tag v$(VERSION)."
+	@echo "Publish with: git push && git push origin v$(VERSION)"
+	@echo "(Approve the pypi environment deployment in GitHub Actions if required reviewers are enabled.)"
 
 # Run the test runner script
 run-tests:

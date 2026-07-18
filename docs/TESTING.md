@@ -1,6 +1,7 @@
 # Testing Guide for vex-reader
 
-This document explains how to run tests for the vex-reader project.
+This document explains how to run tests for the vex-reader project. For setup
+and releasing, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Test Setup
 
@@ -19,6 +20,7 @@ The project has been configured with a comprehensive testing setup that includes
 tests/
 ├── __init__.py
 ├── test_vex1.py           # Main test file
+├── nvd/                   # Mocked NVD API responses
 ├── cve-2024-21626.json    # Test data
 ├── cve-2024-40951.json    # Test data
 └── cisco-sa-openssh-rce-2024.json  # Test data
@@ -49,9 +51,6 @@ make clean
 
 # Build the package
 make build
-
-# Bump version, commit, and tag
-make version VERSION=0.9.6
 ```
 
 ### Option 2: Using the Test Runner Script
@@ -125,21 +124,7 @@ The CI workflow includes:
 2. **Lint job**: Checks code quality with flake8, black, and isort
 3. **Security job**: Scans for security vulnerabilities
 4. **Build job**: Builds and validates the package
-
-## Version Bumps
-
-To release a new version locally:
-
-```bash
-make version VERSION=0.9.6
-```
-
-This updates `pyproject.toml`, commits the change, and creates an annotated
-tag `v0.9.6`. Push when ready:
-
-```bash
-git push && git push origin v0.9.6
-```
+5. **Release job**: On `v*` tags, publishes to PyPI via Trusted Publishing
 
 ## Test Data
 
@@ -148,6 +133,7 @@ The tests use real VEX (Vulnerability Exchange) files as test data:
 - `cve-2024-21626.json`: Contains CVSS data and vulnerability information
 - `cve-2024-40951.json`: Contains vulnerability data without CVSS scores
 - `cisco-sa-openssh-rce-2024.json`: Cisco security advisory format
+- `nvd/*.json`: Mocked NVD API responses (no live network calls in unit tests)
 
 ## Writing New Tests
 
@@ -163,11 +149,7 @@ Example test structure:
 
 ```python
 import os
-import sys
 from unittest import TestCase
-
-# Add the parent directory to the path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from vex import Vex, VexPackages
 

@@ -31,13 +31,12 @@ uv pip install vex-reader
 
 ## Usage
 
-The best way to use vex-reader is to install the Python module.  It provides
+The best way to use vex-reader is to install the Python module. It provides
 the `vex-reader` binary and you can import the library for use in your own
 applications.
 
-
 ```
-vex-reader --vex tests/cve-2002-2443.json
+vex-reader --vex /path/to/advisory.json
 CVE-2002-2443
 -------------
 
@@ -94,39 +93,23 @@ CVSS v2 Score Breakdown
 Copyright © Red Hat, Inc. All rights reserved
 ```
 
-By default, `vex-reader` will pull the CVSS score from NVD's API.  If this
-is undesirable (for testing, etc) you can pass the `--no-nvd` argument to
+By default, `vex-reader` will pull the CVSS score from NVD's API. If this
+is undesirable (for testing, etc.) you can pass the `--no-nvd` argument to
 prevent lookups. Currently, `vex-reader` requires the VEX file to parse to
 be on-disk.
 
-## Development
+A good place to find VEX documents is
+https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
 
-Contributions to vex-reader are welcome.  Currently, it works predominantly with
-Red Hat's VEX files and has limited success with other VEX files (such as from
-Cisco).  If `vex-reader` fails to parse the VEX file you're feeding it, you can
-either submit a patch or open an issue and link to the VEX file you're trying
-to parse.
+## License
 
-### Development setup:
+GPLv3+. See [LICENSE](LICENSE).
 
-Requires [uv](https://docs.astral.sh/uv/).
+## Contributing
 
-```shell
-git clone https://github.com/vdanen/vex-reader.git
-cd vex-reader
-uv sync
-```
+Development setup, releasing, and Trusted Publishing notes:
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-When working from the git repository for development, use:
+Running tests: [docs/TESTING.md](docs/TESTING.md).
 
-```
-$ uv run vex-reader --vex tests/cve-2002-2443.json
-```
-
-To bump the package version, commit the change, and create a git tag:
-
-```shell
-make version VERSION=0.9.6
-```
-
-A good place to find some VEX documents to play with is here: https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
+Security reports: [SECURITY.md](SECURITY.md).
