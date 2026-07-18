@@ -105,6 +105,10 @@ https://wid.cert-bund.de/.well-known/csaf-aggregator/aggregator.json
 
 GPLv3+. See [LICENSE](LICENSE).
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## Contributing
 
 Development setup, releasing, and Trusted Publishing notes:
