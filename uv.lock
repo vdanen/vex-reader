@@ -1815,7 +1815,7 @@ wheels = [
 
 [[package]]
 name = "vex-reader"
-version = "0.9.5"
+version = "0.9.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "pytz" },
