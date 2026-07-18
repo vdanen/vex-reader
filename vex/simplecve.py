@@ -1,9 +1,11 @@
 # Copyright (c) 2024 Vincent Danen
 # License: GPLv3+
 
-from typing import Optional, Dict, Any
 from dataclasses import dataclass
+from typing import Any, Dict, Optional
+
 from .simplecvss import CVSSv2, CVSSv3
+
 
 @dataclass
 class CVE:
@@ -38,25 +40,25 @@ class CVE:
         self.raw = cve_data
 
         # Initialize empty CVSS objects
-        self.cvss31 = CVSSv3(None, '3.1')
-        self.cvss30 = CVSSv3(None, '3.0')
-        self.cvss20 = CVSSv2(None, '2.0')
+        self.cvss31 = CVSSv3(None, "3.1")
+        self.cvss30 = CVSSv3(None, "3.0")
+        self.cvss20 = CVSSv2(None, "2.0")
 
         if not cve_data:
             return
 
         try:
-            metrics = cve_data['containers']['adp'][0].get('metrics', [{}])[0]
+            metrics = cve_data["containers"]["adp"][0].get("metrics", [{}])[0]
 
             # Parse CVSS data if available
-            if cvss31_data := metrics.get('cvssV3_1'):
-                self.cvss31 = CVSSv3(cvss31_data, '3.1')
+            if cvss31_data := metrics.get("cvssV3_1"):
+                self.cvss31 = CVSSv3(cvss31_data, "3.1")
 
-            if cvss30_data := metrics.get('cvssV3_0'):
-                self.cvss30 = CVSSv3(cvss30_data, '3.0')
+            if cvss30_data := metrics.get("cvssV3_0"):
+                self.cvss30 = CVSSv3(cvss30_data, "3.0")
 
-            if cvss2_data := metrics.get('cvssV2'):
-                self.cvss20 = CVSSv2(cvss2_data, '2.0')
+            if cvss2_data := metrics.get("cvssV2"):
+                self.cvss20 = CVSSv2(cvss2_data, "2.0")
 
         except (KeyError, IndexError) as e:
             # Log error or handle invalid data structure

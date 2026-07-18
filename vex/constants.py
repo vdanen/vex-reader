@@ -2,42 +2,35 @@
 from collections import OrderedDict  # Python 2.7+ has OrderedDict built-in
 
 # Mapping of severity ratings to a numeric value for comparison
-SEVERITY_MAP = {
-    "Critical":  4,
-    "Important": 3,
-    "Moderate":  2,
-    "Low":       1
-}
+SEVERITY_MAP = {"Critical": 4, "Important": 3, "Moderate": 2, "Low": 1}
 
 # Display all times in US/Eastern
-TZ = 'US/Eastern'
+TZ = "US/Eastern"
 
 SEVERITY_COLOR = {
-    "Critical":  'red',
-    "Important": 'yellow',
-    "Moderate":  'blue',
-    "Low":       'green',
-    "None":      'green'
+    "Critical": "red",
+    "Important": "yellow",
+    "Moderate": "blue",
+    "Low": "green",
+    "None": "green",
 }
 
-SEVERITIES = {
-    "C": "Critical",
-    "I": "Important",
-    "M": "Moderate",
-    "L": "Low"
-}
+SEVERITIES = {"C": "Critical", "I": "Important", "M": "Moderate", "L": "Low"}
 
 VENDOR_ADVISORY = {
-    "RHSA":    "Red Hat",
-    "RHEA":    "Red Hat",
-    "RHBA":    "Red Hat",
-    "USN":     "Ubuntu",
+    "RHSA": "Red Hat",
+    "RHEA": "Red Hat",
+    "RHBA": "Red Hat",
+    "USN": "Ubuntu",
     "SUSE-SU": "SUSE",
-    "GLSA":    "Gentoo"
+    "GLSA": "Gentoo",
 }
 
-ARCHES    = frozenset(['ppc64le', 'ppc64', 'ppc', 'i686', 's390x', 'x86_64', 'aarch64', 'noarch'])
-FORBIDDEN = frozenset(['debuginfo', 'kernel-headers'])
+ARCHES = frozenset(
+    ["ppc64le", "ppc64", "ppc", "i686", "s390x", "x86_64", "aarch64", "noarch"]
+)
+FORBIDDEN = frozenset(["debuginfo", "kernel-headers"])
+
 
 def get_rating(score: float) -> str:
     """Map a CVSS score to a severity category.
@@ -49,15 +42,16 @@ def get_rating(score: float) -> str:
         String representing severity rating
     """
     if score < 0.1:
-        return 'None'
+        return "None"
     elif score <= 3.9:
-        return 'Low'
+        return "Low"
     elif score <= 6.9:
-        return 'Medium'
+        return "Medium"
     elif score <= 8.9:
-        return 'High'
+        return "High"
     else:
-        return 'Critical'
+        return "Critical"
+
 
 def filter_components(components: list) -> list:
     """Filter component list to get base package names.
@@ -72,13 +66,14 @@ def filter_components(components: list) -> list:
         Filtered list of base package names
     """
     # First try to find source RPMs
-    filtered = [c.replace('.src', '') for c in components if '.src' in c]
+    filtered = [c.replace(".src", "") for c in components if ".src" in c]
 
     if not filtered:
         # No source RPMs found, try x86_64 packages
         filtered = [
-            c.replace('.x86_64', '') for c in components
-            if 'x86_64' in c and not any(f in c for f in FORBIDDEN)
+            c.replace(".x86_64", "")
+            for c in components
+            if "x86_64" in c and not any(f in c for f in FORBIDDEN)
         ]
 
     # If still empty, return original components (likely won't fix case)

@@ -3,10 +3,10 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
-from .vex import Vex
 from .package import VexPackages
-from .simplenvd import NVD
 from .simplecve import CVE
+from .simplenvd import NVD
+from .vex import Vex
 
 try:
     __version__ = version("vex-reader")

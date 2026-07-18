@@ -37,11 +37,11 @@ test-cov:
 # Run linting checks
 lint:
 	@echo "Running flake8..."
-	-uv run flake8 vex/ --count --select=E9,F63,F7,F82 --show-source --statistics
+	uv run flake8 vex/ --count --select=E9,F63,F7,F82 --show-source --statistics
 	@echo "Running black (check only)..."
-	-uv run black --check --diff vex/
+	uv run black --check --diff vex/ tests/
 	@echo "Running isort (check only)..."
-	-uv run isort --check-only --diff vex/
+	uv run isort --check-only --diff vex/ tests/
 
 # Clean build artifacts
 clean:

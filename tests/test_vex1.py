@@ -1,20 +1,18 @@
+import json
 import os
 import sys
 from unittest import TestCase
-import json
 
 # Add the parent directory to the path so we can import vex
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from vex import Vex
-from vex import VexPackages
-from vex import NVD
+from vex import NVD, Vex, VexPackages
 
 
 def load_nvd_fixture(cve_id):
     """Load a mocked NVD API response for the given CVE id."""
-    path = os.path.join(os.path.dirname(__file__), 'nvd', f'{cve_id.lower()}.json')
-    with open(path, encoding='utf-8') as f:
+    path = os.path.join(os.path.dirname(__file__), "nvd", f"{cve_id.lower()}.json")
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -25,28 +23,28 @@ class TestVex(TestCase):
 class TestCVE_2024_40951(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2024-40951'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2024-40951"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2024-07-11')
+        self.assertEqual(self.vex.release_date, "2024-07-11")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Moderate')
+        self.assertEqual(self.vex.global_impact, "Moderate")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '2297535')
+        self.assertEqual(self.vex.bz_id, "2297535")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'NOT AVAILABLE ')
+        self.assertEqual(self.vex.global_cvss.vectorString, "NOT AVAILABLE ")
 
     def test_cvss_base_score(self):
-        self.assertEqual(self.vex.global_cvss.baseScore, '')
+        self.assertEqual(self.vex.global_cvss.baseScore, "")
 
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 4)
@@ -64,25 +62,28 @@ class TestCVE_2024_40951(TestVex):
 class TestCVE_2024_21626(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2024-21626'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2024-21626"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2024-01-31')
+        self.assertEqual(self.vex.release_date, "2024-01-31")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Important')
+        self.assertEqual(self.vex.global_impact, "Important")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '2258725')
+        self.assertEqual(self.vex.bz_id, "2258725")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.6)
@@ -103,28 +104,28 @@ class TestCVE_2024_21626(TestVex):
 class TestCVE_2002_0803(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2002-0803'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2002-0803"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2002-06-07')
+        self.assertEqual(self.vex.release_date, "2002-06-07")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'None')
+        self.assertEqual(self.vex.global_impact, "None")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '1616805')
+        self.assertEqual(self.vex.bz_id, "1616805")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'NOT AVAILABLE ')
+        self.assertEqual(self.vex.global_cvss.vectorString, "NOT AVAILABLE ")
 
     def test_cvss_base_score(self):
-        self.assertEqual(self.vex.global_cvss.baseScore, '')
+        self.assertEqual(self.vex.global_cvss.baseScore, "")
 
     def test_number_of_refs(self):
         self.assertEqual(len(self.vex.references), 3)
@@ -142,32 +143,37 @@ class TestCVE_2002_0803(TestVex):
 class TestCVE_2021_44228(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2021-44228'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2021-44228"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2021-12-09')
+        self.assertEqual(self.vex.release_date, "2021-12-09")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Critical')
+        self.assertEqual(self.vex.global_impact, "Critical")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '2030932')
+        self.assertEqual(self.vex.bz_id, "2030932")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 9.8)
 
     def test_nvd_cvss_vector(self):
         self.nvd = NVD(load_nvd_fixture(self.cve))
-        self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H')
+        self.assertEqual(
+            self.nvd.cvss31.vectorString, "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+        )
 
     def test_nvd_cvss_base_score(self):
         self.nvd = NVD(load_nvd_fixture(self.cve))
@@ -189,25 +195,28 @@ class TestCVE_2021_44228(TestVex):
 class TestCVE_2025_29087(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2025-29087'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2025-29087"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2025-04-06')
+        self.assertEqual(self.vex.release_date, "2025-04-06")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Moderate')
+        self.assertEqual(self.vex.global_impact, "Moderate")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '2358028')
+        self.assertEqual(self.vex.bz_id, "2358028")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 5.5)
@@ -231,25 +240,28 @@ class TestCVE_2025_29087(TestVex):
 class TestCVE_2025_59840(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2025-59840'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2025-59840"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2025-11-13')
+        self.assertEqual(self.vex.release_date, "2025-11-13")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Important')
+        self.assertEqual(self.vex.global_impact, "Important")
 
     def test_bzid(self):
-        self.assertEqual(self.vex.bz_id, '2414907')
+        self.assertEqual(self.vex.bz_id, "2414907")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 8.1)
@@ -273,16 +285,16 @@ class TestCVE_2025_59840(TestVex):
 class TestCVE_2025_58443(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2025-58443'
-        test_file = os.path.join(os.path.dirname(__file__), f'{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2025-58443"
+        test_file = os.path.join(os.path.dirname(__file__), f"{self.cve.lower()}.json")
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2025-09-06')
+        self.assertEqual(self.vex.release_date, "2025-09-06")
 
     def test_impact(self):
         self.assertEqual(self.vex.global_impact, None)
@@ -291,14 +303,16 @@ class TestCVE_2025_58443(TestVex):
         self.assertEqual(self.vex.bz_id, None)
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'NOT AVAILABLE ')
+        self.assertEqual(self.vex.global_cvss.vectorString, "NOT AVAILABLE ")
 
     def test_cvss_base_score(self):
-        self.assertEqual(self.vex.global_cvss.baseScore, '')
+        self.assertEqual(self.vex.global_cvss.baseScore, "")
 
     def test_nvd_cvss_vector(self):
         self.nvd = NVD(load_nvd_fixture(self.cve))
-        self.assertEqual(self.nvd.cvss31.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N')
+        self.assertEqual(
+            self.nvd.cvss31.vectorString, "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+        )
 
     def test_nvd_cvss_base_score(self):
         self.nvd = NVD(load_nvd_fixture(self.cve))
@@ -323,22 +337,27 @@ class TestCVE_2025_58443(TestVex):
 class TestSUSECVE_2014_0160(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2014-0160'
-        test_file = os.path.join(os.path.dirname(__file__), f'suse-{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2014-0160"
+        test_file = os.path.join(
+            os.path.dirname(__file__), f"suse-{self.cve.lower()}.json"
+        )
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2014-04-07')
+        self.assertEqual(self.vex.release_date, "2014-04-07")
 
     def test_impact(self):
-        self.assertEqual(self.vex.global_impact, 'Important')
+        self.assertEqual(self.vex.global_impact, "Important")
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 7.5)
@@ -362,22 +381,27 @@ class TestSUSECVE_2014_0160(TestVex):
 class TestMSRCCVE_2022_24735(TestVex):
     def setUp(self):
         # Use the correct path relative to the tests directory
-        self.cve = 'CVE-2022-24735'
-        test_file = os.path.join(os.path.dirname(__file__), f'msrc_{self.cve.lower()}.json')
-        self.vex      = Vex(test_file)
+        self.cve = "CVE-2022-24735"
+        test_file = os.path.join(
+            os.path.dirname(__file__), f"msrc_{self.cve.lower()}.json"
+        )
+        self.vex = Vex(test_file)
         self.packages = VexPackages(self.vex.raw)
 
     def test_cve_name(self):
         self.assertEqual(self.vex.cve, self.cve)
 
     def test_public_date(self):
-        self.assertEqual(self.vex.release_date, '2022-04-01')
+        self.assertEqual(self.vex.release_date, "2022-04-01")
 
     def test_impact(self):
         self.assertEqual(self.vex.global_impact, None)
 
     def test_cvss_vector(self):
-        self.assertEqual(self.vex.global_cvss.vectorString, 'CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H')
+        self.assertEqual(
+            self.vex.global_cvss.vectorString,
+            "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+        )
 
     def test_cvss_base_score(self):
         self.assertEqual(self.vex.global_cvss.baseScore, 7.8)
