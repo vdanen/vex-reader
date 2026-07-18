@@ -58,16 +58,14 @@ clean:
 build: clean
 	uv build
 
-# Emergency manual upload. Prefer: make version VERSION=x.y.z && git push && git push origin vX.Y.Z
-# which publishes via GitHub Actions Trusted Publishing.
+# Emergency manual upload. Prefer Trusted Publishing: see `make version` / docs/DEVELOPMENT.md.
 upload: build
-	@echo "WARNING: Prefer Trusted Publishing (push a v* tag). Continuing with twine..."
+	@echo "WARNING: Prefer Trusted Publishing (tag on main after develop->main PR). Continuing with twine..."
 	uv run twine upload dist/*
 
 # Bump version, commit, and create an annotated git tag.
 # Usage: make version VERSION=1.2.3
-# Then: git push && git push origin v$(VERSION)
-# CI publishes to PyPI via Trusted Publishing.
+# CI publishes to PyPI via Trusted Publishing after the tag is on main.
 version:
 ifndef VERSION
 	$(error VERSION is required. Usage: make version VERSION=1.2.3)
@@ -76,9 +74,21 @@ endif
 	git add pyproject.toml uv.lock
 	git commit -m "Bump version to $(VERSION)"
 	git tag -a "v$(VERSION)" -m "v$(VERSION)"
-	@echo "Created commit and tag v$(VERSION)."
-	@echo "Publish with: git push && git push origin v$(VERSION)"
-	@echo "(Approve the pypi environment deployment in GitHub Actions if required reviewers are enabled.)"
+	@echo ""
+	@echo "Created commit and local tag v$(VERSION)."
+	@echo ""
+	@echo "Next steps (main is protected — do not push commits to main):"
+	@echo "  1. Push the version bump on develop:"
+	@echo "       git push origin develop"
+	@echo "  2. Open a PR develop -> main on GitHub and merge it."
+	@echo "  3. After the merge, push the tag:"
+	@echo "       git push origin v$(VERSION)"
+	@echo "  4. Approve the pypi environment deployment in Actions if prompted."
+	@echo "  5. Confirm https://pypi.org/project/vex-reader/"
+	@echo ""
+	@echo "Do not push the tag before the PR merges (the release job requires"
+	@echo "the tagged commit to already be on main). See docs/DEVELOPMENT.md."
+
 
 # Run the test runner script
 run-tests:
