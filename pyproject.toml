@@ -32,7 +32,7 @@ dev = [
     "pytest-xdist==3.8.0",
     "coverage==7.16.2",
     "flake8==7.4.1",
-    "black==26.5.1",
+    "black==26.10.0",
     "isort==9.0.2",
     "build==1.6.1",
     "twine==7.0.0",
