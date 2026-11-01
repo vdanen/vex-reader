@@ -31,30 +31,49 @@ Common Make targets: `make help`, `make test`, `make lint`, `make build`.
 ## Releasing
 
 New releases use `v*` tags (for example `v0.9.6`). Historical tags such as
-`0.9.5` remain as-is.
+`0.9.5` remain as-is. The release workflow only publishes if the tagged commit
+is already on `main` (so a tag pushed before the PR merges will fail until
+you re-run the job or re-push the tag after merge).
 
-1. Bump the version, commit, and create an annotated tag:
+`main` is protected: do **not** push commits directly to it. Use `develop` and
+a PR.
+
+1. On `develop`, bump the version (creates a commit and local tag):
 
    ```shell
+   git checkout develop
+   git pull
    make version VERSION=0.9.6
    ```
 
-2. Push the commit and tag:
+2. Push the version-bump commit on `develop` (not the tag yet, or the first
+   release run will fail until `main` has that commit):
 
    ```shell
-   git push
+   git push origin develop
+   ```
+
+3. Open a PR `develop` → `main` on GitHub and merge it.
+
+4. After the merge, push the tag (the tagged commit is now on `main`):
+
+   ```shell
    git push origin v0.9.6
    ```
 
-3. GitHub Actions runs [`.github/workflows/release.yml`](../.github/workflows/release.yml),
-   builds the package, and publishes to PyPI with
+   If you pushed the tag earlier and the Release job failed the “on main”
+   check, either **Re-run** that failed workflow after the merge, or delete and
+   re-push the tag.
+
+5. GitHub Actions runs [`.github/workflows/release.yml`](../.github/workflows/release.yml),
+   verifies the tag is on `main`, builds the package, and publishes to PyPI with
    [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC; no API token).
 
-4. If the `pypi` GitHub Environment has required reviewers, open the
+6. If the `pypi` GitHub Environment has required reviewers, open the
    [Actions](https://github.com/vdanen/vex-reader/actions) run for that tag and
    **Approve** the deployment when prompted.
 
-5. Confirm the new version on https://pypi.org/project/vex-reader/
+7. Confirm the new version on https://pypi.org/project/vex-reader/
 
 `make upload` (twine) is an emergency fallback only.
 
