@@ -15,7 +15,7 @@ any VEX documents.
 
 ## Installation
 
-Requires Python 3.10 or later.
+Requires Python 3.11 or later.
 
 Install [vex-reader](https://pypi.org/project/vex-reader/) from PyPI:
 

@@ -7,14 +7,14 @@ authors = [
 description = "Read VEX files"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Operating System :: OS Independent",
@@ -61,7 +61,7 @@ exclude = ["tests*", "hooks*"]
 
 [tool.black]
 line-length = 88
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.isort]
 profile = "black"
