@@ -36,7 +36,7 @@ dev = [
     "isort==9.0.2",
     "build==1.6.1",
     "twine==7.0.0",
-    "pkginfo==1.13",
+    "pkginfo==1.13.3",
     "bandit[toml]",
     "safety",
 ]
