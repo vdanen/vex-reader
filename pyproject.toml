@@ -30,7 +30,7 @@ dev = [
     "pytest==9.2.0",
     "pytest-cov==7.1.0",
     "pytest-xdist==3.8.0",
-    "coverage==7.16.2",
+    "coverage==7.17.1",
     "flake8==7.4.1",
     "black==26.10.1",
     "isort==9.0.2",
